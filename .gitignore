@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+
+# Logs and debug files
+*.log
+*.txt
+*.zip
+
+# Environment and secret files
+.env
+**/.env
+.env.local
+
+# Chrome temp profiles
+chrome-profile/
+chrome-temp-profile*/
+chrome-temp-profile-new-test-2/
+chrome-temp-profile-test/
