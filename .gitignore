@@ -16,7 +16,3 @@ chrome-profile/
 chrome-temp-profile*/
 chrome-temp-profile-new-test-2/
 chrome-temp-profile-test/
-
-# Android/Flutter build artifacts
-zando/
-payment-server/

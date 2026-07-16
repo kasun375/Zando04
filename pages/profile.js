@@ -9,6 +9,7 @@ import { showToast } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 import { stopNotifications } from '../js/notifications.js';
 import { fetchMyOrders } from '../js/orders.js';
+import { renderBottomNav, bindBottomNav } from './home.js';
 
 export async function renderProfile(appEl) {
   const { userModel, currentUser } = getState();
@@ -86,6 +87,7 @@ export async function renderProfile(appEl) {
           </div>
         </div>
       </div>
+      ${renderBottomNav('profile')}
     </div>
   `;
 
@@ -102,6 +104,7 @@ export async function renderProfile(appEl) {
   document.getElementById('profile-orders-btn')?.addEventListener('click', () => navigate('orders'));
   document.getElementById('profile-notif-btn')?.addEventListener('click', () => navigate('notifications'));
   document.getElementById('profile-admin-btn')?.addEventListener('click', () => navigate('admin'));
+  bindBottomNav();
 
   document.getElementById('profile-signout-btn')?.addEventListener('click', async () => {
     if (!confirm('Are you sure you want to sign out?')) return;

@@ -1,0 +1,47 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ],
+  "emulators": {
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "ui": {
+      "host": "0.0.0.0",
+      "enabled": true
+    }
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "zando-b574e",
+          "appId": "1:20423532374:android:a9cec07adcda68e2d880f7",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "zando-b574e",
+          "configurations": {
+            "android": "1:20423532374:android:a9cec07adcda68e2d880f7",
+            "ios": "1:20423532374:ios:096f7b56f4505e13d880f7",
+            "macos": "1:20423532374:ios:096f7b56f4505e13d880f7",
+            "web": "1:20423532374:web:213ad3f80bc841a9d880f7",
+            "windows": "1:20423532374:web:061ffd5c00713fe8d880f7"
+          }
+        }
+      }
+    }
+  }
+}

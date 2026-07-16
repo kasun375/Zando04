@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "20423532374",
+    "project_id": "zando-b574e",
+    "storage_bucket": "zando-b574e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20423532374:android:faa3e498bc1b1ceed880f7",
+        "android_client_info": {
+          "package_name": "com.eshop.zando"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20423532374-7abjokhk69gm95iv547knr5slu5rf2ia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eshop.zando",
+            "certificate_hash": "9dadb0956048a3fee726d80853aaf714422baf33"
+          }
+        },
+        {
+          "client_id": "20423532374-43eao0s3sbvabhblvcjeq2bd0ng6k99q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU0VQPo6mCA-o5DrGuCEhdhjG-AyCpeM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20423532374-43eao0s3sbvabhblvcjeq2bd0ng6k99q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "20423532374-rluisdphm1tff82rujhfif91bgn3dtlp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.zando"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

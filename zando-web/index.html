@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zando — Shop Everything</title>
+  <meta name="description" content="Zando is your one-stop e-commerce destination. Shop electronics, fashion, groceries, and more with fast delivery." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+
+  <!-- Favicon & PWA Icons -->
+  <link rel="icon" type="image/png" href="assets/images/app_icon.png" />
+  <link rel="apple-touch-icon" href="assets/images/app_icon.png" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <!-- Stripe JS SDK (Secure Card tokenisation) -->
+  <script src="https://js.stripe.com/v3/"></script>
+
+</head>
+<body>
+
+  <!-- Protocol Check (Prevents file:// protocol errors) -->
+  <script>
+    if (window.location.protocol === 'file:') {
+      document.write(`
+        <div style="font-family: sans-serif; padding: 3rem; text-align: center; background: #2E062B; color: white; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <h1 style="color: #FFFF00; font-size: 2.5rem; margin-bottom: 1rem;">⚠️ Server Required</h1>
+          <p style="font-size: 1.2rem; max-width: 600px; line-height: 1.6; margin-bottom: 2rem;">
+            You cannot open this file directly by double-clicking it because modern web browsers block secure features (like JavaScript modules) from running on local files.
+          </p>
+          <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 12px;">
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">Please open your browser and go to:</p>
+            <a href="http://127.0.0.1:3000" style="color: #FFFF00; font-size: 2rem; font-weight: bold; text-decoration: none;">http://127.0.0.1:3000</a>
+          </div>
+        </div>
+      `);
+      window.stop(); // Stops further parsing of the document
+    }
+  </script>
+
+
+  <!-- Splash Screen (standalone, not inside #app) -->
+  <div id="splash-screen" class="splash-screen">
+    <img src="assets/images/Zando%20web%20splash.jpg" alt="ZANDO" style="width: 100%; height: 100%; object-fit: cover;" />
+  </div>
+
+  <!-- App Root (starts hidden) -->
+  <div id="app" style="display:none;"></div>
+
+  <!-- Mobile Bottom Navigation Bar (Visible only on mobile/tablet viewports) -->
+  <nav id="mobile-bottom-nav" class="mobile-bottom-nav" style="display: none;">
+    <div class="mobile-nav-item active" data-nav="home">
+      <span class="material-icons-round">home_outlined</span>
+    </div>
+    <div class="mobile-nav-item" data-nav="profile">
+      <span class="material-icons-round">person_outline</span>
+    </div>
+    <div class="mobile-nav-item" data-nav="cart">
+      <span class="material-icons-round">shopping_cart_outlined</span>
+    </div>
+    <div class="mobile-nav-item" data-nav="categories">
+      <span class="material-icons-round">grid_view_outlined</span>
+    </div>
+  </nav>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="toast-container"></div>
+
+
+  <!-- Main App — Firebase + Bootstrap -->
+  <script type="module">
+    // ── Firebase Init ──────────────────────────────
+    import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getFunctions, connectFunctionsEmulator } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
+
+    try {
+      const firebaseConfig = {
+        apiKey:            'AIzaSyCAMt4rLwtm5htZhPZnWdT-bjyzGxnstPM',
+        authDomain:        'zando-b574e.firebaseapp.com',
+        projectId:         'zando-b574e',
+        storageBucket:     'zando-b574e.appspot.com',
+        messagingSenderId: '20423532374',
+        appId:             '1:20423532374:web:213ad3f80bc841a9d880f7',
+        measurementId:     'G-SM7F64PL0V'
+      };
+
+      const fbApp  = initializeApp(firebaseConfig);
+      window._firebaseApp = fbApp;
+      window._auth = getAuth(fbApp);
+      window._db   = getFirestore(fbApp);
+
+      const functions = getFunctions(fbApp);
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
+        connectFunctionsEmulator(functions, window.location.hostname, 5001);
+      }
+      window._functions = functions;
+
+      // ── Bootstrap ──────────────────────────────────
+      const { bootstrapApp } = await import('./js/app.js');
+      await bootstrapApp();
+
+    } catch (err) {
+      console.error('Bootstrap error:', err);
+      // Show error on screen so user can see what went wrong
+      document.getElementById('splash-screen').innerHTML = `
+        <div style="text-align:center;color:white;padding:2rem;max-width:480px;">
+          <span style="font-size:3rem;">⚠️</span>
+          <h2 style="margin:1rem 0 0.5rem;font-family:sans-serif;">Failed to Load</h2>
+          <p style="color:rgba(255,255,255,0.7);font-size:0.875rem;margin-bottom:1.5rem;">${err.message}</p>
+          <button onclick="location.reload()"
+            style="background:#FFFF00;color:#000;border:none;padding:0.75rem 2rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;">
+            RETRY
+          </button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

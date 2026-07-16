@@ -1,0 +1,17 @@
+{
+  "name": "zando-payment-server",
+  "version": "1.0.0",
+  "description": "Local Stripe payment server for ZANDO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "firebase": "^12.15.0",
+    "puppeteer-core": "^25.1.0",
+    "stripe": "^16.0.0"
+  }
+}
