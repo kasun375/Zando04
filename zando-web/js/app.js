@@ -25,6 +25,7 @@ const PAGES = {
   orders:        () => import('../pages/order-history.js'),
   notifications: () => import('../pages/notifications.js'),
   admin:         () => import('../pages/admin.js'),
+  categories:    () => import('../pages/categories.js'),
 };
 
 async function loadPage(name) {
@@ -118,6 +119,11 @@ export async function bootstrapApp() {
   registerRoute('admin', async () => {
     const mod = await loadPage('admin');
     await mod?.renderAdmin(appEl);
+  });
+
+  registerRoute('categories', async () => {
+    const mod = await loadPage('categories');
+    mod?.renderCategories(appEl);
   });
 
   registerRoute('404', () => {
@@ -253,6 +259,58 @@ export async function bootstrapApp() {
       import('../pages/notifications.js').then(mod => {
         mod.renderNotifications(appEl);
       }).catch(() => {});
+    }
+  });
+
+  // ── Mobile Bottom Navigation Sync & Events ─────────────────────────────────
+  function syncMobileNav() {
+    const hash = window.location.hash.slice(1) || 'home';
+    const base = hash.split('/')[0];
+    
+    // Group related routes under tabs
+    let activeTab = base;
+    if (['login', 'register', 'orders', 'order-history', 'profile'].includes(base)) {
+      activeTab = 'profile';
+    } else if (['cart'].includes(base)) {
+      activeTab = 'cart';
+    } else if (['categories'].includes(base)) {
+      activeTab = 'categories';
+    } else {
+      activeTab = 'home';
+    }
+
+    const iconMap = {
+      home: { active: 'home', inactive: 'home_outlined' },
+      profile: { active: 'person', inactive: 'person_outline' },
+      cart: { active: 'shopping_cart', inactive: 'shopping_cart_outlined' },
+      categories: { active: 'grid_view', inactive: 'grid_view_outlined' }
+    };
+
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+      const tabName = item.getAttribute('data-nav');
+      const iconEl = item.querySelector('.material-icons-round');
+      if (tabName === activeTab) {
+        item.classList.add('active');
+        if (iconEl && iconMap[tabName]) iconEl.textContent = iconMap[tabName].active;
+      } else {
+        item.classList.remove('active');
+        if (iconEl && iconMap[tabName]) iconEl.textContent = iconMap[tabName].inactive;
+      }
+    });
+  }
+
+  window.addEventListener('hashchange', syncMobileNav);
+  syncMobileNav(); // Run on init
+
+  document.getElementById('mobile-bottom-nav')?.addEventListener('click', (e) => {
+    const item = e.target.closest('.mobile-nav-item');
+    if (!item) return;
+    const target = item.getAttribute('data-nav');
+    if (target === 'profile') {
+      const { currentUser } = getState();
+      navigate(currentUser ? 'profile' : 'login');
+    } else {
+      navigate(target);
     }
   });
 }

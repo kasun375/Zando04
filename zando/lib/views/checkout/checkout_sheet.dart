@@ -34,15 +34,13 @@ class CheckoutSheet extends StatefulWidget {
 class _CheckoutSheetState extends State<CheckoutSheet> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   // Payment field controllers
   final _cardNumberController = TextEditingController();
   final _cardHolderController = TextEditingController();
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
-
-  final _paypalEmailController = TextEditingController();
-  final _paypalPasswordController = TextEditingController();
 
   String _selectedPaymentMethod = 'Credit Card';
 
@@ -58,12 +56,11 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   @override
   void dispose() {
     _addressController.dispose();
+    _phoneController.dispose();
     _cardNumberController.dispose();
     _cardHolderController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
-    _paypalEmailController.dispose();
-    _paypalPasswordController.dispose();
     super.dispose();
   }
 
@@ -97,8 +94,6 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   Widget _buildPaymentMethodsSelector() {
     final methods = [
       {'id': 'Credit Card', 'name': 'Card', 'icon': Icons.credit_card_outlined},
-      {'id': 'PayPal', 'name': 'PayPal', 'icon': Icons.account_balance_wallet_outlined},
-      {'id': 'Google Pay', 'name': 'Google Pay', 'icon': Icons.payment_outlined},
       {'id': 'Cash on Delivery', 'name': 'Cash on Delivery', 'icon': Icons.handshake_outlined},
     ];
 
@@ -226,61 +221,6 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
           ),
         ],
       );
-    } else if (_selectedPaymentMethod == 'PayPal') {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _paypalEmailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: _buildInputDecoration('PayPal Email', Icons.email_outlined),
-            validator: (val) {
-              if (_selectedPaymentMethod == 'PayPal') {
-                if (val == null || val.trim().isEmpty) return 'Enter PayPal email';
-                if (!val.contains('@')) return 'Enter valid email';
-              }
-              return null;
-            },
-            enabled: !_isProcessing,
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _paypalPasswordController,
-            obscureText: true,
-            decoration: _buildInputDecoration('PayPal Password', Icons.lock_outline),
-            validator: (val) {
-              if (_selectedPaymentMethod == 'PayPal') {
-                if (val == null || val.trim().isEmpty) return 'Enter password';
-              }
-              return null;
-            },
-            enabled: !_isProcessing,
-          ),
-        ],
-      );
-    } else if (_selectedPaymentMethod == 'Google Pay') {
-      return Container(
-        margin: const EdgeInsets.only(top: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.payment, color: AppColors.primary),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Pay securely via Google Pay.',
-                style: TextStyle(fontSize: 13, color: AppColors.textBody),
-              ),
-            ),
-          ],
-        ),
-      );
     } else {
       return Container(
         margin: const EdgeInsets.only(top: 16),
@@ -369,6 +309,28 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   Icons.local_shipping_outlined,
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Enter shipping address' : null,
+                enabled: !_isProcessing,
+              ),
+              const SizedBox(height: 16),
+
+              // Section 1.5: Mobile Number
+              const Text(
+                'Mobile Number',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textHead,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: _buildInputDecoration(
+                  'Enter mobile number...',
+                  Icons.phone_outlined,
+                ),
+                validator: (val) => val == null || val.trim().isEmpty ? 'Enter mobile number' : null,
                 enabled: !_isProcessing,
               ),
               const SizedBox(height: 20),
@@ -649,6 +611,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       status: OrderStatus.pending,
       createdAt: DateTime.now(),
       shippingAddress: _addressController.text.trim(),
+      mobileNumber: _phoneController.text.trim(),
       paymentMethod: paymentMethod,
     );
 

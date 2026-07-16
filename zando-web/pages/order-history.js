@@ -79,9 +79,9 @@ function renderOrdersList(orders) {
   content.innerHTML = `
     <div class="order-history-header">
       <h2 style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:800;">
-        Order History
+        Oder History
       </h2>
-      <span style="color:var(--color-text-muted);font-size:var(--text-sm);">${orders.length} orders</span>
+      <span style="color:var(--color-text-muted);font-size:var(--text-sm);">${orders.length} oders</span>
     </div>
     ${orders.map(renderOrderCard).join('')}
   `;
@@ -150,6 +150,15 @@ function renderOrderCard(order) {
             </div>
           </div>
         ` : ''}
+        ${order.mobileNumber ? `
+          <div style="display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:0.75rem;">
+            <span class="material-icons-round" style="font-size:1rem;color:var(--color-text-muted);margin-top:2px;">phone</span>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);">MOBILE NUMBER</div>
+              <div style="font-size:var(--text-sm);">${order.mobileNumber}</div>
+            </div>
+          </div>
+        ` : ''}
         ${order.paymentMethod ? `
           <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
             <span class="material-icons-round" style="font-size:1rem;color:var(--color-text-muted);">payment</span>
@@ -175,7 +184,7 @@ function renderOrderHistoryHeader() {
           <span class="material-icons-round">arrow_back</span>
         </button>
         <div style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:white;flex:1;text-align:center;">
-          My Orders
+          My Oders
         </div>
         <button class="icon-btn" id="orders-cart-btn" aria-label="Cart">
           <span class="material-icons-round">shopping_cart</span>

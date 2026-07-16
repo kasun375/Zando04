@@ -217,7 +217,8 @@ function renderAdminOrders(orders) {
           <hr class="divider" />
 
           <!-- Address & Payment -->
-          ${order.shippingAddress ? `<p style="font-size:var(--text-sm);margin-bottom:0.5rem;">📍 ${order.shippingAddress}</p>` : ''}
+          ${order.shippingAddress ? `<p style="font-size:var(--text-sm);margin-bottom:0.25rem;">📍 ${order.shippingAddress}</p>` : ''}
+          ${order.mobileNumber ? `<p style="font-size:var(--text-sm);margin-bottom:0.5rem;">📞 ${order.mobileNumber}</p>` : ''}
           ${order.paymentMethod ? `<p style="font-size:var(--text-sm);margin-bottom:1rem;">💳 ${order.paymentMethod}</p>` : ''}
 
           <!-- Status update -->

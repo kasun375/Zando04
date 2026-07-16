@@ -210,7 +210,7 @@ function renderTrackOrdersCard() {
         <span class="material-icons-round">local_shipping</span>
       </div>
       <div class="track-orders-text">
-        <div class="track-orders-title">Track My Orders</div>
+        <div class="track-orders-title">Track My Oders</div>
         <div class="track-orders-sub">View active shipments &amp; history</div>
       </div>
       <div class="track-orders-arrow">

@@ -62,6 +62,17 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         <span class="form-error" id="addr-err"></span>
       </div>
 
+      <!-- Section 1.5: Mobile Number -->
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label class="form-label">Mobile Number</label>
+        <div class="form-control-wrapper">
+          <span class="material-icons-round input-icon">phone</span>
+          <input type="tel" id="checkout-phone" class="form-control has-icon"
+            placeholder="Enter mobile number..." />
+        </div>
+        <span class="form-error" id="phone-err"></span>
+      </div>
+
       <!-- Section 2: Interactive Card Form -->
       <div class="form-group" style="margin-bottom:1.25rem;">
         <label class="form-label">Payment Method</label>
@@ -69,14 +80,6 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           <div class="payment-method-btn active" data-method="Credit Card">
             <span class="material-icons-round">credit_card</span>
             <span>Card</span>
-          </div>
-          <div class="payment-method-btn" data-method="PayPal">
-            <span class="material-icons-round">account_balance_wallet</span>
-            <span>PayPal</span>
-          </div>
-          <div class="payment-method-btn" data-method="Google Pay">
-            <span class="material-icons-round">payment</span>
-            <span>Google Pay</span>
           </div>
           <div class="payment-method-btn" data-method="Cash on Delivery">
             <span class="material-icons-round">handshake</span>
@@ -97,28 +100,6 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
             <label class="form-label" style="font-size:var(--text-xs);margin-bottom:0.25rem;">Card Details</label>
             <div id="card-element" style="background:var(--color-surface); padding:0.75rem 1rem; border-radius:var(--radius-md); border:1.5px solid var(--color-border);"></div>
             <span class="form-error" id="card-element-err" style="color:var(--color-error);font-size:0.75rem;margin-top:0.25rem;display:block;"></span>
-          </div>
-        </div>
-
-        <!-- PayPal details -->
-        <div class="payment-form-section" id="pay-form-paypal" style="display:none;">
-          <div class="form-group" style="margin-bottom:0.75rem;">
-            <label class="form-label" style="font-size:var(--text-xs);margin-bottom:0.25rem;">PayPal Email</label>
-            <input type="email" id="paypal-email" class="form-control" placeholder="paypal@example.com" />
-            <span class="form-error" id="paypal-email-err" style="color:var(--color-error);font-size:0.75rem;"></span>
-          </div>
-          <div class="form-group">
-            <label class="form-label" style="font-size:var(--text-xs);margin-bottom:0.25rem;">Password</label>
-            <input type="password" id="paypal-password" class="form-control" placeholder="••••••••" />
-            <span class="form-error" id="paypal-password-err" style="color:var(--color-error);font-size:0.75rem;"></span>
-          </div>
-        </div>
-
-        <!-- Google Pay details -->
-        <div class="payment-form-section" id="pay-form-gpay" style="display:none;">
-          <div style="background:var(--color-surface-2);padding:1rem;border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--color-text-body);display:flex;align-items:center;gap:0.75rem;">
-            <span class="material-icons-round" style="color:var(--color-primary);">payment</span>
-            <span>Pay securely with Google Pay.</span>
           </div>
         </div>
 
@@ -185,6 +166,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         displayError.textContent = '';
       }
     });
+
   }).catch((err) => {
     console.error('Stripe initialization failed:', err);
     const displayError = document.getElementById('card-element-err');
@@ -212,17 +194,11 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
 
       // Hide all forms
       document.getElementById('pay-form-card').style.display = 'none';
-      document.getElementById('pay-form-paypal').style.display = 'none';
-      document.getElementById('pay-form-gpay').style.display = 'none';
       document.getElementById('pay-form-cod').style.display = 'none';
 
       // Show selected form
       if (_selectedMethod === 'Credit Card') {
         document.getElementById('pay-form-card').style.display = 'block';
-      } else if (_selectedMethod === 'PayPal') {
-        document.getElementById('pay-form-paypal').style.display = 'block';
-      } else if (_selectedMethod === 'Google Pay') {
-        document.getElementById('pay-form-gpay').style.display = 'flex';
       } else if (_selectedMethod === 'Cash on Delivery') {
         document.getElementById('pay-form-cod').style.display = 'flex';
       }
@@ -237,17 +213,10 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
     });
   }
 
-  const paypalEmailInput = document.getElementById('paypal-email');
-  if (paypalEmailInput) {
-    paypalEmailInput.addEventListener('input', () => {
-      document.getElementById('paypal-email-err').textContent = '';
-    });
-  }
-
-  const paypalPwdInput = document.getElementById('paypal-password');
-  if (paypalPwdInput) {
-    paypalPwdInput.addEventListener('input', () => {
-      document.getElementById('paypal-password-err').textContent = '';
+  const phoneInput = document.getElementById('checkout-phone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      document.getElementById('phone-err').textContent = '';
     });
   }
 
@@ -260,17 +229,23 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   document.getElementById('checkout-pay-btn').addEventListener('click', async () => {
     // Clear error texts
     document.getElementById('addr-err').textContent = '';
+    document.getElementById('phone-err').textContent = '';
     if (document.getElementById('card-holder-err')) document.getElementById('card-holder-err').textContent = '';
     if (document.getElementById('card-element-err')) document.getElementById('card-element-err').textContent = '';
-    if (document.getElementById('paypal-email-err')) document.getElementById('paypal-email-err').textContent = '';
-    if (document.getElementById('paypal-password-err')) document.getElementById('paypal-password-err').textContent = '';
 
     const addr = addrInput.value.trim();
+    const phone = phoneInput ? phoneInput.value.trim() : '';
 
+    let validationFailed = false;
     if (!addr) {
       document.getElementById('addr-err').textContent = 'Enter shipping address';
-      return;
+      validationFailed = true;
     }
+    if (!phone) {
+      document.getElementById('phone-err').textContent = 'Enter mobile number';
+      validationFailed = true;
+    }
+    if (validationFailed) return;
 
     // Validate payment details based on selected method
     if (_selectedMethod === 'Credit Card') {
@@ -279,20 +254,6 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         document.getElementById('card-holder-err').textContent = 'Enter cardholder name';
         return;
       }
-    } else if (_selectedMethod === 'PayPal') {
-      const email = document.getElementById('paypal-email').value.trim();
-      const pwd = document.getElementById('paypal-password').value.trim();
-
-      let hasErr = false;
-      if (!email || !email.includes('@')) {
-        document.getElementById('paypal-email-err').textContent = 'Enter valid PayPal email';
-        hasErr = true;
-      }
-      if (!pwd) {
-        document.getElementById('paypal-password-err').textContent = 'Enter password';
-        hasErr = true;
-      }
-      if (hasErr) return;
     }
 
     if (_isPaying) return;
@@ -337,7 +298,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
       }
 
       // Finalize order locally as chosen payment method
-      await finalizeOrder(addr, methodDisplay);
+      await finalizeOrder(addr, methodDisplay, phone);
       closePopup();
       showSuccessDialog();
     } catch (err) {
@@ -350,11 +311,12 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   });
 }
 
-async function finalizeOrder(address, paymentMethod) {
+async function finalizeOrder(address, paymentMethod, mobileNumber) {
   await placeOrder({
     items: _checkoutItems,
     totalAmount: _checkoutTotal,
     shippingAddress: address,
+    mobileNumber,
     paymentMethod,
   });
 

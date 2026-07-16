@@ -10,6 +10,7 @@ class OrderModel {
   final OrderStatus status;
   final DateTime createdAt;
   final String shippingAddress;
+  final String mobileNumber;
   final String paymentMethod;
 
   OrderModel({
@@ -20,6 +21,7 @@ class OrderModel {
     required this.status,
     required this.createdAt,
     required this.shippingAddress,
+    required this.mobileNumber,
     required this.paymentMethod,
   });
 
@@ -35,6 +37,7 @@ class OrderModel {
       ),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       shippingAddress: map['shippingAddress'] ?? '',
+      mobileNumber: map['mobileNumber'] ?? '',
       paymentMethod: map['paymentMethod'] ?? '',
     );
   }
@@ -47,6 +50,7 @@ class OrderModel {
       'status': status.toString().split('.').last,
       'createdAt': createdAt,
       'shippingAddress': shippingAddress,
+      'mobileNumber': mobileNumber,
       'paymentMethod': paymentMethod,
     };
   }

@@ -10,7 +10,7 @@ import {
 import { setState, getState } from './state.js';
 
 // Place an order
-export async function placeOrder({ items, totalAmount, shippingAddress, paymentMethod }) {
+export async function placeOrder({ items, totalAmount, shippingAddress, mobileNumber, paymentMethod }) {
   const { currentUser } = getState();
   if (!currentUser) throw new Error('Must be signed in to place an order');
 
@@ -21,6 +21,7 @@ export async function placeOrder({ items, totalAmount, shippingAddress, paymentM
     status: 'pending',
     createdAt: serverTimestamp(),
     shippingAddress,
+    mobileNumber,
     paymentMethod,
   };
 

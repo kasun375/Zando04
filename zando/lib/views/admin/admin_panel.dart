@@ -343,6 +343,26 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.phone_outlined,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  order.mobileNumber.isEmpty
+                                      ? 'No phone number specified'
+                                      : order.mobileNumber,
+                                  style: const TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 16),
                           const Text(
                             'Payment Info',

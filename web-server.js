@@ -66,7 +66,9 @@ const server = http.createServer((req, res) => {
 
     const headers = {
       'Content-Type': mime,
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
       'Access-Control-Allow-Origin': '*',
     };
 
