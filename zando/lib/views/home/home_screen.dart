@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 imageUrl.isNotEmpty
                     ? Image.network(
                         imageUrl,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: AppColors.primary,
                           child: const Center(
