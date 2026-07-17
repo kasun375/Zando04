@@ -25,6 +25,7 @@ const PAGES = {
   orders:        () => import('../pages/order-history.js'),
   notifications: () => import('../pages/notifications.js'),
   admin:         () => import('../pages/admin.js'),
+  categories:    () => import('../pages/categories.js'),
 };
 
 async function loadPage(name) {
@@ -98,6 +99,11 @@ export async function bootstrapApp() {
   registerRoute('profile', async () => {
     const mod = await loadPage('profile');
     mod?.renderProfile(appEl);
+  });
+
+  registerRoute('categories', async () => {
+    const mod = await loadPage('categories');
+    mod?.renderCategories(appEl);
   });
 
   registerRoute('orders', async () => {

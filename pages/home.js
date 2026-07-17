@@ -693,26 +693,22 @@ function showCategoryDrawer() {
 
 // ---- Bottom Navigation (mobile) ----
 export function renderBottomNav(activePage) {
-  const { currentUser, cart } = getState();
+  const { currentUser } = getState();
   const cartCount = getCartCount();
   return `
     <nav class="bottom-nav" id="bottom-nav">
       <button class="bottom-nav-item ${activePage === 'home' ? 'active' : ''}" id="bnav-home" aria-label="Home">
         <span class="material-icons-round">home</span>
-        <span>Home</span>
       </button>
-      <button class="bottom-nav-item ${activePage === 'categories' ? 'active' : ''}" id="bnav-categories" aria-label="Categories">
-        <span class="material-icons-round">grid_view</span>
-        <span>Categories</span>
+      <button class="bottom-nav-item ${activePage === 'profile' ? 'active' : ''}" id="bnav-profile" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
+        <span class="material-icons-round">person</span>
       </button>
       <button class="bottom-nav-item ${activePage === 'cart' ? 'active' : ''}" id="bnav-cart" aria-label="Cart" style="position:relative;">
         <span class="material-icons-round">shopping_cart</span>
         ${cartCount > 0 ? `<span class="bottom-nav-badge">${cartCount}</span>` : ''}
-        <span>Cart</span>
       </button>
-      <button class="bottom-nav-item ${activePage === 'profile' ? 'active' : ''}" id="bnav-profile" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
-        <span class="material-icons-round">person</span>
-        <span>${currentUser ? 'Profile' : 'Sign In'}</span>
+      <button class="bottom-nav-item ${activePage === 'categories' ? 'active' : ''}" id="bnav-categories" aria-label="Categories">
+        <span class="material-icons-round">grid_view</span>
       </button>
     </nav>
   `;
@@ -724,16 +720,15 @@ export function bindBottomNav() {
     navigate('home');
   });
 
-  document.getElementById('bnav-categories')?.addEventListener('click', () => {
-    // Open the categories drawer on mobile
-    showCategoryDrawer();
+  document.getElementById('bnav-profile')?.addEventListener('click', () => {
+    const { currentUser } = getState();
+    navigate(currentUser ? 'profile' : 'login');
   });
 
   document.getElementById('bnav-cart')?.addEventListener('click', () => navigate('cart'));
 
-  document.getElementById('bnav-profile')?.addEventListener('click', () => {
-    const { currentUser } = getState();
-    navigate(currentUser ? 'profile' : 'login');
+  document.getElementById('bnav-categories')?.addEventListener('click', () => {
+    navigate('categories');
   });
 }
 

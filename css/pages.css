@@ -266,8 +266,6 @@
 
 /* ====== HOME PAGE ====== */
 .home-hero {
-  border-radius: var(--radius-xl);
-  overflow: hidden;
   width: 100%;
   margin-bottom: var(--space-6);
 }
@@ -868,4 +866,39 @@
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-2);
   }
+}
+
+/* ====== CATEGORIES LIST PAGE ====== */
+.categories-list {
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #EAEAEA;
+  cursor: pointer;
+  background: white;
+  transition: background-color var(--transition-fast);
+}
+
+.category-row-item:hover {
+  background-color: #F8F9FA;
+}
+
+.category-row-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: #333333;
+}
+
+.category-row-arrow {
+  color: #00A3C4; /* Cyan double chevron */
+  font-size: var(--text-base);
+  font-weight: 700;
+  letter-spacing: -2px;
 }
