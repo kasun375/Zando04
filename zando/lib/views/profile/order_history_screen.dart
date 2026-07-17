@@ -15,8 +15,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   void initState() {
     super.initState();
     final auth = Provider.of<AuthProvider>(context, listen: false);
-    Future.microtask(() =>
-        Provider.of<OrderProvider>(context, listen: false).fetchUserOrders(auth.userModel!.uid));
+    Future.microtask(() {
+      if (!mounted) return;
+      Provider.of<OrderProvider>(context, listen: false).fetchUserOrders(auth.userModel!.uid);
+    });
   }
 
   @override

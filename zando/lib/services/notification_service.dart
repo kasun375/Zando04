@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import '../utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,7 +14,7 @@ import '../views/profile/order_history_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -40,10 +39,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       await FirestoreService().addNotification(userId, notification);
-      print("Background notification saved: $messageId");
+      debugPrint("Background notification saved: $messageId");
     }
   } catch (e) {
-    print('Error saving background notification: $e');
+    debugPrint('Error saving background notification: $e');
   }
 }
 
@@ -63,13 +62,6 @@ class NotificationService {
     }
   }
 
-  FirebaseInAppMessaging? get _inAppMessaging {
-    try {
-      return FirebaseInAppMessaging.instance;
-    } catch (_) {
-      return null;
-    }
-  }
 
   bool _isInitialized = false;
 
@@ -79,8 +71,20 @@ class NotificationService {
 
     final fcm = _fcm;
     if (fcm == null) {
-      print('Firebase Messaging is not supported or failed to initialize on this platform.');
+      debugPrint('Firebase Messaging is not supported or failed to initialize on this platform.');
       return;
+    }
+
+    // Capture auth state synchronously before any awaits
+    String? initialUserId;
+    final initialContext = navigatorKey.currentContext;
+    if (initialContext != null) {
+      try {
+        final authProvider = Provider.of<AuthProvider>(initialContext, listen: false);
+        initialUserId = authProvider.userModel?.uid;
+      } catch (e) {
+        debugPrint('Error getting AuthProvider during initialize: $e');
+      }
     }
 
     try {
@@ -91,26 +95,16 @@ class NotificationService {
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('User granted permission');
+        debugPrint('User granted permission');
       }
     } catch (e) {
-      print('Error requesting FCM permission: $e');
+      debugPrint('Error requesting FCM permission: $e');
     }
 
-    final activeContext = navigatorKey.currentContext;
-    if (activeContext != null) {
-      try {
-        final authProvider = Provider.of<AuthProvider>(
-          activeContext,
-          listen: false,
-        );
-        if (authProvider.userModel != null) {
-          _saveToken(authProvider.userModel!.uid);
-        }
-      } catch (e) {
-        print('Error getting AuthProvider during initialize: $e');
-      }
+    if (initialUserId != null) {
+      _saveToken(initialUserId);
     }
+
 
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
@@ -119,7 +113,7 @@ class NotificationService {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
+      debugPrint('Got a message whilst in the foreground!');
       _saveNotificationToDatabase(message);
 
       final title =
@@ -131,14 +125,14 @@ class NotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Notification opened app from background!');
+      debugPrint('Notification opened app from background!');
       _saveNotificationToDatabase(message);
       _handleNotificationClick(message.data);
     });
 
     fcm.getInitialMessage().then((RemoteMessage? message) {
       if (message != null) {
-        print('Notification opened app from terminated state!');
+        debugPrint('Notification opened app from terminated state!');
         _saveNotificationToDatabase(message);
         _handleNotificationClick(message.data);
       }
@@ -166,12 +160,12 @@ class NotificationService {
           data: Map<String, dynamic>.from(message.data),
         );
         FirestoreService().addNotification(userId, notification);
-        print('Notification saved to database: $messageId');
+        debugPrint('Notification saved to database: $messageId');
       } else {
-        print('No authenticated user found, cannot save notification.');
+        debugPrint('No authenticated user found, cannot save notification.');
       }
     } catch (e) {
-      print('Error saving notification to database: $e');
+      debugPrint('Error saving notification to database: $e');
     }
   }
 
@@ -184,7 +178,7 @@ class NotificationService {
         if (AppConstants.vapidKey != 'YOUR_PUBLIC_VAPID_KEY') {
           token = await fcm.getToken(vapidKey: AppConstants.vapidKey);
         } else {
-          print('Web VAPID Key is not configured. Web FCM token registration skipped.');
+          debugPrint('Web VAPID Key is not configured. Web FCM token registration skipped.');
           return;
         }
       } else {
@@ -192,10 +186,10 @@ class NotificationService {
       }
       if (token != null) {
         await FirestoreService().saveUserFcmToken(userId, token);
-        print('FCM Token saved: $token');
+        debugPrint('FCM Token saved: $token');
       }
     } catch (e) {
-      print('Error saving FCM Token: $e');
+      debugPrint('Error saving FCM Token: $e');
     }
   }
 
@@ -206,7 +200,7 @@ class NotificationService {
   ) {
     final overlayState = navigatorKey.currentState?.overlay;
     if (overlayState == null) {
-      print('OverlayState is null, cannot show banner.');
+      debugPrint('OverlayState is null, cannot show banner.');
       return;
     }
     late OverlayEntry overlayEntry;
@@ -323,7 +317,7 @@ class _SlideDownBannerState extends State<SlideDownBanner>
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -339,7 +333,7 @@ class _SlideDownBannerState extends State<SlideDownBanner>
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -371,7 +365,7 @@ class _SlideDownBannerState extends State<SlideDownBanner>
                             Text(
                               widget.body,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                                 fontSize: 13,
                               ),
                               maxLines: 2,

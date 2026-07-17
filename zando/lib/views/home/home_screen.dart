@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           backgroundColor: AppColors.navBar,
           selectedItemColor: AppColors.navBarIcon,
-          unselectedItemColor: AppColors.navBarIcon.withOpacity(0.5),
+          unselectedItemColor: AppColors.navBarIcon.withValues(alpha: 0.5),
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: false,
           showUnselectedLabels: false,

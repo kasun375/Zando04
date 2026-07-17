@@ -26,19 +26,18 @@ class _ManageBannersScreenState extends State<ManageBannersScreen> {
                   onPressed: bannerProvider.isLoading
                       ? null
                       : () async {
+                          final ctx = context;
                           try {
                             await bannerProvider.syncFromGoogleSheets(gid: '1274288907');
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Banners synced successfully')),
-                              );
-                            }
+                            if (!ctx.mounted) return;
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              const SnackBar(content: Text('Banners synced successfully')),
+                            );
                           } catch (e) {
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Sync failed: $e')),
-                              );
-                            }
+                            if (!ctx.mounted) return;
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(content: Text('Sync failed: $e')),
+                            );
                           }
                         },
                   icon: const Icon(Icons.sync, color: Colors.white),

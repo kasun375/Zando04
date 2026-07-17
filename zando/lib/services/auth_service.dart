@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -38,7 +39,7 @@ class AuthService {
       }
       return result;
     } catch (e) {
-      print('Error signing in with Google: $e');
+      debugPrint('Error signing in with Google: $e');
       rethrow;
     }
   }
@@ -50,7 +51,7 @@ class AuthService {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>, uid);
       }
     } catch (e) {
-      print('Error getting user data: $e');
+      debugPrint('Error getting user data: $e');
     }
     return null;
   }
@@ -72,7 +73,7 @@ class AuthService {
       }
       return result;
     } catch (e) {
-      print('Error signing up: $e');
+      debugPrint('Error signing up: $e');
       rethrow;
     }
   }
@@ -84,7 +85,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      print('Error signing in: $e');
+      debugPrint('Error signing in: $e');
       rethrow;
     }
   }

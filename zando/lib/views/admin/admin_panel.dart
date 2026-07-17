@@ -203,9 +203,9 @@ class AdminProductsView extends StatelessWidget {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: Colors.orange.withOpacity(
-                                              0.2,
-                                            ),
+                                            color: Colors.orange.withValues(
+                                             alpha: 0.2,
+                                           ),
                                             borderRadius: BorderRadius.circular(
                                               4,
                                             ),
@@ -259,9 +259,10 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => Provider.of<OrderProvider>(context, listen: false).fetchAllOrders(),
-    );
+    Future.microtask(() {
+      if (!mounted) return;
+      Provider.of<OrderProvider>(context, listen: false).fetchAllOrders();
+    });
   }
 
   @override
@@ -296,7 +297,7 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withOpacity(0.1),
+                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(

@@ -38,7 +38,7 @@ class WelcomeScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         letterSpacing: 2,
                       ),
                     ),
@@ -65,6 +65,7 @@ class WelcomeScreen extends StatelessWidget {
                             try {
                               await authProvider.signInWithGoogle();
                             } catch (e) {
+                              if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Google Sign-In failed: $e')),
                               );

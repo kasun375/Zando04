@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import '../models/product_model.dart';
 import '../models/banner_model.dart';
 import '../utils/image_utils.dart';
@@ -64,9 +65,9 @@ class GoogleSheetsService {
             }
           }
           
-          print('DEBUG: Product: $name');
-          print('DEBUG: Main URL: $mainImageUrl');
-          print('DEBUG: Gallery URLs: $galleryImages');
+          debugPrint('DEBUG: Product: $name');
+          debugPrint('DEBUG: Main URL: $mainImageUrl');
+          debugPrint('DEBUG: Gallery URLs: $galleryImages');
 
           return ProductModel(
             id: '', 
@@ -84,7 +85,7 @@ class GoogleSheetsService {
         throw Exception('Failed to load Google Sheet: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching Google Sheet: $e');
+      debugPrint('Error fetching Google Sheet: $e');
       rethrow;
     }
   }
@@ -92,16 +93,16 @@ class GoogleSheetsService {
   Future<List<BannerModel>> fetchBanners({String? sheetId, String? gid}) async {
     final targetSheetId = sheetId ?? defaultProductSheetId;
     final url = getCsvUrl(targetSheetId, gid: gid);
-    print('DEBUG: Fetching banners from: $url');
+    debugPrint('DEBUG: Fetching banners from: $url');
     try {
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode == 200) {
         String csvData = response.body;
-        print('DEBUG: Banner CSV Data (first 100 chars): ${csvData.substring(0, csvData.length > 100 ? 100 : csvData.length)}');
+        debugPrint('DEBUG: Banner CSV Data (first 100 chars): ${csvData.substring(0, csvData.length > 100 ? 100 : csvData.length)}');
         
         List<List<dynamic>> rows = const CsvToListConverter().convert(csvData);
-        print('DEBUG: Total rows found including header: ${rows.length}');
+        debugPrint('DEBUG: Total rows found including header: ${rows.length}');
         
         if (rows.isEmpty) return [];
         
@@ -120,7 +121,7 @@ class GoogleSheetsService {
             String title = row.length > 1 ? (row[1]?.toString() ?? '').trim() : '';
             String convertedUrl = ImageUtils.convertToDirectLink(rawImageUrl);
             
-            print('DEBUG: Banner processing - Title: $title, Raw URL: $rawImageUrl');
+            debugPrint('DEBUG: Banner processing - Title: $title, Raw URL: $rawImageUrl');
             
             banners.add(BannerModel(
               id: '', 
@@ -128,7 +129,7 @@ class GoogleSheetsService {
               title: title.isEmpty ? null : title,
             ));
           } catch (e) {
-            print('DEBUG: Error processing banner row $row: $e');
+            debugPrint('DEBUG: Error processing banner row $row: $e');
           }
         }
         return banners;
@@ -136,7 +137,7 @@ class GoogleSheetsService {
         throw Exception('Failed to load Banner Google Sheet: ${response.statusCode}');
       }
     } catch (e) {
-      print('DEBUG: Error fetching Banner Google Sheet: $e');
+      debugPrint('DEBUG: Error fetching Banner Google Sheet: $e');
       rethrow;
     }
   }

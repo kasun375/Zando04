@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../models/product_model.dart';
 import '../services/firestore_service.dart';
 import '../services/google_sheets_service.dart';
@@ -104,9 +105,9 @@ class ProductProvider with ChangeNotifier {
         await _firestoreService.addProduct(product);
       }
       
-      print('Sync from Google Sheets completed successfully. Added ${sheetProducts.length} products.');
+      debugPrint('Sync from Google Sheets completed successfully. Added ${sheetProducts.length} products.');
     } catch (e) {
-      print('Sync failed: $e');
+      debugPrint('Sync failed: $e');
       rethrow;
     } finally {
       _isLoading = false;

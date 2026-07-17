@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../models/banner_model.dart';
 import '../services/firestore_service.dart';
 import '../services/google_sheets_service.dart';
@@ -50,9 +51,9 @@ class BannerProvider with ChangeNotifier {
         await _firestoreService.addBanner(banner);
       }
       
-      print('Sync from Google Sheets completed successfully. Added ${sheetBanners.length} banners.');
+      debugPrint('Sync from Google Sheets completed successfully. Added ${sheetBanners.length} banners.');
     } catch (e) {
-      print('Banner sync failed: $e');
+      debugPrint('Banner sync failed: $e');
       rethrow;
     } finally {
       _isLoading = false;

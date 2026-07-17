@@ -128,7 +128,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+                    color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
                     border: Border.all(
                       color: isSelected ? AppColors.primary : Colors.grey.shade300,
                       width: isSelected ? 1.5 : 1.0,
@@ -448,7 +448,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
   Future<void> _processDirectCardPayment(double amount) async {
     final String host = await _determineActiveHost();
-    print('Selected local host for payment: $host');
+    debugPrint('Selected local host for payment: $host');
 
     final String cardHolder = _cardHolderController.text.trim();
 
@@ -495,7 +495,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       }
     } catch (e) {
       firebaseError = e;
-      print('Firebase Cloud Function failed on host $host: $e. Trying local payment server...');
+      debugPrint('Firebase Cloud Function failed on host $host: $e. Trying local payment server...');
     }
 
     // ── 3. Fallback to Local Payment Server if Cloud Function fails/not found ──
@@ -525,7 +525,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
           throw Exception(data['error'] ?? 'Local payment server returned: ${data['error'] ?? response.statusCode}');
         }
       } catch (e) {
-        print('Local payment server connection failed on host $host: $e');
+        debugPrint('Local payment server connection failed on host $host: $e');
         if (firebaseError != null) {
           throw Exception(
             'Payment failed.\n\n'

@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Welcome back, please sign in',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 14,
                     ),
                   ),
@@ -124,10 +124,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               _passwordController.text.trim(),
                             );
                             // Navigator pops to main wrapper which will see authenticated state
+                            if (!context.mounted) return;
                             if (Navigator.of(context).canPop()) {
                               Navigator.of(context).pop();
                             }
                           } catch (e) {
+                            if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(e.toString())),
                             );
@@ -155,15 +157,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Divider
                     Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
                             'OR',
-                            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -173,10 +175,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         try {
                           await authProvider.signInWithGoogle();
+                          if (!context.mounted) return;
                           if (Navigator.of(context).canPop()) {
                             Navigator.of(context).pop();
                           }
                         } catch (e) {
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Google Sign-In failed: $e')),
                           );
