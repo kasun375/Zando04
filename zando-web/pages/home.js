@@ -255,6 +255,15 @@ function renderCarousel(banners) {
         </button>
         <div class="carousel-dots" id="carousel-dots">${dots}</div>
       </div>
+      <!-- Google AdSense Ad -->
+      <div class="adsense-ad-container" style="margin: 1.5rem auto 0 auto; text-align: center; max-width: 100%; overflow: hidden;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1267014580635785"
+             data-ad-slot="default"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
     </div>
   `;
 }
@@ -493,6 +502,13 @@ function bindCarousel(banners) {
     updateCarousel();
     resetTimer();
   });
+
+  // Initialize AdSense unit
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (err) {
+    console.warn('AdSense push failed (ad blocker or script not loaded):', err);
+  }
 }
 
 function resetTimer() {
