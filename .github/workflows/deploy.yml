@@ -1,0 +1,51 @@
+name: Deploy Flutter Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Flutter (stable channel)
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: zando
+
+      # 4. Build Flutter Web with correct base-href for GitHub Pages
+      #    The base-href must match the repo name: /Zando04/
+      - name: Build Flutter Web
+        run: flutter build web --release --base-href /Zando04/
+        working-directory: zando
+
+      # 5. Add a .nojekyll file so GitHub Pages serves files starting with _
+      - name: Add .nojekyll
+        run: touch zando/build/web/.nojekyll
+
+      # 6. Deploy to gh-pages branch
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: zando/build/web
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Deploy Flutter web build [skip ci]"

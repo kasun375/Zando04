@@ -1,0 +1,18 @@
+{
+  "name": "Zando — Shop Everything",
+  "short_name": "Zando",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#2e062b",
+  "theme_color": "#2e062b",
+  "description": "Zando is your one-stop e-commerce destination. Shop electronics, fashion, groceries, and more.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "assets/images/app_icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

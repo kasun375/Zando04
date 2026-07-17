@@ -3,11 +3,11 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 async function run() {
-  // 1. Start the python server
-  console.log('Starting Python web server...');
-  const server = spawn('python', ['web-server.py'], {
+  // 1. Start the node server
+  console.log('Starting Node web server...');
+  const server = spawn('node', ['web-server.js'], {
     cwd: path.join(__dirname, '..'),
-    stdio: 'ignore',
+    stdio: 'inherit',
     shell: true
   });
 
@@ -47,14 +47,27 @@ async function run() {
 
   console.log('Navigating to http://127.0.0.1:3000...');
   try {
-    await page.goto('http://127.0.0.1:3000', { waitUntil: 'networkidle0', timeout: 8000 });
+    await page.goto('http://127.0.0.1:3000', { waitUntil: 'domcontentloaded', timeout: 8000 });
   } catch (e) {
     console.log('Navigation warning/timeout:', e.message);
   }
 
-  // Wait 4 more seconds to allow Firestore snapshots to fire
-  console.log('Waiting for Firestore events...');
+  // Wait 4 more seconds to allow scripts to run
+  console.log('Waiting for scripts to execute...');
   await new Promise(r => setTimeout(r, 4000));
+
+  // Get the HTML content of the splash screen and app root
+  const splashHTML = await page.evaluate(() => {
+    const el = document.getElementById('splash-screen');
+    return el ? el.innerHTML : 'No splash screen element';
+  });
+  console.log('Splash Screen HTML Content:', splashHTML.trim());
+
+  const appDisplay = await page.evaluate(() => {
+    const el = document.getElementById('app');
+    return el ? { display: el.style.display, htmlSnippet: el.innerHTML.substring(0, 200) } : 'No app element';
+  });
+  console.log('App Element status:', appDisplay);
 
   console.log('Closing browser...');
   await browser.close();

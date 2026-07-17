@@ -4,7 +4,7 @@ import mimetypes
 import sys
 
 PORT = 3000
-DIRECTORY = "zando-web"
+DIRECTORY = "."
 
 # Fix Windows registry MIME type association bug for JS modules/CSS
 mimetypes.add_type('application/javascript', '.js')

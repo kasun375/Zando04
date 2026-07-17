@@ -62,18 +62,24 @@ if "%START_PAYMENT%"=="true" (
     echo [1/3] Starting Local Payment Server on port 4242...
     start "ZANDO Payment Server" cmd /k "cd payment-server && node server.js"
 ) else (
-    echo [1/3] Skipping Payment Server (Node.js missing).
+    echo [1/3] Skipping Payment Server - Node.js missing
 )
 
 if "%START_EMULATOR%"=="true" (
     echo [2/3] Starting Firebase Emulator on port 5001/4000...
     start "ZANDO Firebase Emulator" cmd /k "cd zando && firebase emulators:start"
 ) else (
-    echo [2/3] Skipping Firebase Emulator (Java missing).
+    echo [2/3] Skipping Firebase Emulator - Java missing
 )
 
 echo [3/3] Starting Web App Server on port 3000...
-start "ZANDO Web App Server" cmd /k "cd /d "%~dp0" && node web-server.js"
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo Node.js not found. Falling back to Python web server...
+    start "ZANDO Web App Server" cmd /k "cd /d "%~dp0." && %PYTHON_CMD% web-server.py"
+) else (
+    start "ZANDO Web App Server" cmd /k "cd /d "%~dp0." && node web-server.js"
+)
 
 echo.
 echo Waiting a brief moment for services to initialize...

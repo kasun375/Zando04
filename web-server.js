@@ -10,7 +10,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const PORT      = parseInt(process.argv[2] || '3000', 10);
-const SERVE_DIR = path.resolve(__dirname, 'zando-web');
+const SERVE_DIR = __dirname;
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
