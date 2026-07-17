@@ -21,14 +21,14 @@ export function renderProductDetail(appEl) {
   _currentImageIndex = 0;
 
   appEl.innerHTML = `
-    <div class="app-layout">
-      ${renderProductDetailHeader()}
+    <div class="app-layout" style="padding-bottom: 80px;">
+      ${renderProductDetailHeader(p.name)}
       <div class="page-content">
-        <div class="main-area">
+        <div class="main-area" style="padding: 1rem;">
           <div class="product-detail-layout">
             <!-- Gallery -->
             <div class="product-detail-gallery">
-              <div class="product-main-image" id="main-img-wrap">
+              <div class="product-main-image" id="main-img-wrap" style="background: #fff; box-shadow: none; border-radius: 0;">
                 <img id="main-product-img" src="${allImages[0] || ''}" alt="${p.name}"
                      onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect width=%22400%22 height=%22400%22 fill=%22%23B1A7B4%22/%3E%3C/svg%3E'" />
               </div>
@@ -45,21 +45,27 @@ export function renderProductDetail(appEl) {
 
             <!-- Info -->
             <div class="product-detail-info">
-              <div class="product-detail-category">${p.category || ''}${p.shop ? ` · ${p.shop}` : ''}</div>
-              <h1 class="product-detail-name">${p.name}</h1>
-
-              ${p.rating > 0 ? `
-                <div class="product-detail-rating">
-                  ${renderStars(p.rating, p.reviewsCount)}
+              <!-- Meta row: Category on left, Rating on right -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div class="product-detail-category" style="margin: 0; font-size: 0.85rem; color: #8E8E8E; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;">
+                  ${p.category || 'CATEGORY'}
                 </div>
-              ` : ''}
+                <div style="display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: #8E8E8E; font-weight: 500;">
+                  <span class="material-icons-round" style="color: #FFC107; font-size: 1.15rem;">star</span>
+                  <span>${Number(p.rating || 0).toFixed(1)} (${p.reviewsCount || 0} reviews)</span>
+                </div>
+              </div>
 
-              <div class="product-detail-price">${formatCurrency(p.price)}</div>
+              <h1 class="product-detail-name" style="font-size: 1.5rem; font-weight: 700; color: #000; margin: 0; font-family: var(--font-display);">${p.name}</h1>
+
+              <div class="product-detail-price" style="font-size: 2.25rem; font-weight: 700; color: #2E062B; margin: 0.5rem 0;">
+                $${p.price}
+              </div>
 
               ${p.description ? `
-                <div>
-                  <h5 style="margin-bottom:0.5rem;font-size:var(--text-base);">Description</h5>
-                  <p class="product-detail-description">${p.description}</p>
+                <div style="margin-top: 1rem;">
+                  <h5 style="margin-bottom: 0.5rem; font-size: 1rem; font-weight: 700; color: #000;">Description</h5>
+                  <p class="product-detail-description" style="margin: 0; color: #6E6E6E; line-height: 1.6; font-size: 0.9rem;">${p.description}</p>
                 </div>
               ` : ''}
 
@@ -68,17 +74,15 @@ export function renderProductDetail(appEl) {
                   <span class="material-icons-round">${inWishlist ? 'favorite' : 'favorite_border'}</span>
                 </button>
                 <button class="btn btn-outline" id="detail-add-cart-btn">
-                  <span class="material-icons-round">shopping_cart</span>
                   ADD TO CART
                 </button>
                 <button class="btn btn-primary" id="detail-buy-now-btn">
-                  <span class="material-icons-round">bolt</span>
                   BUY NOW
                 </button>
               </div>
 
               <!-- Trust badges -->
-              <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+              <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;">
                 <div style="display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--color-text-muted);">
                   <span class="material-icons-round" style="font-size:1rem;color:var(--color-success);">verified</span>
                   Genuine Product
@@ -141,21 +145,15 @@ export function renderProductDetail(appEl) {
   });
 }
 
-function renderProductDetailHeader() {
+function renderProductDetailHeader(productName) {
   return `
-    <header class="site-header">
-      <div class="header-top">
+    <header class="site-header product-detail-header">
+      <div class="header-top" style="justify-content: flex-start; gap: 0.5rem; align-items: center;">
         <button class="icon-btn" id="back-btn" aria-label="Go back" style="flex-shrink:0;">
           <span class="material-icons-round">arrow_back</span>
         </button>
-        <div class="header-logo" id="home-logo-btn" style="cursor:pointer;">
-          <span class="header-logo-text">ZANDO</span>
-        </div>
-        <div style="flex:1;"></div>
-        <div class="header-actions">
-          <button class="icon-btn" id="cart-header-btn" aria-label="Cart">
-            <span class="material-icons-round">shopping_cart</span>
-          </button>
+        <div class="header-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: #2E062B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">
+          ${productName}
         </div>
       </div>
     </header>
