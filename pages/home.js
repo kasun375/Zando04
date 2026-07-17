@@ -262,7 +262,7 @@ function renderCarousel(banners) {
         <ins class="adsbygoogle"
              style="display:block"
              data-ad-client="ca-pub-1267014580635785"
-             data-ad-slot="default"
+             data-ad-slot="8586663497"
              data-ad-format="auto"
              data-full-width-responsive="true"></ins>
       </div>
