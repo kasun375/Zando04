@@ -25,7 +25,6 @@
 
   /* Desktop: larger hero */
   .home-hero {
-    aspect-ratio: 21 / 8;
     border-radius: var(--radius-xl);
   }
 
@@ -171,7 +170,6 @@
 
   /* Hero carousel — taller on mobile */
   .home-hero {
-    aspect-ratio: 16 / 9;
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-4);
   }
@@ -457,10 +455,7 @@
     font-size: var(--text-lg);
   }
 
-  /* Home hero closer to square on very small screens */
-  .home-hero {
-    aspect-ratio: 4 / 3;
-  }
+
 
   /* Carousel dots */
   .carousel-dot {
@@ -620,9 +615,7 @@
 
 /* ── Landscape mobile adjustments ────────────────────── */
 @media (max-width: 768px) and (orientation: landscape) {
-  .home-hero {
-    aspect-ratio: 16 / 6;
-  }
+
 
   .auth-page {
     padding-top: var(--space-6);

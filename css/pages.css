@@ -269,7 +269,6 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 9;
   margin-bottom: var(--space-6);
 }
 
