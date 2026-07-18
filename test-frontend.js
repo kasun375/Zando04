@@ -15,7 +15,7 @@ setTimeout(() => {
   const chromeProcess = spawn(chromePath, [
     '--headless',
     '--remote-debugging-port=9222',
-    'http://127.0.0.1:3000'
+    'about:blank'
   ]);
 
   chromeProcess.on('error', (err) => {
@@ -36,9 +36,9 @@ setTimeout(() => {
           console.log('Tabs:', tabs);
           
           // Connect to the tab via WebSocket to get console logs
-          const tab = tabs.find(t => t.url.includes('3000'));
+          const tab = tabs.find(t => t.type === 'page');
           if (!tab) {
-            console.error('No tab found for port 3000');
+            console.error('No tab found');
             chromeProcess.kill();
             serverProcess.kill();
             process.exit(1);
@@ -55,6 +55,7 @@ setTimeout(() => {
             // Enable Console and Runtime
             ws.send(JSON.stringify({ id: 1, method: 'Console.enable' }));
             ws.send(JSON.stringify({ id: 2, method: 'Runtime.enable' }));
+            ws.send(JSON.stringify({ id: 3, method: 'Page.navigate', params: { url: 'http://127.0.0.1:3000/' } }));
           });
           
           ws.on('message', (message) => {
@@ -64,9 +65,28 @@ setTimeout(() => {
               console.log(`[BROWSER CONSOLE - ${msg.params.type.toUpperCase()}]`, ...args);
             } else if (msg.method === 'Runtime.exceptionThrown') {
               console.error('[BROWSER EXCEPTION]', msg.params.exceptionDetails);
+            } else if (msg.id === 10) {
+              console.log('[EVALUATION RESULT]', JSON.stringify(msg.result?.result?.value, null, 2));
             }
           });
           
+          setTimeout(() => {
+            ws.send(JSON.stringify({
+              id: 10,
+              method: 'Runtime.evaluate',
+              params: {
+                expression: `({
+                  splashExists: !!document.getElementById('splash-screen'),
+                  splashOpacity: document.getElementById('splash-screen')?.style.opacity,
+                  appDisplay: document.getElementById('app')?.style.display,
+                  appHtmlSnippet: document.getElementById('app')?.innerHTML.substring(0, 500),
+                  bodyHtmlSnippet: document.body.innerHTML.substring(0, 500)
+                })`,
+                returnByValue: true
+              }
+            }));
+          }, 4500);
+
           setTimeout(() => {
             console.log('Finished logging. Cleaning up...');
             ws.close();

@@ -255,10 +255,12 @@
     display: none;
   }
 
-  .all-categories-btn {
-    font-size: var(--text-xs);
-    padding: 0.4rem 0.75rem;
-    white-space: nowrap;
+  .category-nav {
+    display: none !important;
+  }
+
+  .all-categories-btn-wrapper {
+    display: none !important;
   }
 
   /* Main area */

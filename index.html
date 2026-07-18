@@ -24,8 +24,7 @@
   <link rel="stylesheet" href="css/components.css?v=1.0.2" />
   <link rel="stylesheet" href="css/pages.css?v=1.0.2" />
   <link rel="stylesheet" href="css/responsive.css?v=1.0.2" />
-  <!-- Stripe JS SDK (Secure Card tokenisation) -->
-  <script src="https://js.stripe.com/v3/"></script>
+  <!-- Stripe JS SDK will be loaded dynamically in checkout.js if needed -->
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1267014580635785"
@@ -33,6 +32,17 @@
 
 </head>
 <body>
+
+  <!-- Global Error Handler to catch and log startup/module errors -->
+  <script>
+    window.addEventListener('error', (e) => {
+      console.error('[WINDOW ERROR]', e.message, 'at', e.filename, 'line', e.lineno);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('[UNHANDLED REJECTION]', e.reason);
+    });
+    console.log('[INDEX.HTML] Global error handlers registered');
+  </script>
 
   <!-- Protocol Check (Prevents file:// protocol errors) -->
   <script>
@@ -68,6 +78,7 @@
 
   <!-- Main App — Firebase + Bootstrap -->
   <script type="module">
+    console.log('[INDEX.HTML] Module execution started');
     // ── Firebase Init ──────────────────────────────
     import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { getAuth }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
