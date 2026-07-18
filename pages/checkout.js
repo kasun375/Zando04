@@ -127,7 +127,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
       </div>
 
       <!-- Section 4: Pay Button -->
-      <button class="btn btn-primary btn-full btn-lg" id="checkout-pay-btn" style="margin-top:1rem;">
+      <button class="btn btn-primary btn-full btn-lg" id="checkout-pay-btn" style="margin-top:1rem; margin-bottom:1.5rem;">
         PLACE ORDER (${formatCurrency(_checkoutTotal)})
       </button>
     </div>

@@ -537,6 +537,11 @@
   .payment-methods {
     flex-wrap: nowrap;
   }
+
+  /* Ensure bottom-sheet modals (like checkout) have enough bottom padding to not be hidden by mobile keyboard or browser chrome */
+  .modal-overlay.bottom-sheet .modal-box {
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
 }
 
 /* ── Small Mobile (≤480px) ─────────────────────────── */
