@@ -4,7 +4,7 @@
 // =====================================================
 
 import { getState, updateCartQty, removeFromCart, getCartTotal } from '../js/state.js';
-import { showToast, formatCurrency } from '../js/utils.js';
+import { showToast, formatCurrency, renderFooter } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 import { renderCheckoutModal } from './checkout.js';
 import { renderBottomNav, bindBottomNav } from './home.js';
@@ -37,6 +37,7 @@ export function renderCart(appEl) {
           ${items.length === 0 ? renderEmptyCart() : renderCartContent(items)}
         </div>
       </div>
+      ${renderFooter()}
       ${renderBottomNav('cart')}
     </div>
   `;

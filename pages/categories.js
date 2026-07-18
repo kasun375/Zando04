@@ -7,6 +7,7 @@ import { getState } from '../js/state.js';
 import { setCategory } from '../js/products.js';
 import { navigate } from '../js/router.js';
 import { renderBottomNav, bindBottomNav } from './home.js';
+import { renderFooter } from '../js/utils.js';
 
 export function renderCategories(appEl) {
   const { shops, categories } = getState();
@@ -29,6 +30,7 @@ export function renderCategories(appEl) {
           </main>
         </div>
       </div>
+      ${renderFooter()}
       ${renderBottomNav('categories')}
     </div>
   `;

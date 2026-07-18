@@ -7,7 +7,7 @@ import { getState, setState, subscribe, getCartCount } from '../js/state.js';
 import { setSearchQuery, setCategory, clearFilters } from '../js/products.js';
 import { addToCart } from '../js/state.js';
 import { toggleWishlist } from '../js/auth.js';
-import { showToast, formatCurrency, renderStars, debounce, imgFallback } from '../js/utils.js';
+import { showToast, formatCurrency, renderStars, debounce, imgFallback, renderFooter } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 
 // Carousel state
@@ -51,6 +51,7 @@ export function renderHome(appEl) {
           </main>
         </div>
       </div>
+      ${renderFooter()}
       ${renderBottomNav('home')}
     </div>
   `;

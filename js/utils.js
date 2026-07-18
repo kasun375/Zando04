@@ -131,3 +131,61 @@ export function imgFallback(imgEl) {
     imgEl.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23B1A7B4"/%3E%3Ctext x="50" y="55" font-family="sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
   };
 }
+
+// Render site footer HTML string
+export function renderFooter() {
+  return `
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-col footer-brand">
+          <img src="assets/images/zando_logo.png" alt="ZANDO" class="footer-brand-logo" onerror="this.style.display='none'" />
+          <p class="footer-desc">Zando is your ultimate online shopping destination. Discover premium fashion, electronics, lifestyle products and more with fast delivery and easy returns.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-icon" aria-label="Facebook"><span class="material-icons-round">facebook</span></a>
+            <a href="#" class="footer-social-icon" aria-label="Instagram"><span class="material-icons-round">camera_alt</span></a>
+            <a href="#" class="footer-social-icon" aria-label="Twitter"><span class="material-icons-round">alternate_email</span></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-title">Quick Links</h3>
+          <div class="footer-links">
+            <a href="#home" class="footer-link">Home</a>
+            <a href="#categories" class="footer-link">Categories</a>
+            <a href="#cart" class="footer-link">Shopping Cart</a>
+            <a href="#profile" class="footer-link">My Profile</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-title">Customer Care</h3>
+          <div class="footer-links">
+            <a href="#orders" class="footer-link">Track Orders</a>
+            <a href="#" class="footer-link">Help & Support</a>
+            <a href="#" class="footer-link">Returns & Refunds</a>
+            <a href="#" class="footer-link">FAQ</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-title">Contact Us</h3>
+          <div class="footer-links">
+            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">email</span> support@zando.com
+            </span>
+            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">phone</span> +94 76 089 12 62
+            </span>
+            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">place</span> New York, NY 10001
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; ${new Date().getFullYear()} ZANDO. All rights reserved.</div>
+        <div style="display:flex; gap:1.5rem;">
+          <a href="#" class="footer-link">Privacy Policy</a>
+          <a href="#" class="footer-link">Terms of Service</a>
+        </div>
+      </div>
+    </footer>
+  `;
+}

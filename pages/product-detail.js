@@ -6,7 +6,7 @@
 import { getState } from '../js/state.js';
 import { addToCart } from '../js/state.js';
 import { toggleWishlist } from '../js/auth.js';
-import { showToast, formatCurrency, renderStars, imgFallback } from '../js/utils.js';
+import { showToast, formatCurrency, renderStars, imgFallback, renderFooter } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 import { renderCheckoutModal } from './checkout.js';
 
@@ -100,6 +100,7 @@ export function renderProductDetail(appEl) {
           </div>
         </div>
       </div>
+      ${renderFooter()}
     </div>
   `;
 
