@@ -35,6 +35,13 @@ const server = http.createServer((req, res) => {
   // Strip query string
   let urlPath = req.url.split('?')[0];
 
+  // Decode URL components (e.g. %20 -> space)
+  try {
+    urlPath = decodeURIComponent(urlPath);
+  } catch (err) {
+    // Keep original urlPath if decoding fails
+  }
+
   // Normalise to index.html for root
   if (urlPath === '/' || urlPath === '') urlPath = '/index.html';
 

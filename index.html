@@ -37,6 +37,21 @@
   <script>
     window.addEventListener('error', (e) => {
       console.error('[WINDOW ERROR]', e.message, 'at', e.filename, 'line', e.lineno);
+      const splash = document.getElementById('splash-screen');
+      if (splash && !window._appReady) {
+        splash.innerHTML = `
+          <div style="text-align:center;color:white;padding:2rem;max-width:480px;font-family:sans-serif;background:#2E062B;border-radius:12px;border: 1px solid rgba(255,255,255,0.1);">
+            <span style="font-size:3rem;">⚠️</span>
+            <h2 style="margin:1rem 0 0.5rem;color:#FFFF00;">Startup Error</h2>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.875rem;margin-bottom:1.5rem;">${e.message || 'Failed to load app scripts/modules'}</p>
+            <p style="color:rgba(255,255,255,0.5);font-size:0.75rem;margin-bottom:1.5rem;">${e.filename ? e.filename + ' line ' + e.lineno : ''}</p>
+            <button onclick="location.reload()"
+              style="background:#FFFF00;color:#000;border:none;padding:0.75rem 2rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;">
+              RETRY
+            </button>
+          </div>
+        `;
+      }
     });
     window.addEventListener('unhandledrejection', (e) => {
       console.error('[UNHANDLED REJECTION]', e.reason);

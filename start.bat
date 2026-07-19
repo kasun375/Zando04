@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 title ZANDO Dev Server Bootstrapper
 color 0b
 echo =====================================================
@@ -76,9 +77,9 @@ echo [3/3] Starting Web App Server on port 3000...
 node --version >nul 2>&1
 if errorlevel 1 (
     echo Node.js not found. Falling back to Python web server...
-    start "ZANDO Web App Server" cmd /k "cd /d "%~dp0." && %PYTHON_CMD% web-server.py"
+    start "ZANDO Web App Server" cmd /k "%PYTHON_CMD% web-server.py"
 ) else (
-    start "ZANDO Web App Server" cmd /k "cd /d "%~dp0." && node web-server.js"
+    start "ZANDO Web App Server" cmd /k "node web-server.js"
 )
 
 echo.

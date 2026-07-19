@@ -53,7 +53,7 @@ function renderCategoriesHeader() {
     <header class="site-header">
       <div class="header-top">
         <div class="header-logo" id="home-logo-btn">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 36px; max-width: 100%; object-fit: contain;" />
+          <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 44px; max-width: 100%; object-fit: contain;" />
         </div>
 
         <div class="header-search" id="header-search-wrap">

@@ -371,7 +371,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--radius-xl);
+  border-radius: 0;
 }
 
 .carousel-track {
