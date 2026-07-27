@@ -22,7 +22,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        Provider.of<NotificationProvider>(context, listen: false).init(currentUser.uid);
+        Provider.of<NotificationProvider>(
+          context,
+          listen: false,
+        ).init(currentUser.uid);
       }
     });
   }
@@ -46,7 +49,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         title: const Text(
           'Notifications',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.black,
+          ),
         ),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.primary,
@@ -54,20 +61,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
         actions: [
           if (filteredNotifications.isNotEmpty) ...[
             TextButton.icon(
-              onPressed: () => notificationProvider.markAllAsRead(currentUser.uid),
-              icon: const Icon(Icons.done_all, size: 18, color: AppColors.primary),
+              onPressed: () =>
+                  notificationProvider.markAllAsRead(currentUser.uid),
+              icon: const Icon(
+                Icons.done_all,
+                size: 18,
+                color: AppColors.primary,
+              ),
               label: const Text(
                 'Mark read',
-                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600, fontSize: 13),
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
               tooltip: 'Clear All',
-              onPressed: () => _showClearAllDialog(context, notificationProvider, currentUser.uid),
+              onPressed: () => _showClearAllDialog(
+                context,
+                notificationProvider,
+                currentUser.uid,
+              ),
             ),
             const SizedBox(width: 8),
-          ]
+          ],
         ],
       ),
       body: Column(
@@ -78,15 +98,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: notificationProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredNotifications.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        itemCount: filteredNotifications.length,
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final notification = filteredNotifications[index];
-                          return _buildNotificationItem(context, notification, currentUser.uid, notificationProvider);
-                        },
-                      ),
+                ? _buildEmptyState()
+                : ListView.builder(
+                    itemCount: filteredNotifications.length,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final notification = filteredNotifications[index];
+                      return _buildNotificationItem(
+                        context,
+                        notification,
+                        currentUser.uid,
+                        notificationProvider,
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -138,7 +163,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
               },
               selectedColor: AppColors.accent, // Neon Yellow
               backgroundColor: Colors.grey[100],
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               side: BorderSide.none,
             ),
           );
@@ -159,7 +186,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
       onDismissed: (_) {
         provider.deleteNotification(userId, notification.id);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notification deleted'), duration: Duration(seconds: 2)),
+          const SnackBar(
+            content: Text('Notification deleted'),
+            duration: Duration(seconds: 2),
+          ),
         );
       },
       background: Container(
@@ -176,7 +206,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: Container(
             width: 44,
             height: 44,
@@ -197,7 +230,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 child: Text(
                   notification.title,
                   style: TextStyle(
-                    fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+                    fontWeight: notification.isRead
+                        ? FontWeight.normal
+                        : FontWeight.bold,
                     fontSize: 15,
                     color: Colors.black,
                   ),
@@ -248,8 +283,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-
-
   String _getRelativeTime(DateTime dateTime) {
     final duration = DateTime.now().difference(dateTime);
     if (duration.inMinutes < 1) {
@@ -267,9 +300,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   void _handleNavigation(BuildContext context, NotificationModel notification) {
     if (notification.type == 'order') {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const OrderHistoryScreen()));
     }
   }
 
@@ -295,7 +328,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
             const SizedBox(height: 24),
             const Text(
               'All caught up!',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -308,10 +345,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
               onPressed: () => Navigator.of(context).pop(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              child: const Text('Go Back', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Go Back',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
@@ -319,12 +367,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  void _showClearAllDialog(BuildContext context, NotificationProvider provider, String userId) {
+  void _showClearAllDialog(
+    BuildContext context,
+    NotificationProvider provider,
+    String userId,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear all notifications?'),
-        content: const Text('This will permanently delete all notifications from this list.'),
+        content: const Text(
+          'This will permanently delete all notifications from this list.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -335,7 +389,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
               provider.clearAll(userId);
               Navigator.pop(context);
             },
-            child: const Text('Clear All', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Clear All',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),

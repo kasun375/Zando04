@@ -39,9 +39,9 @@ class ProductModel {
       isFeatured: map['isFeatured'] ?? false,
       rating: (map['rating'] ?? 0.0).toDouble(),
       reviewsCount: map['reviewsCount'] ?? 0,
-      galleryImages: List<String>.from(map['galleryImages'] ?? [])
-          .map((url) => ImageUtils.convertToDirectLink(url))
-          .toList(),
+      galleryImages: List<String>.from(
+        map['galleryImages'] ?? [],
+      ).map((url) => ImageUtils.convertToDirectLink(url)).toList(),
     );
   }
 

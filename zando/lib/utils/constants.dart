@@ -9,15 +9,15 @@ class AppColors {
   static const Color textHead = Color(0xFF1A1A1A);
   static const Color error = Color(0xFFDC3545);
   static const Color success = Color(0xFF28A745);
-  
+
   // Custom UI colors from mockup
   static const Color creamCard = Color(0xFFFFF2CC); // Light beige/cream card
-  static const Color productCard = Color(0xFFB1A7B4); // Lavender/grey product card
+  static const Color productCard = Color(
+    0xFFB1A7B4,
+  ); // Lavender/grey product card
   static const Color navBar = Color(0xFFE0E0E0); // Bottom nav background
   static const Color navBarIcon = Color(0xFF000000); // Bottom nav icon color
 }
-
-
 
 class AppThemes {
   static final ThemeData lightTheme = ThemeData(
@@ -44,14 +44,8 @@ class AppThemes {
         fontWeight: FontWeight.bold,
         fontSize: 24,
       ),
-      bodyLarge: TextStyle(
-        color: AppColors.textBody,
-        fontSize: 16,
-      ),
-      bodyMedium: TextStyle(
-        color: AppColors.textBody,
-        fontSize: 14,
-      ),
+      bodyLarge: TextStyle(color: AppColors.textBody, fontSize: 16),
+      bodyMedium: TextStyle(color: AppColors.textBody, fontSize: 14),
     ),
   );
 }

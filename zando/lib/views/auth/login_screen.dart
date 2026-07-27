@@ -80,8 +80,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
-                    validator: (value) =>
-                        value != null && value.contains('@') ? null : 'Enter a valid email',
+                    validator: (value) => value != null && value.contains('@')
+                        ? null
+                        : 'Enter a valid email',
                   ),
                   const SizedBox(height: 16),
 
@@ -106,13 +107,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
-                    validator: (value) =>
-                        value != null && value.length >= 6 ? null : 'Password too short',
+                    validator: (value) => value != null && value.length >= 6
+                        ? null
+                        : 'Password too short',
                   ),
                   const SizedBox(height: 32),
 
                   if (authProvider.isLoading)
-                    const Center(child: CircularProgressIndicator(color: Colors.white))
+                    const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    )
                   else ...[
                     // Email Login Button
                     ElevatedButton(
@@ -157,15 +161,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Divider
                     Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
                             'OR',
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.4),
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -182,11 +197,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         } catch (e) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Google Sign-In failed: $e')),
+                            SnackBar(
+                              content: Text('Google Sign-In failed: $e'),
+                            ),
                           );
                         }
                       },
-                      icon: const Icon(FontAwesomeIcons.google, size: 18, color: Colors.black),
+                      icon: const Icon(
+                        FontAwesomeIcons.google,
+                        size: 18,
+                        color: Colors.black,
+                      ),
                       label: const Text(
                         'SIGN IN WITH GOOGLE',
                         style: TextStyle(
@@ -210,7 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       );
                     },
                     child: const Text(

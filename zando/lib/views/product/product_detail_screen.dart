@@ -31,7 +31,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ...product.galleryImages,
     ].where((img) => img.isNotEmpty).toList();
 
-    final mainImage = allImages.isNotEmpty ? allImages[_selectedImageIndex] : '';
+    final mainImage = allImages.isNotEmpty
+        ? allImages[_selectedImageIndex]
+        : '';
 
     return Scaffold(
       appBar: AppBar(title: Text(product.name)),
@@ -50,7 +52,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     )
                   : Container(
                       color: Colors.grey[200],
-                      child: const Center(child: Icon(Icons.image_not_supported, size: 50)),
+                      child: const Center(
+                        child: Icon(Icons.image_not_supported, size: 50),
+                      ),
                     ),
             ),
             if (allImages.length > 1)
@@ -105,13 +109,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       Text(
                         product.category.toUpperCase(),
-                        style: const TextStyle(color: Colors.grey, letterSpacing: 1.5),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                       Row(
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 20),
                           const SizedBox(width: 4),
-                          Text('${product.rating} (${product.reviewsCount} reviews)'),
+                          Text(
+                            '${product.rating} (${product.reviewsCount} reviews)',
+                          ),
                         ],
                       ),
                     ],
@@ -151,7 +160,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: Row(
@@ -161,7 +174,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 auth.userModel?.wishlist.contains(product.id) ?? false
                     ? Icons.favorite
                     : Icons.favorite_border,
-                color: auth.userModel?.wishlist.contains(product.id) ?? false ? Colors.red : null,
+                color: auth.userModel?.wishlist.contains(product.id) ?? false
+                    ? Colors.red
+                    : null,
                 size: 28,
               ),
               onPressed: () {
@@ -187,9 +202,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   foregroundColor: AppColors.primary,
                   side: const BorderSide(color: AppColors.primary, width: 1.5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Text('ADD TO CART', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                child: const Text(
+                  'ADD TO CART',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -217,10 +240,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('BUY NOW', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                child: const Text(
+                  'BUY NOW',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
             ),
           ],

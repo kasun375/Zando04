@@ -62,7 +62,6 @@ class NotificationService {
     }
   }
 
-
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -71,7 +70,9 @@ class NotificationService {
 
     final fcm = _fcm;
     if (fcm == null) {
-      debugPrint('Firebase Messaging is not supported or failed to initialize on this platform.');
+      debugPrint(
+        'Firebase Messaging is not supported or failed to initialize on this platform.',
+      );
       return;
     }
 
@@ -80,7 +81,10 @@ class NotificationService {
     final initialContext = navigatorKey.currentContext;
     if (initialContext != null) {
       try {
-        final authProvider = Provider.of<AuthProvider>(initialContext, listen: false);
+        final authProvider = Provider.of<AuthProvider>(
+          initialContext,
+          listen: false,
+        );
         initialUserId = authProvider.userModel?.uid;
       } catch (e) {
         debugPrint('Error getting AuthProvider during initialize: $e');
@@ -104,7 +108,6 @@ class NotificationService {
     if (initialUserId != null) {
       _saveToken(initialUserId);
     }
-
 
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
@@ -178,7 +181,9 @@ class NotificationService {
         if (AppConstants.vapidKey != 'YOUR_PUBLIC_VAPID_KEY') {
           token = await fcm.getToken(vapidKey: AppConstants.vapidKey);
         } else {
-          debugPrint('Web VAPID Key is not configured. Web FCM token registration skipped.');
+          debugPrint(
+            'Web VAPID Key is not configured. Web FCM token registration skipped.',
+          );
           return;
         }
       } else {

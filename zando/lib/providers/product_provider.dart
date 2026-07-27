@@ -14,9 +14,11 @@ class ProductProvider with ChangeNotifier {
 
   List<ProductModel> get products {
     return _products.where((p) {
-      final matchesSearch = p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+      final matchesSearch =
+          p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           p.shop.toLowerCase().contains(_searchQuery.toLowerCase());
-      final matchesCategoryOrShop = _selectedCategory == 'All' ||
+      final matchesCategoryOrShop =
+          _selectedCategory == 'All' ||
           p.category == _selectedCategory ||
           p.shop == _selectedCategory;
       return matchesSearch && matchesCategoryOrShop;
@@ -93,7 +95,7 @@ class ProductProvider with ChangeNotifier {
 
       // For simplicity, we'll replace existing products in Firestore with the Sheet data
       // OR you can just add missing ones. Usually, the Sheet is the "Source of Truth".
-      
+
       // OPTIONAL: Delete existing products in Firestore first to ensure a clean sync
       final currentProducts = await _firestoreService.getProducts().first;
       for (var p in currentProducts) {
@@ -104,8 +106,10 @@ class ProductProvider with ChangeNotifier {
       for (var product in sheetProducts) {
         await _firestoreService.addProduct(product);
       }
-      
-      debugPrint('Sync from Google Sheets completed successfully. Added ${sheetProducts.length} products.');
+
+      debugPrint(
+        'Sync from Google Sheets completed successfully. Added ${sheetProducts.length} products.',
+      );
     } catch (e) {
       debugPrint('Sync failed: $e');
       rethrow;

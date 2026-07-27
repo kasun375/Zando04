@@ -24,7 +24,10 @@ class WelcomeScreen extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32.0,
+                vertical: 24.0,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,9 +57,7 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       if (authProvider.isLoading)
                         const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
+                          child: CircularProgressIndicator(color: Colors.white),
                         )
                       else ...[
                         // Google sign in button
@@ -67,11 +68,17 @@ class WelcomeScreen extends StatelessWidget {
                             } catch (e) {
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Google Sign-In failed: $e')),
+                                SnackBar(
+                                  content: Text('Google Sign-In failed: $e'),
+                                ),
                               );
                             }
                           },
-                          icon: const Icon(FontAwesomeIcons.google, size: 18, color: Colors.black),
+                          icon: const Icon(
+                            FontAwesomeIcons.google,
+                            size: 18,
+                            color: Colors.black,
+                          ),
                           label: const Text(
                             'CONTINUE WITH GOOGLE',
                             style: TextStyle(
@@ -94,7 +101,9 @@ class WelcomeScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const LoginScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const LoginScreen(),
+                              ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -119,11 +128,16 @@ class WelcomeScreen extends StatelessWidget {
                         OutlinedButton(
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
                             );
                           },
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.white, width: 1.5),
+                            side: const BorderSide(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),

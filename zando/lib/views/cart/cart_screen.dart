@@ -68,14 +68,19 @@ class _CartScreenState extends State<CartScreen> {
                       final isChecked = _selectedItemIds.contains(item.id);
 
                       return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         leading: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Checkbox(
                               value: isChecked,
                               activeColor: AppColors.primary,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                               onChanged: (val) {
                                 setState(() {
                                   if (val == true) {
@@ -122,7 +127,9 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                             Text(
                               '${item.quantity}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             IconButton(
                               icon: const Icon(Icons.add, size: 20),
@@ -147,7 +154,7 @@ class _CartScreenState extends State<CartScreen> {
                         color: Colors.black12,
                         blurRadius: 10,
                         offset: Offset(0, -5),
-                      )
+                      ),
                     ],
                   ),
                   child: Column(
@@ -157,7 +164,10 @@ class _CartScreenState extends State<CartScreen> {
                         children: [
                           const Text(
                             'Total:',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             '\$${selectedTotal.toStringAsFixed(2)}',
@@ -177,14 +187,19 @@ class _CartScreenState extends State<CartScreen> {
                               ? null
                               : () {
                                   final selectedOrderItems = cart.items.values
-                                      .where((item) => _selectedItemIds.contains(item.id))
-                                      .map((item) => OrderItem(
-                                            productId: item.id,
-                                            productName: item.name,
-                                            quantity: item.quantity,
-                                            price: item.price,
-                                            imageUrl: item.imageUrl,
-                                          ))
+                                      .where(
+                                        (item) =>
+                                            _selectedItemIds.contains(item.id),
+                                      )
+                                      .map(
+                                        (item) => OrderItem(
+                                          productId: item.id,
+                                          productName: item.name,
+                                          quantity: item.quantity,
+                                          price: item.price,
+                                          imageUrl: item.imageUrl,
+                                        ),
+                                      )
                                       .toList();
 
                                   showModalBottomSheet(
@@ -194,7 +209,8 @@ class _CartScreenState extends State<CartScreen> {
                                     builder: (_) => CheckoutSheet(
                                       buyNowItems: selectedOrderItems,
                                       buyNowTotal: selectedTotal,
-                                      checkoutItemIds: _selectedItemIds.toList(),
+                                      checkoutItemIds: _selectedItemIds
+                                          .toList(),
                                     ),
                                   );
                                 },
@@ -205,7 +221,10 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           child: const Text(
                             'CHECKOUT',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

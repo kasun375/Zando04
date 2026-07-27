@@ -15,7 +15,8 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -24,7 +25,10 @@ class AuthService {
       UserCredential result = await _auth.signInWithCredential(credential);
       User? user = result.user;
       if (user != null) {
-        DocumentSnapshot doc = await _db.collection('users').doc(user.uid).get();
+        DocumentSnapshot doc = await _db
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (!doc.exists) {
           UserModel userModel = UserModel(
             uid: user.uid,
@@ -56,7 +60,11 @@ class AuthService {
     return null;
   }
 
-  Future<UserCredential?> signUp(String email, String password, String name) async {
+  Future<UserCredential?> signUp(
+    String email,
+    String password,
+    String name,
+  ) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,

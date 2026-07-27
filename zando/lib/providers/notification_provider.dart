@@ -23,14 +23,19 @@ class NotificationProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _subscription = _firestoreService.getUserNotifications(userId).listen((data) {
-      _notifications = data;
-      _isLoading = false;
-      notifyListeners();
-    }, onError: (e) {
-      _isLoading = false;
-      notifyListeners();
-    });
+    _subscription = _firestoreService
+        .getUserNotifications(userId)
+        .listen(
+          (data) {
+            _notifications = data;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (e) {
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
   }
 
   void clear() {

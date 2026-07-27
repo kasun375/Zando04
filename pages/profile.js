@@ -28,10 +28,16 @@ export async function renderProfile(appEl) {
         <div class="main-area">
           <div class="profile-page" style="padding-bottom:5rem;">
             <div class="profile-avatar-wrap">
-              ${currentUser.photoURL
-                ? `<img src="${currentUser.photoURL}" alt="Avatar" style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow-primary);" />`
-                : `<div class="profile-avatar"><span class="material-icons-round">account_circle</span></div>`
-              }
+              <label for="profile-image-upload" style="cursor:pointer; position:relative; display:inline-block;">
+                ${userModel?.profileImageUrl || currentUser.photoURL
+                  ? `<img src="${userModel?.profileImageUrl || currentUser.photoURL}" alt="Avatar" style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow-primary);" />`
+                  : `<div class="profile-avatar"><span class="material-icons-round">account_circle</span></div>`
+                }
+                <div style="position:absolute; bottom:0; right:0; background:var(--color-primary); color:white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-md);">
+                  <span class="material-icons-round" style="font-size:16px;">edit</span>
+                </div>
+              </label>
+              <input type="file" id="profile-image-upload" accept="image/*" style="display:none;" />
               <h2 class="profile-name">${userModel?.name || currentUser.displayName || 'User'}</h2>
               <p class="profile-email">${userModel?.email || currentUser.email || ''}</p>
               ${isAdmin ? `<span class="badge badge-primary" style="font-size:var(--text-xs);padding:4px 12px;">ADMIN</span>` : ''}
@@ -171,6 +177,59 @@ export async function renderProfile(appEl) {
     console.error('Failed to fetch orders for profile stats:', err);
     const countEl = document.getElementById('profile-orders-count');
     if (countEl) countEl.textContent = '—';
+  });
+
+  // Handle Profile Picture Upload
+  document.getElementById('profile-image-upload')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB max
+      showToast('Image must be less than 2MB', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 250;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // compress to jpeg
+        const base64 = canvas.toDataURL('image/jpeg', 0.8);
+        
+        try {
+          await updateUserProfile(currentUser.uid, { profileImageUrl: base64 });
+          showToast('Profile picture updated!', 'success');
+          renderProfile(appEl); // Re-render to show updated image
+        } catch (err) {
+          console.error('Profile pic upload error:', err);
+          showToast('Failed to update picture', 'error');
+        }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 
   // Save profile basic changes

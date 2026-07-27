@@ -11,11 +11,13 @@ import '../../providers/notification_provider.dart';
 import '../../services/notification_service.dart';
 import '../../utils/responsive_layout.dart';
 import '../../utils/constants.dart';
-import '../../widgets/product_card.dart';
+import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 import '../cart/cart_screen.dart';
 import '../profile/order_history_screen.dart';
 import '../admin/admin_panel.dart';
 import 'notification_screen.dart';
+import '../../widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,7 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadBannerAd();
     }
     _searchFocusNode.addListener(() {
-      if (_searchFocusNode.hasFocus && _searchController.text.trim().isNotEmpty) {
+      if (_searchFocusNode.hasFocus &&
+          _searchController.text.trim().isNotEmpty) {
         _showOverlay();
       } else {
         _hideOverlay();
@@ -139,13 +142,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               product.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             subtitle: Text(
                               product.shop,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
                             ),
                             trailing: Text(
                               '\$${product.price.toStringAsFixed(2)}',
@@ -184,7 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (currentUser != null && !_notificationsInitialized) {
       _notificationsInitialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<NotificationProvider>(context, listen: false).init(currentUser.uid);
+        Provider.of<NotificationProvider>(
+          context,
+          listen: false,
+        ).init(currentUser.uid);
         NotificationService().initialize();
       });
     }
@@ -261,7 +272,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Custom Header matching the UI screenshot search bar
   Widget _buildSearchHeader(BuildContext context) {
-    final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    final productProvider = Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    );
     final notificationProvider = Provider.of<NotificationProvider>(context);
 
     return Container(
@@ -291,13 +305,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationScreen(),
+                      ),
                     );
                   },
                   icon: Badge(
                     label: Text(
                       '${notificationProvider.unreadCount}',
-                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
                     ),
                     isLabelVisible: notificationProvider.unreadCount > 0,
                     backgroundColor: AppColors.accent, // Neon Yellow
@@ -398,7 +418,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Container(
                   margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.creamCard, // Pale Beige/Cream
                     borderRadius: BorderRadius.circular(12),
@@ -410,11 +433,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 44,
                         height: 44,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.local_shipping_outlined,
-                          size: 36,
-                          color: AppColors.primary,
-                        ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.local_shipping_outlined,
+                              size: 36,
+                              color: AppColors.primary,
+                            ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -468,13 +492,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.only(bottom: 24),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.85,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
-                        itemCount: productProvider.products.isEmpty ? 4 : productProvider.products.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.85,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                            ),
+                        itemCount: productProvider.products.isEmpty
+                            ? 4
+                            : productProvider.products.length,
                         itemBuilder: (context, index) {
                           if (productProvider.products.isEmpty) {
                             return Container(
@@ -490,7 +517,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                           } else {
-                            return ProductCard(product: productProvider.products[index]);
+                            return ProductCard(
+                              product: productProvider.products[index],
+                            );
                           }
                         },
                       ),
@@ -504,61 +533,65 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, String>> _fallbackBanners = [
     {
-      'imageUrl': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1470&auto=format&fit=crop',
-      'title': 'New Summer Collection'
+      'imageUrl':
+          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1470&auto=format&fit=crop',
+      'title': 'New Summer Collection',
     },
     {
-      'imageUrl': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1470&auto=format&fit=crop',
-      'title': 'Premium Fashion'
+      'imageUrl':
+          'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1470&auto=format&fit=crop',
+      'title': 'Premium Fashion',
     },
     {
-      'imageUrl': 'https://images.unsplash.com/photo-1441984969344-93437537b044?q=80&w=1470&auto=format&fit=crop',
-      'title': 'Modern Electronics'
+      'imageUrl':
+          'https://images.unsplash.com/photo-1441984969344-93437537b044?q=80&w=1470&auto=format&fit=crop',
+      'title': 'Modern Electronics',
     },
   ];
 
   Widget _buildCarouselPlaceholder(BannerProvider bannerProvider) {
     final banners = bannerProvider.banners.isNotEmpty
-        ? bannerProvider.banners.map((b) => {'imageUrl': b.imageUrl, 'title': b.title}).toList()
+        ? bannerProvider.banners
+              .map((b) => {'imageUrl': b.imageUrl, 'title': b.title})
+              .toList()
         : _fallbackBanners;
 
-    return SizedBox(
-      width: double.infinity,
-      child: CarouselSlider(
-        options: CarouselOptions(
-          height: 380.0,
-          viewportFraction: 1.0,
-          autoPlay: true,
-          enableInfiniteScroll: true,
-          autoPlayAnimationDuration: const Duration(milliseconds: 600),
-        ),
-        items: banners.map((banner) {
-          return Builder(
-            builder: (BuildContext context) {
-              final imageUrl = banner['imageUrl'] ?? '';
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200.0,
+        viewportFraction: 1.0,
+        autoPlay: true,
+        enableInfiniteScroll: true,
+      ),
+      items: banners.map((banner) {
+        return Builder(
+          builder: (BuildContext context) {
+            final imageUrl = banner['imageUrl'] ?? '';
 
-              return SizedBox(
-                width: double.infinity,
-                height: 380,
-                child: imageUrl.isNotEmpty
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                imageUrl.isNotEmpty
                     ? Image.network(
                         imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: 380,
+                        fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: AppColors.primary,
                           child: const Center(
-                            child: Icon(Icons.error, color: Colors.white54, size: 40),
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.white54,
+                              size: 40,
+                            ),
                           ),
                         ),
                       )
                     : Container(color: AppColors.primary),
-              );
-            },
-          );
-        }).toList(),
-      ),
+              ],
+            );
+          },
+        );
+      }).toList(),
     );
   }
 
@@ -580,7 +613,11 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 8),
             Text(
               'AdMob Banner Ad (Web Placeholder)',
-              style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -603,7 +640,10 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               width: 14,
               height: 14,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -644,7 +684,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Column(
                   children: [
                     ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       title: Text(
                         catName,
                         style: TextStyle(
@@ -665,7 +708,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         });
                       },
                     ),
-                    Divider(height: 1, color: Colors.grey[100], indent: 24, endIndent: 24),
+                    Divider(
+                      height: 1,
+                      color: Colors.grey[100],
+                      indent: 24,
+                      endIndent: 24,
+                    ),
                   ],
                 );
               },
@@ -700,11 +748,29 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
   @override
   void initState() {
     super.initState();
+    _syncUserData();
+  }
+
+  @override
+  void didUpdateWidget(ProfileTabWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.authProvider.userModel != oldWidget.authProvider.userModel) {
+      _syncUserData();
+    }
+  }
+
+  void _syncUserData() {
     final user = widget.authProvider.userModel;
-    _selectedGender = user?.gender;
-    _selectedLanguage = user?.language ?? 'English';
-    if (user?.birthday != null && user!.birthday!.isNotEmpty) {
-      _selectedDate = DateTime.tryParse(user.birthday!);
+    if (user != null) {
+      _selectedGender = (user.gender == null || user.gender!.isEmpty)
+          ? null
+          : user.gender;
+      _selectedLanguage = (user.language == null || user.language!.isEmpty)
+          ? 'English'
+          : user.language;
+      if (user.birthday != null && user.birthday!.isNotEmpty) {
+        _selectedDate = DateTime.tryParse(user.birthday!);
+      }
     }
   }
 
@@ -728,6 +794,50 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
     }
   }
 
+  Future<void> _pickAndUploadImage(BuildContext context) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 250,
+        maxHeight: 250,
+        imageQuality: 70,
+      );
+
+      if (image != null) {
+        setState(() {
+          _isSaving = true;
+        });
+
+        final bytes = await image.readAsBytes();
+        final base64String = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+
+        await widget.authProvider.updateUserProfile(
+          profileImageUrl: base64String,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile picture updated successfully!'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update picture: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = widget.authProvider.userModel;
@@ -737,7 +847,10 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'My Profile',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.primary,
         elevation: 0,
@@ -747,12 +860,78 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.account_circle, size: 80, color: AppColors.primary),
+            Center(
+              child: GestureDetector(
+                onTap: () => _pickAndUploadImage(context),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.transparent,
+                      child: ClipOval(
+                        child: user?.profileImageUrl != null
+                            ? (user!.profileImageUrl!.startsWith('data:image')
+                                  ? Image.memory(
+                                      base64Decode(
+                                        user.profileImageUrl!.split(',').last,
+                                      ),
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                Icons.account_circle,
+                                                size: 80,
+                                                color: AppColors.primary,
+                                              ),
+                                    )
+                                  : Image.network(
+                                      user.profileImageUrl!,
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                Icons.account_circle,
+                                                size: 80,
+                                                color: AppColors.primary,
+                                              ),
+                                    ))
+                            : const Icon(
+                                Icons.account_circle,
+                                size: 80,
+                                color: AppColors.primary,
+                              ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             Text(
               user?.name ?? 'User',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -776,7 +955,12 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                   children: [
                     const Text(
                       'PERSONAL INFORMATION',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
@@ -787,7 +971,10 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                       ),
                       items: const [
                         DropdownMenuItem(value: 'Male', child: Text('Male')),
-                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                        DropdownMenuItem(
+                          value: 'Female',
+                          child: Text('Female'),
+                        ),
                         DropdownMenuItem(value: 'Other', child: Text('Other')),
                       ],
                       onChanged: (val) {
@@ -813,7 +1000,11 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                                   : "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}",
                               style: const TextStyle(fontSize: 15),
                             ),
-                            const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
                           ],
                         ),
                       ),
@@ -826,8 +1017,14 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                         border: OutlineInputBorder(),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'English', child: Text('English')),
-                        DropdownMenuItem(value: 'Sinhala', child: Text('Sinhala')),
+                        DropdownMenuItem(
+                          value: 'English',
+                          child: Text('English'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Sinhala',
+                          child: Text('Sinhala'),
+                        ),
                         DropdownMenuItem(value: 'Tamil', child: Text('Tamil')),
                       ],
                       onChanged: (val) {
@@ -848,7 +1045,8 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                                 });
                                 String? birthdayStr;
                                 if (_selectedDate != null) {
-                                  birthdayStr = "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
+                                  birthdayStr =
+                                      "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
                                 }
                                 try {
                                   await widget.authProvider.updateUserProfile(
@@ -858,13 +1056,21 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                                   );
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Profile updated successfully!')),
+                                      const SnackBar(
+                                        content: Text(
+                                          'Profile updated successfully!',
+                                        ),
+                                      ),
                                     );
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Failed to update profile: $e')),
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to update profile: $e',
+                                        ),
+                                      ),
                                     );
                                   }
                                 } finally {
@@ -879,7 +1085,9 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         child: const Text('Save Profile'),
                       ),
@@ -904,7 +1112,12 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                   children: [
                     const Text(
                       'ADDRESS BOOK',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     if (addresses.isEmpty)
@@ -924,7 +1137,10 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                           final addr = addresses[idx];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade50,
                               border: Border.all(color: Colors.grey.shade200),
@@ -932,7 +1148,11 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.location_on, color: AppColors.primary, size: 20),
+                                const Icon(
+                                  Icons.location_on,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -943,14 +1163,24 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.error,
+                                    size: 20,
+                                  ),
                                   onPressed: () async {
                                     final list = List<String>.from(addresses);
                                     list.removeAt(idx);
-                                    await widget.authProvider.updateUserProfile(savedAddresses: list);
+                                    await widget.authProvider.updateUserProfile(
+                                      savedAddresses: list,
+                                    );
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Address removed.')),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Address removed.'),
+                                        ),
                                       );
                                     }
                                   },
@@ -969,7 +1199,10 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                             decoration: const InputDecoration(
                               hintText: 'Add new address...',
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                             ),
                           ),
                         ),
@@ -978,12 +1211,17 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                           onPressed: () async {
                             final text = _newAddressController.text.trim();
                             if (text.isEmpty) return;
-                            final list = List<String>.from(addresses)..add(text);
-                            await widget.authProvider.updateUserProfile(savedAddresses: list);
+                            final list = List<String>.from(addresses)
+                              ..add(text);
+                            await widget.authProvider.updateUserProfile(
+                              savedAddresses: list,
+                            );
                             _newAddressController.clear();
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Address added successfully.')),
+                                const SnackBar(
+                                  content: Text('Address added successfully.'),
+                                ),
                               );
                             }
                           },
@@ -991,7 +1229,9 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                             backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.all(12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           child: const Icon(Icons.add),
                         ),
@@ -1010,42 +1250,63 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                 );
               },
               icon: const Icon(Icons.history, color: Colors.white),
-              label: const Text('Order History', style: TextStyle(color: Colors.white)),
+              label: const Text(
+                'Order History',
+                style: TextStyle(color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             if (isAdmin) ...[
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AdminPanel()),
-                  );
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const AdminPanel()));
                 },
-                icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
-                label: const Text('Admin Panel', style: TextStyle(color: Colors.white)),
+                icon: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  'Admin Panel',
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
             ],
             OutlinedButton.icon(
               onPressed: () async {
-                Provider.of<NotificationProvider>(context, listen: false).clear();
+                Provider.of<NotificationProvider>(
+                  context,
+                  listen: false,
+                ).clear();
                 await widget.authProvider.signOut();
               },
               icon: const Icon(Icons.logout, color: AppColors.primary),
-              label: const Text('Sign Out', style: TextStyle(color: AppColors.primary)),
+              label: const Text(
+                'Sign Out',
+                style: TextStyle(color: AppColors.primary),
+              ),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: AppColors.primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
@@ -1066,15 +1327,20 @@ class CategoryDrawer extends StatelessWidget {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(color: AppColors.primary),
-            child: Text('Categories', style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: Text(
+              'Categories',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
           ),
-          ...productProvider.categories.map((cat) => ListTile(
-                title: Text(cat),
-                onTap: () {
-                  productProvider.setCategory(cat);
-                  Navigator.pop(context);
-                },
-              )),
+          ...productProvider.categories.map(
+            (cat) => ListTile(
+              title: Text(cat),
+              onTap: () {
+                productProvider.setCategory(cat);
+                Navigator.pop(context);
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -1095,13 +1361,18 @@ class SideCategoryMenu extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text('CATEGORIES', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+            child: Text(
+              'CATEGORIES',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
           ),
-          ...productProvider.categories.map((cat) => ListTile(
-                title: Text(cat),
-                selected: false,
-                onTap: () => productProvider.setCategory(cat),
-              )),
+          ...productProvider.categories.map(
+            (cat) => ListTile(
+              title: Text(cat),
+              selected: false,
+              onTap: () => productProvider.setCategory(cat),
+            ),
+          ),
         ],
       ),
     );

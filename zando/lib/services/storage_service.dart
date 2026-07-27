@@ -14,7 +14,9 @@ class StorageService {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final ref = _storage.ref().child(folder).child('$fileName.jpg');
 
-      debugPrint('Attempting upload to: gs://${_storage.bucket}/${ref.fullPath}');
+      debugPrint(
+        'Attempting upload to: gs://${_storage.bucket}/${ref.fullPath}',
+      );
 
       final Uint8List imageData = await image.readAsBytes();
 

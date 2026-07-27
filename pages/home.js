@@ -236,7 +236,8 @@ function renderCarousel(banners) {
     }
     return `
       <div class="carousel-slide">
-        <img src="${b.imageUrl || ''}" alt="${b.title || 'Banner'}" loading="lazy" />
+        <img src="${b.imageUrl || ''}" alt="${b.title || 'Banner'}" loading="lazy"
+             onerror="this.onerror=null; this.style.display='none'; this.parentElement.style.background='#2E062B'; this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:1rem;\\'>Banner Image</div>';" />
       </div>
     `;
   }).join('');
@@ -251,15 +252,15 @@ function renderCarousel(banners) {
         <div class="carousel-track" id="carousel-track">${slides}</div>
         <div class="carousel-dots" id="carousel-dots">${dots}</div>
       </div>
-      <!-- Google AdSense Ad -->
-      <div class="adsense-ad-container" style="margin: 1.5rem auto 0 auto; text-align: center; max-width: 100%; overflow: hidden;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-1267014580635785"
-             data-ad-slot="8586663497"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </div>
+    </div>
+    <!-- Google AdSense Ad -->
+    <div class="adsense-ad-container" style="margin: 1.5rem auto 0 auto; text-align: center; max-width: 100%; overflow: hidden;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-1267014580635785"
+           data-ad-slot="8586663497"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
     </div>
   `;
 }

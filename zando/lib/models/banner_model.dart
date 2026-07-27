@@ -5,17 +5,10 @@ class BannerModel {
   final String imageUrl;
   final String? title;
 
-  BannerModel({
-    required this.id,
-    required this.imageUrl,
-    this.title,
-  });
+  BannerModel({required this.id, required this.imageUrl, this.title});
 
   Map<String, dynamic> toMap() {
-    return {
-      'imageUrl': imageUrl,
-      'title': title,
-    };
+    return {'imageUrl': imageUrl, 'title': title};
   }
 
   factory BannerModel.fromMap(Map<String, dynamic> map, String id) {

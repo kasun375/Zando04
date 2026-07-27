@@ -91,6 +91,7 @@ class AuthProvider with ChangeNotifier {
     String? birthday,
     String? language,
     List<String>? savedAddresses,
+    String? profileImageUrl,
   }) async {
     if (_userModel == null) return;
     _userModel = UserModel(
@@ -98,7 +99,7 @@ class AuthProvider with ChangeNotifier {
       email: _userModel!.email,
       name: _userModel!.name,
       phoneNumber: _userModel!.phoneNumber,
-      profileImageUrl: _userModel!.profileImageUrl,
+      profileImageUrl: profileImageUrl ?? _userModel!.profileImageUrl,
       isAdmin: _userModel!.isAdmin,
       wishlist: _userModel!.wishlist,
       gender: gender ?? _userModel!.gender,

@@ -38,7 +38,10 @@ class BannerProvider with ChangeNotifier {
     notifyListeners();
     try {
       final googleSheetsService = GoogleSheetsService();
-      final sheetBanners = await googleSheetsService.fetchBanners(sheetId: sheetId, gid: gid);
+      final sheetBanners = await googleSheetsService.fetchBanners(
+        sheetId: sheetId,
+        gid: gid,
+      );
 
       // Clean sync: Delete existing banners first
       final currentBanners = await _firestoreService.getBanners().first;
@@ -50,8 +53,10 @@ class BannerProvider with ChangeNotifier {
       for (var banner in sheetBanners) {
         await _firestoreService.addBanner(banner);
       }
-      
-      debugPrint('Sync from Google Sheets completed successfully. Added ${sheetBanners.length} banners.');
+
+      debugPrint(
+        'Sync from Google Sheets completed successfully. Added ${sheetBanners.length} banners.',
+      );
     } catch (e) {
       debugPrint('Banner sync failed: $e');
       rethrow;

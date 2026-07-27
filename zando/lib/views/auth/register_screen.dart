@@ -81,8 +81,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
-                    validator: (value) =>
-                        value != null && value.isNotEmpty ? null : 'Enter your name',
+                    validator: (value) => value != null && value.isNotEmpty
+                        ? null
+                        : 'Enter your name',
                   ),
                   const SizedBox(height: 16),
 
@@ -106,8 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
-                    validator: (value) =>
-                        value != null && value.contains('@') ? null : 'Enter a valid email',
+                    validator: (value) => value != null && value.contains('@')
+                        ? null
+                        : 'Enter a valid email',
                   ),
                   const SizedBox(height: 16),
 
@@ -132,13 +134,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
-                    validator: (value) =>
-                        value != null && value.length >= 6 ? null : 'Password too short (min 6 chars)',
+                    validator: (value) => value != null && value.length >= 6
+                        ? null
+                        : 'Password too short (min 6 chars)',
                   ),
                   const SizedBox(height: 32),
 
                   if (authProvider.isLoading)
-                    const Center(child: CircularProgressIndicator(color: Colors.white))
+                    const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    )
                   else ...[
                     // Register Button
                     ElevatedButton(
@@ -183,15 +188,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     // Divider
                     Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
                             'OR',
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.4),
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -208,11 +224,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         } catch (e) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Google Sign-In failed: $e')),
+                            SnackBar(
+                              content: Text('Google Sign-In failed: $e'),
+                            ),
                           );
                         }
                       },
-                      icon: const Icon(FontAwesomeIcons.google, size: 18, color: Colors.black),
+                      icon: const Icon(
+                        FontAwesomeIcons.google,
+                        size: 18,
+                        color: Colors.black,
+                      ),
                       label: const Text(
                         'SIGN UP WITH GOOGLE',
                         style: TextStyle(

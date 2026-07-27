@@ -64,7 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '20423532374',
     projectId: 'zando-b574e',
     storageBucket: 'zando-b574e.appspot.com',
-    iosClientId: '20423532374-rluisdphm1tff82rujhfif91bgn3dtlp.apps.googleusercontent.com',
+    iosClientId:
+        '20423532374-rluisdphm1tff82rujhfif91bgn3dtlp.apps.googleusercontent.com',
     iosBundleId: 'com.eshop.zando',
   );
 
@@ -74,7 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '20423532374',
     projectId: 'zando-b574e',
     storageBucket: 'zando-b574e.appspot.com',
-    iosClientId: '20423532374-rluisdphm1tff82rujhfif91bgn3dtlp.apps.googleusercontent.com',
+    iosClientId:
+        '20423532374-rluisdphm1tff82rujhfif91bgn3dtlp.apps.googleusercontent.com',
     iosBundleId: 'com.eshop.zando',
   );
 

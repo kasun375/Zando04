@@ -204,8 +204,8 @@ class AdminProductsView extends StatelessWidget {
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.orange.withValues(
-                                             alpha: 0.2,
-                                           ),
+                                              alpha: 0.2,
+                                            ),
                                             borderRadius: BorderRadius.circular(
                                               4,
                                             ),
@@ -297,7 +297,9 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
+                      color: _getStatusColor(
+                        order.status,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(

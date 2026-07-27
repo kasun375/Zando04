@@ -10,8 +10,14 @@ class FirestoreService {
 
   // Banner Methods
   Stream<List<BannerModel>> getBanners() {
-    return _db.collection('banners').snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => BannerModel.fromMap(doc.data(), doc.id)).toList());
+    return _db
+        .collection('banners')
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> addBanner(BannerModel banner) async {
@@ -24,8 +30,14 @@ class FirestoreService {
 
   // Product Methods
   Stream<List<ProductModel>> getProducts() {
-    return _db.collection('products').snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => ProductModel.fromMap(doc.data(), doc.id)).toList());
+    return _db
+        .collection('products')
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ProductModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> addProduct(ProductModel product) async {
@@ -47,8 +59,11 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => OrderModel.fromMap(doc.data(), doc.id)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Stream<List<OrderModel>> getAllOrders() {
@@ -56,8 +71,11 @@ class FirestoreService {
         .collection('orders')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => OrderModel.fromMap(doc.data(), doc.id)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> placeOrder(OrderModel order) async {
@@ -71,13 +89,19 @@ class FirestoreService {
   }
 
   // Wishlist Methods
-  Future<void> toggleWishlist(String userId, String productId, List<String> currentWishlist) async {
+  Future<void> toggleWishlist(
+    String userId,
+    String productId,
+    List<String> currentWishlist,
+  ) async {
     if (currentWishlist.contains(productId)) {
       currentWishlist.remove(productId);
     } else {
       currentWishlist.add(productId);
     }
-    await _db.collection('users').doc(userId).update({'wishlist': currentWishlist});
+    await _db.collection('users').doc(userId).update({
+      'wishlist': currentWishlist,
+    });
   }
 
   // Review Methods
@@ -88,12 +112,19 @@ class FirestoreService {
         .collection('reviews')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => ReviewModel.fromMap(doc.data(), doc.id)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ReviewModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> addReview(String productId, ReviewModel review) async {
-    await _db.collection('products').doc(productId).collection('reviews').add(review.toMap());
+    await _db
+        .collection('products')
+        .doc(productId)
+        .collection('reviews')
+        .add(review.toMap());
   }
 
   // Notification Methods
@@ -104,12 +135,17 @@ class FirestoreService {
         .collection('notifications')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromMap(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NotificationModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
-  Future<void> addNotification(String userId, NotificationModel notification) async {
+  Future<void> addNotification(
+    String userId,
+    NotificationModel notification,
+  ) async {
     if (notification.id.isNotEmpty) {
       await _db
           .collection('users')
@@ -126,7 +162,10 @@ class FirestoreService {
     }
   }
 
-  Future<void> markNotificationAsRead(String userId, String notificationId) async {
+  Future<void> markNotificationAsRead(
+    String userId,
+    String notificationId,
+  ) async {
     await _db
         .collection('users')
         .doc(userId)

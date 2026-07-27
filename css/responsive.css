@@ -23,9 +23,8 @@
     grid-template-columns: repeat(5, 1fr);
   }
 
-  /* Desktop: hero carousel is 380px tall, full viewport width */
+  /* Desktop: larger hero */
   .carousel {
-    height: 380px;
     border-radius: 0;
   }
 
@@ -275,23 +274,12 @@
     gap: var(--space-2);
   }
 
-  /* Hero carousel — appropriate height on mobile */
+  /* Hero carousel — taller on mobile */
   .home-hero {
-    height: 200px;
     margin-bottom: var(--space-4);
   }
   .carousel {
-    height: 200px;
     border-radius: 0;
-  }
-  .carousel-slide {
-    height: 200px;
-  }
-  .carousel-slide img {
-    height: 200px;
-  }
-  .carousel-slide.mockup-slide {
-    height: 200px;
   }
 
   /* Track orders card */

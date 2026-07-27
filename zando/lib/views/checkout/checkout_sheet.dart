@@ -105,7 +105,11 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   Widget _buildPaymentMethodsSelector() {
     final methods = [
       {'id': 'Credit Card', 'name': 'Card', 'icon': Icons.credit_card_outlined},
-      {'id': 'Cash on Delivery', 'name': 'Cash on Delivery', 'icon': Icons.handshake_outlined},
+      {
+        'id': 'Cash on Delivery',
+        'name': 'Cash on Delivery',
+        'icon': Icons.handshake_outlined,
+      },
     ];
 
     return Column(
@@ -137,11 +141,18 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
+                    color: isSelected
+                        ? AppColors.primary.withValues(alpha: 0.05)
+                        : Colors.white,
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : Colors.grey.shade300,
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
                       width: isSelected ? 1.5 : 1.0,
                     ),
                     borderRadius: BorderRadius.circular(12),
@@ -151,15 +162,21 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                     children: [
                       Icon(
                         method['icon'] as IconData,
-                        color: isSelected ? AppColors.primary : Colors.grey.shade600,
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.grey.shade600,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         method['name'] as String,
                         style: TextStyle(
-                          color: isSelected ? AppColors.primary : Colors.grey.shade700,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.grey.shade700,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                           fontSize: 13,
                         ),
                       ),
@@ -182,10 +199,14 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _cardHolderController,
-            decoration: _buildInputDecoration('Cardholder Name', Icons.person_outline),
+            decoration: _buildInputDecoration(
+              'Cardholder Name',
+              Icons.person_outline,
+            ),
             validator: (val) {
               if (_selectedPaymentMethod == 'Credit Card') {
-                if (val == null || val.trim().isEmpty) return 'Enter cardholder name';
+                if (val == null || val.trim().isEmpty)
+                  return 'Enter cardholder name';
               }
               return null;
             },
@@ -205,7 +226,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.grey.shade50,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 18,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade200),
@@ -216,13 +240,13 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade800,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
             onCardChanged: (card) {
               setState(() {
                 _cardEditComplete = card?.complete ?? false;
@@ -263,7 +287,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.userModel;
     final addresses = user?.savedAddresses ?? [];
-    
+
     final baseAmount = widget.buyNowTotal ?? cart.totalAmount;
     final finalTotal = baseAmount + (_isGift && _giftWrap ? 5.00 : 0.0);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
@@ -306,7 +330,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 ],
               ),
               const Divider(height: 20),
-              
+
               // Section 0.5: Saved Addresses Dropdown
               if (user != null && addresses.isNotEmpty) ...[
                 const Text(
@@ -321,11 +345,22 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 DropdownButtonFormField<String>(
                   value: _selectedSavedAddress,
                   hint: const Text('Select Saved Address'),
-                  decoration: _buildInputDecoration('Select from book', Icons.bookmark_outline),
-                  items: addresses.map((addr) => DropdownMenuItem(
-                    value: addr,
-                    child: Text(addr, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  )).toList(),
+                  decoration: _buildInputDecoration(
+                    'Select from book',
+                    Icons.bookmark_outline,
+                  ),
+                  items: addresses
+                      .map(
+                        (addr) => DropdownMenuItem(
+                          value: addr,
+                          child: Text(
+                            addr,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      )
+                      .toList(),
                   onChanged: (val) {
                     setState(() {
                       _selectedSavedAddress = val;
@@ -355,7 +390,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   'Enter shipping address...',
                   Icons.local_shipping_outlined,
                 ),
-                validator: (val) => val == null || val.trim().isEmpty ? 'Enter shipping address' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Enter shipping address'
+                    : null,
                 enabled: !_isProcessing,
               ),
               const SizedBox(height: 16),
@@ -373,7 +410,13 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   child: Column(
                     children: [
                       CheckboxListTile(
-                        title: const Text('🎁 Deliver as a Gift', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        title: const Text(
+                          '🎁 Deliver as a Gift',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                         value: _isGift,
                         onChanged: (val) {
                           setState(() {
@@ -393,27 +436,45 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _recipientNameController,
-                          decoration: _buildInputDecoration("Recipient's Name", Icons.person_outline),
-                          validator: (val) => _isGift && (val == null || val.trim().isEmpty) ? "Enter recipient name" : null,
+                          decoration: _buildInputDecoration(
+                            "Recipient's Name",
+                            Icons.person_outline,
+                          ),
+                          validator: (val) =>
+                              _isGift && (val == null || val.trim().isEmpty)
+                              ? "Enter recipient name"
+                              : null,
                           enabled: !_isProcessing,
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
                           controller: _recipientPhoneController,
-                          decoration: _buildInputDecoration("Recipient's Phone", Icons.phone_outlined),
-                          validator: (val) => _isGift && (val == null || val.trim().isEmpty) ? "Enter recipient phone" : null,
+                          decoration: _buildInputDecoration(
+                            "Recipient's Phone",
+                            Icons.phone_outlined,
+                          ),
+                          validator: (val) =>
+                              _isGift && (val == null || val.trim().isEmpty)
+                              ? "Enter recipient phone"
+                              : null,
                           enabled: !_isProcessing,
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
                           controller: _giftMessageController,
                           maxLines: 2,
-                          decoration: _buildInputDecoration("Gift Message / Card Note", Icons.notes_outlined),
+                          decoration: _buildInputDecoration(
+                            "Gift Message / Card Note",
+                            Icons.notes_outlined,
+                          ),
                           enabled: !_isProcessing,
                         ),
                         const SizedBox(height: 8),
                         CheckboxListTile(
-                          title: const Text('Add Gift Wrapping (+\$5.00)', style: TextStyle(fontSize: 12)),
+                          title: const Text(
+                            'Add Gift Wrapping (+\$5.00)',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           value: _giftWrap,
                           onChanged: (val) {
                             setState(() {
@@ -449,7 +510,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   'Enter mobile number...',
                   Icons.phone_outlined,
                 ),
-                validator: (val) => val == null || val.trim().isEmpty ? 'Enter mobile number' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Enter mobile number'
+                    : null,
                 enabled: !_isProcessing,
               ),
               const SizedBox(height: 20),
@@ -478,7 +541,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         ),
                         Text(
                           '\$${baseAmount.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 13, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -536,7 +602,8 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         ),
                       )
                     : ElevatedButton(
-                        onPressed: () => _processCheckout(context, cart, finalTotal),
+                        onPressed: () =>
+                            _processCheckout(context, cart, finalTotal),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -568,8 +635,8 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
     final List<String> potentialHosts = [
       '192.168.1.4', // Current computer IP on local Wi-Fi
-      '10.0.2.2',    // Android Emulator
-      'localhost',   // iOS Emulator / Desktop
+      '10.0.2.2', // Android Emulator
+      'localhost', // iOS Emulator / Desktop
     ];
 
     for (final host in potentialHosts) {
@@ -609,9 +676,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
     final paymentMethod = await Stripe.instance.createPaymentMethod(
       params: PaymentMethodParams.card(
         paymentMethodData: PaymentMethodData(
-          billingDetails: BillingDetails(
-            name: cardHolder,
-          ),
+          billingDetails: BillingDetails(name: cardHolder),
         ),
       ),
     );
@@ -629,9 +694,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
       final callable = functions.httpsCallable(
         'createPaymentIntent',
-        options: HttpsCallableOptions(
-          timeout: const Duration(seconds: 15),
-        ),
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 15)),
       );
 
       final result = await callable.call({
@@ -641,14 +704,18 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       });
 
       final data = result.data;
-      if (data['success'] == true && (data['status'] == 'succeeded' || data['status'] == 'requires_capture')) {
+      if (data['success'] == true &&
+          (data['status'] == 'succeeded' ||
+              data['status'] == 'requires_capture')) {
         success = true;
       } else {
         throw Exception(data['error'] ?? 'Payment failed');
       }
     } catch (e) {
       firebaseError = e;
-      debugPrint('Firebase Cloud Function failed on host $host: $e. Trying local payment server...');
+      debugPrint(
+        'Firebase Cloud Function failed on host $host: $e. Trying local payment server...',
+      );
     }
 
     // ── 3. Fallback to Local Payment Server if Cloud Function fails/not found ──
@@ -656,26 +723,33 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       try {
         final url = Uri.parse('http://$host:4242/create-payment-intent');
 
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'amount': (amount * 100).round(),
-            'currency': 'usd',
-            'paymentMethodId': paymentMethodId,
-          }),
-        ).timeout(const Duration(seconds: 15));
+        final response = await http
+            .post(
+              url,
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'amount': (amount * 100).round(),
+                'currency': 'usd',
+                'paymentMethodId': paymentMethodId,
+              }),
+            )
+            .timeout(const Duration(seconds: 15));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          if (data['success'] == true && (data['status'] == 'succeeded' || data['status'] == 'requires_capture')) {
+          if (data['success'] == true &&
+              (data['status'] == 'succeeded' ||
+                  data['status'] == 'requires_capture')) {
             success = true;
           } else {
             throw Exception(data['error'] ?? 'Payment failed');
           }
         } else {
           final data = jsonDecode(response.body);
-          throw Exception(data['error'] ?? 'Local payment server returned: ${data['error'] ?? response.statusCode}');
+          throw Exception(
+            data['error'] ??
+                'Local payment server returned: ${data['error'] ?? response.statusCode}',
+          );
         }
       } catch (e) {
         debugPrint('Local payment server connection failed on host $host: $e');
@@ -683,16 +757,22 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
           throw Exception(
             'Payment failed.\n\n'
             'Firebase error: ${firebaseError.toString().replaceFirst('Exception: ', '')}\n\n'
-            'Local server error: ${e.toString().replaceFirst('Exception: ', '')}'
+            'Local server error: ${e.toString().replaceFirst('Exception: ', '')}',
           );
         } else {
-          throw Exception('Payment failed. Local payment server is unreachable.');
+          throw Exception(
+            'Payment failed. Local payment server is unreachable.',
+          );
         }
       }
     }
   }
 
-  Future<void> _processCheckout(BuildContext context, CartProvider cart, double totalAmount) async {
+  Future<void> _processCheckout(
+    BuildContext context,
+    CartProvider cart,
+    double totalAmount,
+  ) async {
     // Validate delivery address first
     if (_addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -707,12 +787,16 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
     // Validate CardField completion state
     if (_selectedPaymentMethod == 'Credit Card' && !_cardEditComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter valid credit card details.')),
+        const SnackBar(
+          content: Text('Please enter valid credit card details.'),
+        ),
       );
       return;
     }
 
-    setState(() { _isProcessing = true; });
+    setState(() {
+      _isProcessing = true;
+    });
 
     try {
       String methodDisplay = _selectedPaymentMethod;
@@ -727,41 +811,65 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       await _finalizeOrder(cart, totalAmount, methodDisplay);
 
       if (!context.mounted) return;
-      setState(() { _isProcessing = false; });
+      setState(() {
+        _isProcessing = false;
+      });
       Navigator.pop(context);
       _showSuccessDialog(context);
     } catch (err) {
       if (!context.mounted) return;
-      setState(() { _isProcessing = false; });
+      setState(() {
+        _isProcessing = false;
+      });
       _showErrorDialog(context, err.toString().replaceFirst('Exception: ', ''));
     }
   }
 
-
-
-  Future<void> _finalizeOrder(CartProvider cart, double totalAmount, String paymentMethod) async {
+  Future<void> _finalizeOrder(
+    CartProvider cart,
+    double totalAmount,
+    String paymentMethod,
+  ) async {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
-    final orderItems = widget.buyNowItems ??
+    final orderItems =
+        widget.buyNowItems ??
         cart.items.values
-            .map((i) => OrderItem(
-                  productId: i.id,
-                  productName: i.name,
-                  quantity: i.quantity,
-                  price: i.price,
-                  imageUrl: i.imageUrl,
-                ))
+            .map(
+              (i) => OrderItem(
+                productId: i.id,
+                productName: i.name,
+                quantity: i.quantity,
+                price: i.price,
+                imageUrl: i.imageUrl,
+              ),
+            )
             .toList();
 
     // calculate estimated delivery 2-3 business days
     final estDate = DateTime.now().add(const Duration(days: 3));
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    final estimatedDelivery = "${months[estDate.month - 1]} ${estDate.day}, ${estDate.year}";
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final estimatedDelivery =
+        "${months[estDate.month - 1]} ${estDate.day}, ${estDate.year}";
 
     final order = OrderModel(
       id: '',
-      userId: auth.userModel?.uid ??
+      userId:
+          auth.userModel?.uid ??
           FirebaseAuth.instance.currentUser?.uid ??
           'guest',
       items: orderItems,
@@ -794,7 +902,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(28.0),
             child: Column(
@@ -817,10 +927,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 const SizedBox(height: 12),
                 const Text(
                   'Your order has been placed successfully. Thank you for shopping with ZANDO!',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -841,7 +948,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                     ),
                     child: const Text(
                       'BACK TO STORE',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
@@ -859,7 +969,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           scrollable: true,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Row(
             children: [
               Icon(Icons.error_outline_rounded, color: AppColors.error),
@@ -879,7 +991,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               onPressed: () => Navigator.pop(dialogContext),
               child: const Text(
                 'TRY AGAIN',
-                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -891,7 +1006,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
 class CardNumberInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final text = newValue.text.replaceAll(' ', '');
     if (text.isEmpty) {
       return newValue.copyWith(text: '');
@@ -914,7 +1032,10 @@ class CardNumberInputFormatter extends TextInputFormatter {
 
 class CardExpiryInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final text = newValue.text.replaceAll('/', '');
     if (text.isEmpty) {
       return newValue.copyWith(text: '');
