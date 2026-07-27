@@ -77,6 +77,34 @@ class AuthProvider with ChangeNotifier {
       profileImageUrl: _userModel!.profileImageUrl,
       isAdmin: _userModel!.isAdmin,
       wishlist: updatedWishlist,
+      gender: _userModel!.gender,
+      birthday: _userModel!.birthday,
+      language: _userModel!.language,
+      savedAddresses: _userModel!.savedAddresses,
+    );
+    notifyListeners();
+    await _authService.updateUserData(_userModel!);
+  }
+
+  Future<void> updateUserProfile({
+    String? gender,
+    String? birthday,
+    String? language,
+    List<String>? savedAddresses,
+  }) async {
+    if (_userModel == null) return;
+    _userModel = UserModel(
+      uid: _userModel!.uid,
+      email: _userModel!.email,
+      name: _userModel!.name,
+      phoneNumber: _userModel!.phoneNumber,
+      profileImageUrl: _userModel!.profileImageUrl,
+      isAdmin: _userModel!.isAdmin,
+      wishlist: _userModel!.wishlist,
+      gender: gender ?? _userModel!.gender,
+      birthday: birthday ?? _userModel!.birthday,
+      language: language ?? _userModel!.language,
+      savedAddresses: savedAddresses ?? _userModel!.savedAddresses,
     );
     notifyListeners();
     await _authService.updateUserData(_userModel!);

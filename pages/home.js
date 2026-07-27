@@ -249,12 +249,6 @@ function renderCarousel(banners) {
     <div class="home-hero">
       <div class="carousel" id="main-carousel">
         <div class="carousel-track" id="carousel-track">${slides}</div>
-        <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous">
-          <span class="material-icons-round">chevron_left</span>
-        </button>
-        <button class="carousel-arrow next" id="carousel-next" aria-label="Next">
-          <span class="material-icons-round">chevron_right</span>
-        </button>
         <div class="carousel-dots" id="carousel-dots">${dots}</div>
       </div>
       <!-- Google AdSense Ad -->

@@ -522,25 +522,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ? bannerProvider.banners.map((b) => {'imageUrl': b.imageUrl, 'title': b.title}).toList()
         : _fallbackBanners;
 
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: 200.0,
-        viewportFraction: 1.0,
-        autoPlay: true,
-        enableInfiniteScroll: true,
-      ),
-      items: banners.map((banner) {
-        return Builder(
-          builder: (BuildContext context) {
-            final imageUrl = banner['imageUrl'] ?? '';
+    return SizedBox(
+      width: double.infinity,
+      child: CarouselSlider(
+        options: CarouselOptions(
+          height: 380.0,
+          viewportFraction: 1.0,
+          autoPlay: true,
+          enableInfiniteScroll: true,
+          autoPlayAnimationDuration: const Duration(milliseconds: 600),
+        ),
+        items: banners.map((banner) {
+          return Builder(
+            builder: (BuildContext context) {
+              final imageUrl = banner['imageUrl'] ?? '';
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                imageUrl.isNotEmpty
+              return SizedBox(
+                width: double.infinity,
+                height: 380,
+                child: imageUrl.isNotEmpty
                     ? Image.network(
                         imageUrl,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 380,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: AppColors.primary,
                           child: const Center(
@@ -549,11 +554,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : Container(color: AppColors.primary),
-              ],
-            );
-          },
-        );
-      }).toList(),
+              );
+            },
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -673,7 +678,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildProfileTab(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final user = auth.userModel;
+    return ProfileTabWidget(authProvider: auth);
+  }
+}
+
+class ProfileTabWidget extends StatefulWidget {
+  final AuthProvider authProvider;
+  const ProfileTabWidget({super.key, required this.authProvider});
+
+  @override
+  State<ProfileTabWidget> createState() => _ProfileTabWidgetState();
+}
+
+class _ProfileTabWidgetState extends State<ProfileTabWidget> {
+  String? _selectedGender;
+  String? _selectedLanguage;
+  DateTime? _selectedDate;
+  final _newAddressController = TextEditingController();
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = widget.authProvider.userModel;
+    _selectedGender = user?.gender;
+    _selectedLanguage = user?.language ?? 'English';
+    if (user?.birthday != null && user!.birthday!.isNotEmpty) {
+      _selectedDate = DateTime.tryParse(user.birthday!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _newAddressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.authProvider.userModel;
+    final addresses = user?.savedAddresses ?? [];
+    final isAdmin = user?.isAdmin ?? false;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -682,7 +742,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: AppColors.primary,
         elevation: 0,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -700,7 +760,249 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+
+            // PERSONAL DETAILS CARD
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'PERSONAL INFORMATION',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      decoration: const InputDecoration(
+                        labelText: 'Gender',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                        DropdownMenuItem(value: 'Other', child: Text('Other')),
+                      ],
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedGender = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: () => _selectDate(context),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Birthday',
+                          border: OutlineInputBorder(),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedDate == null
+                                  ? 'Select Birthday'
+                                  : "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}",
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                            const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedLanguage,
+                      decoration: const InputDecoration(
+                        labelText: 'Preferred Language',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'English', child: Text('English')),
+                        DropdownMenuItem(value: 'Sinhala', child: Text('Sinhala')),
+                        DropdownMenuItem(value: 'Tamil', child: Text('Tamil')),
+                      ],
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedLanguage = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isSaving
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isSaving = true;
+                                });
+                                String? birthdayStr;
+                                if (_selectedDate != null) {
+                                  birthdayStr = "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
+                                }
+                                try {
+                                  await widget.authProvider.updateUserProfile(
+                                    gender: _selectedGender,
+                                    birthday: birthdayStr,
+                                    language: _selectedLanguage,
+                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Profile updated successfully!')),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Failed to update profile: $e')),
+                                    );
+                                  }
+                                } finally {
+                                  if (mounted) {
+                                    setState(() {
+                                      _isSaving = false;
+                                    });
+                                  }
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: const Text('Save Profile'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // ADDRESS BOOK CARD
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ADDRESS BOOK',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                    ),
+                    const SizedBox(height: 12),
+                    if (addresses.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          'No saved addresses yet.',
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: addresses.length,
+                        itemBuilder: (context, idx) {
+                          final addr = addresses[idx];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              border: Border.all(color: Colors.grey.shade200),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.location_on, color: AppColors.primary, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    addr,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                                  onPressed: () async {
+                                    final list = List<String>.from(addresses);
+                                    list.removeAt(idx);
+                                    await widget.authProvider.updateUserProfile(savedAddresses: list);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Address removed.')),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _newAddressController,
+                            decoration: const InputDecoration(
+                              hintText: 'Add new address...',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final text = _newAddressController.text.trim();
+                            if (text.isEmpty) return;
+                            final list = List<String>.from(addresses)..add(text);
+                            await widget.authProvider.updateUserProfile(savedAddresses: list);
+                            _newAddressController.clear();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Address added successfully.')),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.all(12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: const Icon(Icons.add),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
@@ -716,7 +1018,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (user?.isAdmin ?? false) ...[
+            if (isAdmin) ...[
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -736,7 +1038,7 @@ class _HomeScreenState extends State<HomeScreen> {
             OutlinedButton.icon(
               onPressed: () async {
                 Provider.of<NotificationProvider>(context, listen: false).clear();
-                await auth.signOut();
+                await widget.authProvider.signOut();
               },
               icon: const Icon(Icons.logout, color: AppColors.primary),
               label: const Text('Sign Out', style: TextStyle(color: AppColors.primary)),

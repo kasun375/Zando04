@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -36,6 +36,14 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
 
+  // Gift options controllers
+  bool _isGift = false;
+  bool _giftWrap = false;
+  final _recipientNameController = TextEditingController();
+  final _recipientPhoneController = TextEditingController();
+  final _giftMessageController = TextEditingController();
+  String? _selectedSavedAddress;
+
   // Payment field controllers
   final _cardNumberController = TextEditingController();
   final _cardHolderController = TextEditingController();
@@ -57,6 +65,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   void dispose() {
     _addressController.dispose();
     _phoneController.dispose();
+    _recipientNameController.dispose();
+    _recipientPhoneController.dispose();
+    _giftMessageController.dispose();
     _cardNumberController.dispose();
     _cardHolderController.dispose();
     _expiryController.dispose();
@@ -249,7 +260,12 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-    final totalAmount = widget.buyNowTotal ?? cart.totalAmount;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.userModel;
+    final addresses = user?.savedAddresses ?? [];
+    
+    final baseAmount = widget.buyNowTotal ?? cart.totalAmount;
+    final finalTotal = baseAmount + (_isGift && _giftWrap ? 5.00 : 0.0);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
@@ -291,6 +307,37 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               ),
               const Divider(height: 20),
               
+              // Section 0.5: Saved Addresses Dropdown
+              if (user != null && addresses.isNotEmpty) ...[
+                const Text(
+                  'Use Saved Address',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textHead,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: _selectedSavedAddress,
+                  hint: const Text('Select Saved Address'),
+                  decoration: _buildInputDecoration('Select from book', Icons.bookmark_outline),
+                  items: addresses.map((addr) => DropdownMenuItem(
+                    value: addr,
+                    child: Text(addr, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  )).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedSavedAddress = val;
+                      if (val != null) {
+                        _addressController.text = val;
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // Section 1: Delivery Address
               const Text(
                 'Delivery Address',
@@ -313,9 +360,81 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               ),
               const SizedBox(height: 16),
 
+              // Section 1.2: Deliver as Gift Card
+              Card(
+                elevation: 0,
+                color: Colors.grey.shade50,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: Colors.grey.shade200),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      CheckboxListTile(
+                        title: const Text('🎁 Deliver as a Gift', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        value: _isGift,
+                        onChanged: (val) {
+                          setState(() {
+                            _isGift = val ?? false;
+                            if (!_isGift) {
+                              _giftWrap = false;
+                            }
+                          });
+                        },
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        activeColor: AppColors.primary,
+                      ),
+                      if (_isGift) ...[
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _recipientNameController,
+                          decoration: _buildInputDecoration("Recipient's Name", Icons.person_outline),
+                          validator: (val) => _isGift && (val == null || val.trim().isEmpty) ? "Enter recipient name" : null,
+                          enabled: !_isProcessing,
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _recipientPhoneController,
+                          decoration: _buildInputDecoration("Recipient's Phone", Icons.phone_outlined),
+                          validator: (val) => _isGift && (val == null || val.trim().isEmpty) ? "Enter recipient phone" : null,
+                          enabled: !_isProcessing,
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _giftMessageController,
+                          maxLines: 2,
+                          decoration: _buildInputDecoration("Gift Message / Card Note", Icons.notes_outlined),
+                          enabled: !_isProcessing,
+                        ),
+                        const SizedBox(height: 8),
+                        CheckboxListTile(
+                          title: const Text('Add Gift Wrapping (+\$5.00)', style: TextStyle(fontSize: 12)),
+                          value: _giftWrap,
+                          onChanged: (val) {
+                            setState(() {
+                              _giftWrap = val ?? false;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          activeColor: AppColors.primary,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
               // Section 1.5: Mobile Number
               const Text(
-                'Mobile Number',
+                'Sender Mobile Number',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -348,24 +467,58 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                   border: Border.all(color: Colors.grey.shade100),
                 ),
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    const Text(
-                      'Total Amount',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textBody,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Subtotal',
+                          style: TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                        Text(
+                          '\$${baseAmount.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '\$${totalAmount.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.primary,
+                    if (_isGift && _giftWrap) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Gift Wrapping',
+                            style: TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                          const Text(
+                            '\$5.00',
+                            style: TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                        ],
                       ),
+                    ],
+                    const Divider(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Amount',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textBody,
+                          ),
+                        ),
+                        Text(
+                          '\$${finalTotal.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -383,7 +536,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         ),
                       )
                     : ElevatedButton(
-                        onPressed: () => _processCheckout(context, cart, totalAmount),
+                        onPressed: () => _processCheckout(context, cart, finalTotal),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -394,7 +547,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'PLACE ORDER \$${totalAmount.toStringAsFixed(2)}',
+                          'PLACE ORDER \$${finalTotal.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -601,6 +754,11 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 ))
             .toList();
 
+    // calculate estimated delivery 2-3 business days
+    final estDate = DateTime.now().add(const Duration(days: 3));
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final estimatedDelivery = "${months[estDate.month - 1]} ${estDate.day}, ${estDate.year}";
+
     final order = OrderModel(
       id: '',
       userId: auth.userModel?.uid ??
@@ -613,6 +771,12 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
       shippingAddress: _addressController.text.trim(),
       mobileNumber: _phoneController.text.trim(),
       paymentMethod: paymentMethod,
+      isGift: _isGift,
+      recipientName: _isGift ? _recipientNameController.text.trim() : '',
+      recipientPhone: _isGift ? _recipientPhoneController.text.trim() : '',
+      giftMessage: _isGift ? _giftMessageController.text.trim() : '',
+      giftWrap: _isGift ? _giftWrap : false,
+      estimatedDelivery: estimatedDelivery,
     );
 
     await orderProvider.placeOrder(order);

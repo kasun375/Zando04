@@ -3,15 +3,13 @@
 // User order history page
 // =====================================================
 
-import { getState } from '../js/state.js';
+import { getState, addToCart } from '../js/state.js';
 import { fetchMyOrders, getStatusColor } from '../js/orders.js';
 import { showToast, formatCurrency, formatDate } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 
 export async function renderOrderHistory(appEl) {
   const { currentUser } = getState();
-  // Guard must happen BEFORE rendering — auth state is already resolved by the time
-  // app.js calls this, so this is safe.
   if (!currentUser) { navigate('login'); return; }
 
   appEl.innerHTML = `
@@ -120,8 +118,43 @@ function renderOrderCard(order) {
     </div>
   `).join('');
 
+  // Timeline Stepper calculation
+  const statusMap = { 'pending': 1, 'processing': 2, 'shipped': 3, 'delivered': 4 };
+  const currentStep = statusMap[order.status?.toLowerCase()] || 1;
+  const progressPercent = ((currentStep - 1) / 3) * 100;
+
+  const timelineHtml = `
+    <div style="margin:1.5rem 0 1rem;">
+      <div style="font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);margin-bottom:0.5rem;letter-spacing:0.5px;">DELIVERY STATUS</div>
+      <div class="delivery-timeline" style="display:flex;justify-content:space-between;align-items:center;position:relative;padding:0 0.5rem;">
+        <div style="position:absolute;top:12px;left:10%;right:10%;height:3px;background:var(--color-border);z-index:1;"></div>
+        <div style="position:absolute;top:12px;left:10%;width:${progressPercent}%;height:3px;background:var(--color-primary);z-index:2;transition:width 0.4s ease;"></div>
+        
+        <div style="z-index:3;text-align:center;">
+          <div style="width:24px;height:24px;border-radius:50%;background:${currentStep >= 1 ? 'var(--color-primary)' : 'var(--color-surface-2)'};color:${currentStep >= 1 ? '#fff' : 'var(--color-text-muted)'};border:2px solid ${currentStep >= 1 ? 'var(--color-primary)' : 'var(--color-border)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin:0 auto 4px;">1</div>
+          <div style="font-size:9px;font-weight:700;color:${currentStep >= 1 ? 'var(--color-text-body)' : 'var(--color-text-muted)'};">Pending</div>
+        </div>
+        
+        <div style="z-index:3;text-align:center;">
+          <div style="width:24px;height:24px;border-radius:50%;background:${currentStep >= 2 ? 'var(--color-primary)' : 'var(--color-surface-2)'};color:${currentStep >= 2 ? '#fff' : 'var(--color-text-muted)'};border:2px solid ${currentStep >= 2 ? 'var(--color-primary)' : 'var(--color-border)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin:0 auto 4px;">2</div>
+          <div style="font-size:9px;font-weight:700;color:${currentStep >= 2 ? 'var(--color-text-body)' : 'var(--color-text-muted)'};">Processing</div>
+        </div>
+
+        <div style="z-index:3;text-align:center;">
+          <div style="width:24px;height:24px;border-radius:50%;background:${currentStep >= 3 ? 'var(--color-primary)' : 'var(--color-surface-2)'};color:${currentStep >= 3 ? '#fff' : 'var(--color-text-muted)'};border:2px solid ${currentStep >= 3 ? 'var(--color-primary)' : 'var(--color-border)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin:0 auto 4px;">3</div>
+          <div style="font-size:9px;font-weight:700;color:${currentStep >= 3 ? 'var(--color-text-body)' : 'var(--color-text-muted)'};">Shipped</div>
+        </div>
+
+        <div style="z-index:3;text-align:center;">
+          <div style="width:24px;height:24px;border-radius:50%;background:${currentStep >= 4 ? 'var(--color-success)' : 'var(--color-surface-2)'};color:${currentStep >= 4 ? '#fff' : 'var(--color-text-muted)'};border:2px solid ${currentStep >= 4 ? 'var(--color-success)' : 'var(--color-border)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin:0 auto 4px;">4</div>
+          <div style="font-size:9px;font-weight:700;color:${currentStep >= 4 ? 'var(--color-success)' : 'var(--color-text-muted)'};">Delivered</div>
+        </div>
+      </div>
+    </div>
+  `;
+
   return `
-    <div class="order-card">
+    <div class="order-card" id="order-card-${order.id}">
       <div class="order-card-header">
         <div>
           <div class="order-card-id">
@@ -137,10 +170,29 @@ function renderOrderCard(order) {
         </div>
       </div>
       <div class="order-card-body">
+        ${timelineHtml}
+        
+        ${order.estimatedDelivery ? `
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;background:rgba(255,255,0,0.1);padding:0.5rem;border-radius:var(--radius-sm);">
+            <span class="material-icons-round" style="font-size:1.1rem;color:var(--color-primary);">event</span>
+            <span style="font-size:var(--text-xs);font-weight:700;color:var(--color-text-body);">ESTIMATED DELIVERY: ${order.estimatedDelivery}</span>
+          </div>
+        ` : ''}
+
         <div style="margin-bottom:1rem;">
           <div style="font-weight:700;font-size:var(--text-sm);margin-bottom:0.5rem;">Items Ordered</div>
           ${itemsHtml}
         </div>
+
+        ${order.isGift ? `
+          <div style="background:rgba(255,105,180,0.1);border-radius:var(--radius-md);padding:0.75rem 1rem;margin-bottom:1rem;border:1px dashed var(--color-primary);">
+            <div style="font-size:var(--text-xs);font-weight:700;color:var(--color-primary);margin-bottom:0.25rem;">🎁 GIFT ORDER DETAILS</div>
+            <div style="font-size:var(--text-sm);margin-bottom:0.25rem;"><strong>To:</strong> ${order.recipientName} (${order.recipientPhone})</div>
+            ${order.giftMessage ? `<div style="font-size:var(--text-sm);font-style:italic;">"${order.giftMessage}"</div>` : ''}
+            ${order.giftWrap ? `<div style="font-size:var(--text-xs);color:var(--color-success);font-weight:bold;margin-top:0.25rem;">✓ Premium Gift Wrapped</div>` : ''}
+          </div>
+        ` : ''}
+
         ${order.shippingAddress ? `
           <div style="display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:0.75rem;">
             <span class="material-icons-round" style="font-size:1rem;color:var(--color-text-muted);margin-top:2px;">location_on</span>
@@ -168,8 +220,14 @@ function renderOrderCard(order) {
             </div>
           </div>
         ` : ''}
-        <div style="text-align:right;font-size:var(--text-lg);font-weight:800;color:var(--color-primary);">
-          Total: ${formatCurrency(order.totalAmount)}
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;border-top:1px solid var(--color-border);padding-top:0.75rem;">
+          <button class="btn btn-outline btn-sm" data-reorder-id="${order.id}">
+            <span class="material-icons-round" style="font-size:1rem;">refresh</span> REORDER
+          </button>
+          <div style="font-size:var(--text-lg);font-weight:800;color:var(--color-primary);">
+            Total: ${formatCurrency(order.totalAmount)}
+          </div>
         </div>
       </div>
     </div>
@@ -194,7 +252,27 @@ function renderOrderHistoryHeader() {
   `;
 }
 
+// Delegated events
 document.addEventListener('click', (e) => {
   if (e.target.closest('#orders-back-btn')) history.back();
   if (e.target.closest('#orders-cart-btn')) navigate('cart');
+
+  const reorderBtn = e.target.closest('[data-reorder-id]');
+  if (reorderBtn) {
+    const orderId = reorderBtn.dataset.reorderId;
+    const { orders } = getState();
+    const order = orders.find(o => o.id === orderId);
+    if (order && order.items) {
+      order.items.forEach(item => {
+        addToCart({
+          id: item.productId,
+          name: item.productName,
+          price: item.price,
+          imageUrl: item.imageUrl
+        });
+      });
+      showToast('Items added back to cart!', 'success');
+      navigate('cart');
+    }
+  }
 }, true);

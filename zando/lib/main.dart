@@ -42,7 +42,9 @@ void main() async {
     try {
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     } catch (e) {
-      debugPrint('Firebase Messaging background handler not supported on this platform: $e');
+      debugPrint(
+        'Firebase Messaging background handler not supported on this platform: $e',
+      );
     }
 
     // NotificationService is initialized inside HomeScreen with context to support provider & custom slide banners.

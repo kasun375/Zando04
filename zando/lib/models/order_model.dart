@@ -12,6 +12,12 @@ class OrderModel {
   final String shippingAddress;
   final String mobileNumber;
   final String paymentMethod;
+  final bool isGift;
+  final String recipientName;
+  final String recipientPhone;
+  final String giftMessage;
+  final bool giftWrap;
+  final String estimatedDelivery;
 
   OrderModel({
     required this.id,
@@ -23,6 +29,12 @@ class OrderModel {
     required this.shippingAddress,
     required this.mobileNumber,
     required this.paymentMethod,
+    this.isGift = false,
+    this.recipientName = '',
+    this.recipientPhone = '',
+    this.giftMessage = '',
+    this.giftWrap = false,
+    this.estimatedDelivery = '',
   });
 
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
@@ -39,6 +51,12 @@ class OrderModel {
       shippingAddress: map['shippingAddress'] ?? '',
       mobileNumber: map['mobileNumber'] ?? '',
       paymentMethod: map['paymentMethod'] ?? '',
+      isGift: map['isGift'] ?? false,
+      recipientName: map['recipientName'] ?? '',
+      recipientPhone: map['recipientPhone'] ?? '',
+      giftMessage: map['giftMessage'] ?? '',
+      giftWrap: map['giftWrap'] ?? false,
+      estimatedDelivery: map['estimatedDelivery'] ?? '',
     );
   }
 
@@ -52,6 +70,12 @@ class OrderModel {
       'shippingAddress': shippingAddress,
       'mobileNumber': mobileNumber,
       'paymentMethod': paymentMethod,
+      'isGift': isGift,
+      'recipientName': recipientName,
+      'recipientPhone': recipientPhone,
+      'giftMessage': giftMessage,
+      'giftWrap': giftWrap,
+      'estimatedDelivery': estimatedDelivery,
     };
   }
 }

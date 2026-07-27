@@ -34,6 +34,9 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   _checkoutTotal = total;
   _checkoutItemIds = checkoutItemIds;
 
+  const { userModel } = getState();
+  const addresses = userModel?.savedAddresses || [];
+
   // Remove existing
   document.getElementById('checkout-modal-overlay')?.remove();
 
@@ -51,6 +54,20 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
       </div>
       <hr class="divider" />
 
+      <!-- Section 0.5: Saved Addresses Dropdown -->
+      ${addresses.length > 0 ? `
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Use Saved Address</label>
+          <div class="form-control-wrapper">
+            <span class="material-icons-round input-icon">bookmark</span>
+            <select id="checkout-saved-address" class="form-control has-icon" style="background:var(--color-surface-2);appearance:none;padding-top:0px;padding-bottom:0px;height:45px;">
+              <option value="">-- Select Saved Address --</option>
+              ${addresses.map(addr => `<option value="${addr}">${addr}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      ` : ''}
+
       <!-- Section 1: Delivery Address -->
       <div class="form-group" style="margin-bottom:1.25rem;">
         <label class="form-label">Delivery Address</label>
@@ -62,9 +79,36 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         <span class="form-error" id="addr-err"></span>
       </div>
 
+      <!-- Section 1.2: Deliver as Gift Toggle -->
+      <div style="background:var(--color-surface-2);border-radius:var(--radius-md);padding:1rem;margin-bottom:1.25rem;border:1px solid var(--color-border);">
+        <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;font-weight:bold;font-size:var(--text-sm);">
+          <input type="checkbox" id="checkout-is-gift" style="width:18px;height:18px;accent-color:var(--color-primary);" />
+          <span>🎁 Deliver as a Gift</span>
+        </label>
+        
+        <div id="gift-options-fields" style="display:none;margin-top:1rem;border-top:1px solid var(--color-border);padding-top:1rem;">
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label class="form-label" style="font-size:var(--text-xs);">Recipient Name</label>
+            <input type="text" id="gift-recipient-name" class="form-control" placeholder="Recipient's name" />
+          </div>
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label class="form-label" style="font-size:var(--text-xs);">Recipient Phone Number</label>
+            <input type="tel" id="gift-recipient-phone" class="form-control" placeholder="Recipient's phone" />
+          </div>
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label class="form-label" style="font-size:var(--text-xs);">Gift Message / Card Note</label>
+            <textarea id="gift-message" class="form-control" rows="2" placeholder="Write your message here..." style="resize:none;"></textarea>
+          </div>
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;margin-top:0.75rem;font-size:var(--text-xs);color:var(--color-text-body);">
+            <input type="checkbox" id="checkout-gift-wrap" style="width:16px;height:16px;accent-color:var(--color-primary);" />
+            <span>Add Gift Wrapping (+$5.00)</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Section 1.5: Mobile Number -->
       <div class="form-group" style="margin-bottom:1.25rem;">
-        <label class="form-label">Mobile Number</label>
+        <label class="form-label">Sender Mobile Number</label>
         <div class="form-control-wrapper">
           <span class="material-icons-round input-icon">phone</span>
           <input type="tel" id="checkout-phone" class="form-control has-icon"
@@ -118,11 +162,14 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         <div class="checkout-summary-row">
           <span>Subtotal</span><span>${formatCurrency(_checkoutTotal)}</span>
         </div>
+        <div class="checkout-summary-row" id="gift-wrap-summary-row" style="display:none;">
+          <span>Gift Wrapping</span><span>$5.00</span>
+        </div>
         <div class="checkout-summary-row">
           <span>Delivery</span><span style="color:var(--color-success);">FREE</span>
         </div>
         <div class="checkout-summary-row total">
-          <span>Total Amount</span><span>${formatCurrency(_checkoutTotal)}</span>
+          <span>Total Amount</span><span id="checkout-total-display">${formatCurrency(_checkoutTotal)}</span>
         </div>
       </div>
 
@@ -183,6 +230,48 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   addrInput.addEventListener('input', () => {
     document.getElementById('addr-err').textContent = '';
   });
+
+  // Saved Address Handler
+  const savedAddrSelect = document.getElementById('checkout-saved-address');
+  if (savedAddrSelect) {
+    savedAddrSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        addrInput.value = e.target.value;
+        document.getElementById('addr-err').textContent = '';
+      }
+    });
+  }
+
+  // Gift Toggle Handler
+  const isGiftCheckbox = document.getElementById('checkout-is-gift');
+  const giftFields = document.getElementById('gift-options-fields');
+  const giftWrapCheckbox = document.getElementById('checkout-gift-wrap');
+  
+  isGiftCheckbox?.addEventListener('change', (e) => {
+    giftFields.style.display = e.target.checked ? 'block' : 'none';
+    if (!e.target.checked) {
+      if (giftWrapCheckbox) giftWrapCheckbox.checked = false;
+      document.getElementById('gift-wrap-summary-row').style.display = 'none';
+      updateCheckoutTotalDisplay();
+    }
+  });
+
+  giftWrapCheckbox?.addEventListener('change', (e) => {
+    document.getElementById('gift-wrap-summary-row').style.display = e.target.checked ? 'flex' : 'none';
+    updateCheckoutTotalDisplay();
+  });
+
+  function updateCheckoutTotalDisplay() {
+    let currentTotal = _checkoutTotal;
+    if (isGiftCheckbox?.checked && giftWrapCheckbox?.checked) {
+      currentTotal += 5.00;
+    }
+    const formatted = formatCurrency(currentTotal);
+    const totalDisp = document.getElementById('checkout-total-display');
+    if (totalDisp) totalDisp.textContent = formatted;
+    const payBtn = document.getElementById('checkout-pay-btn');
+    if (payBtn && !_isPaying) payBtn.textContent = `PLACE ORDER (${formatted})`;
+  }
 
   // Toggle payment methods
   const methodBtns = document.querySelectorAll('#checkout-payment-methods .payment-method-btn');
@@ -259,6 +348,13 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
     if (_isPaying) return;
     _isPaying = true;
 
+    const isGift = isGiftCheckbox ? isGiftCheckbox.checked : false;
+    const giftWrap = (isGift && giftWrapCheckbox) ? giftWrapCheckbox.checked : false;
+    const recipientName = isGift ? document.getElementById('gift-recipient-name').value.trim() : '';
+    const recipientPhone = isGift ? document.getElementById('gift-recipient-phone').value.trim() : '';
+    const giftMessage = isGift ? document.getElementById('gift-message').value.trim() : '';
+    const finalTotal = isGift && giftWrap ? _checkoutTotal + 5.00 : _checkoutTotal;
+
     const payBtn = document.getElementById('checkout-pay-btn');
     payBtn.disabled = true;
     payBtn.innerHTML = '<div class="spinner sm white"></div> Placing Order...';
@@ -270,12 +366,12 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           showToast('Secure payment fields are loading. Please try again in a moment.', 'error');
           _isPaying = false;
           payBtn.disabled = false;
-          payBtn.textContent = `PLACE ORDER (${formatCurrency(_checkoutTotal)})`;
+          payBtn.textContent = `PLACE ORDER (${formatCurrency(finalTotal)})`;
           return;
         }
         const cardHolder = document.getElementById('card-holder').value.trim();
 
-        // Tokenize card securely using Stripe JS SDK (no raw card data leaves the user browser)
+        // Tokenize card securely using Stripe JS SDK
         const { paymentMethod, error } = await stripe.createPaymentMethod({
           type: 'card',
           card: cardElement,
@@ -288,36 +384,46 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           document.getElementById('card-element-err').textContent = error.message;
           _isPaying = false;
           payBtn.disabled = false;
-          payBtn.textContent = `PLACE ORDER (${formatCurrency(_checkoutTotal)})`;
+          payBtn.textContent = `PLACE ORDER (${formatCurrency(finalTotal)})`;
           return;
         }
 
         methodDisplay = `Credit Card (**** ${paymentMethod.card.last4})`;
 
-        await processStripePayment(_checkoutTotal, paymentMethod.id);
+        await processStripePayment(finalTotal, paymentMethod.id);
       }
 
       // Finalize order locally as chosen payment method
-      await finalizeOrder(addr, methodDisplay, phone);
+      await finalizeOrder(addr, methodDisplay, phone, isGift, recipientName, recipientPhone, giftMessage, giftWrap, finalTotal);
       closePopup();
       showSuccessDialog();
     } catch (err) {
       console.error('Checkout Error:', err);
       _isPaying = false;
       payBtn.disabled = false;
-      payBtn.textContent = `PLACE ORDER (${formatCurrency(_checkoutTotal)})`;
+      payBtn.textContent = `PLACE ORDER (${formatCurrency(finalTotal)})`;
       showToast(err.message || 'Failed to place order', 'error');
     }
   });
 }
 
-async function finalizeOrder(address, paymentMethod, mobileNumber) {
+async function finalizeOrder(address, paymentMethod, mobileNumber, isGift, recipientName, recipientPhone, giftMessage, giftWrap, finalTotal) {
+  const estDate = new Date();
+  estDate.setDate(estDate.getDate() + 3);
+  const estimatedDelivery = estDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
   await placeOrder({
     items: _checkoutItems,
-    totalAmount: _checkoutTotal,
+    totalAmount: finalTotal,
     shippingAddress: address,
     mobileNumber,
     paymentMethod,
+    isGift,
+    recipientName,
+    recipientPhone,
+    giftMessage,
+    giftWrap,
+    estimatedDelivery
   });
 
   // Clear cart

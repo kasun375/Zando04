@@ -266,8 +266,13 @@
 
 /* ====== HOME PAGE ====== */
 .home-hero {
-  width: 100%;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 380px;
   margin-bottom: var(--space-6);
+  overflow: hidden;
 }
 
 .carousel-slide.mockup-slide {
@@ -276,7 +281,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 380px;
 }
 
 .carousel-mockup-content {

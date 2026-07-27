@@ -10,7 +10,10 @@ import {
 import { setState, getState } from './state.js';
 
 // Place an order
-export async function placeOrder({ items, totalAmount, shippingAddress, mobileNumber, paymentMethod }) {
+export async function placeOrder({
+  items, totalAmount, shippingAddress, mobileNumber, paymentMethod,
+  isGift = false, recipientName = '', recipientPhone = '', giftMessage = '', giftWrap = false, estimatedDelivery = ''
+}) {
   const { currentUser } = getState();
   if (!currentUser) throw new Error('Must be signed in to place an order');
 
@@ -23,6 +26,12 @@ export async function placeOrder({ items, totalAmount, shippingAddress, mobileNu
     shippingAddress,
     mobileNumber,
     paymentMethod,
+    isGift,
+    recipientName,
+    recipientPhone,
+    giftMessage,
+    giftWrap,
+    estimatedDelivery,
   };
 
   const docRef = await addDoc(collection(window._db, 'orders'), orderData);
