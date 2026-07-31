@@ -98,12 +98,12 @@ function renderHeader() {
 
   return `
     <header class="site-header" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; background: #2E062B;">
-      <div class="header-top" style="padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+      <div class="header-top header-top-responsive">
         <div class="header-logo" id="home-logo-btn" style="cursor: pointer; flex-shrink: 0;">
           <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 44px; max-width: 100%; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));" />
         </div>
 
-        <div class="header-search" id="header-search-wrap" style="flex: 1; max-width: 600px;">
+        <div class="header-search" id="header-search-wrap" style="flex: 1; max-width: 600px; width: 100%;">
           <div class="header-search-inner" style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 24px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease;">
             <input
               type="text"
@@ -120,7 +120,7 @@ function renderHeader() {
           <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 8px); left: 0; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
         </div>
 
-        <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+        <div class="header-actions header-actions-responsive">
           ${currentUser ? `
             <button class="icon-btn header-icon-btn" id="notification-btn" aria-label="Notifications">
               <span class="material-icons-round">notifications</span>
@@ -141,7 +141,7 @@ function renderHeader() {
       </div>
 
       <nav class="category-nav" style="background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 2rem;">
-        <div class="category-nav-inner" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
+        <div class="category-nav-inner category-nav-responsive">
           <div class="all-categories-btn-wrapper" id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
             <button class="all-categories-btn" id="all-categories-btn" style="background: transparent; color: #fff; border: none; font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.3s;">
               <span class="material-icons-round">menu</span>
@@ -152,7 +152,7 @@ function renderHeader() {
             </div>
           </div>
           
-          <div class="main-nav-links" style="display: flex; gap: 2rem;">
+          <div class="main-nav-links main-nav-responsive">
             <a id="nav-about-home" class="nav-link">About Us</a>
             <a id="nav-privacy-home" class="nav-link">Privacy Policy</a>
             <a id="nav-contact-home" class="nav-link">Contact Us</a>
@@ -161,6 +161,66 @@ function renderHeader() {
       </nav>
       
       <style>
+        .header-top-responsive {
+          padding: 1rem 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 2rem;
+        }
+        .header-actions-responsive {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+        .category-nav-responsive {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+        .main-nav-responsive {
+          display: flex;
+          gap: 2rem;
+        }
+        @media (max-width: 768px) {
+          .header-top-responsive {
+            flex-wrap: wrap;
+            padding: 0.8rem 1rem;
+            gap: 1rem;
+          }
+          .header-logo {
+            flex: 1 1 auto;
+          }
+          .header-search {
+            order: 3;
+            flex: 1 1 100%;
+            max-width: 100% !important;
+          }
+          .header-actions-responsive {
+            order: 2;
+            width: auto;
+            justify-content: flex-end;
+            gap: 0.5rem;
+          }
+          .category-nav-responsive {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          .main-nav-responsive {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+          }
+          .header-icon-btn {
+            width: 36px;
+            height: 36px;
+          }
+          .header-icon-btn .material-icons-round {
+            font-size: 1.2rem;
+          }
+        }
         .header-icon-btn {
           background: rgba(255,255,255,0.1);
           color: #fff;

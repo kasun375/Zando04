@@ -168,13 +168,13 @@ export function renderFooter() {
           <h3 class="footer-title">Contact Us</h3>
           <div class="footer-links">
             <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">email</span> support@zando.com
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">email</span> kasunjayaweera80@gmail.com
             </span>
             <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">phone</span> +94 76 089 12 62
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">phone</span> +94760891262
             </span>
             <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">place</span> New York, NY 10001
+              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">place</span> Zando Stores, No 49, Paniyandoowa Rd, Ambalangoda
             </span>
           </div>
         </div>
