@@ -26,6 +26,9 @@ const PAGES = {
   notifications: () => import('../pages/notifications.js'),
   admin:         () => import('../pages/admin.js'),
   categories:    () => import('../pages/categories.js'),
+  about:         () => import('../pages/about.js'),
+  privacy:       () => import('../pages/privacy.js'),
+  contact:       () => import('../pages/contact.js'),
 };
 
 async function loadPage(name) {
@@ -124,6 +127,21 @@ export async function bootstrapApp() {
   registerRoute('admin', async () => {
     const mod = await loadPage('admin');
     await mod?.renderAdmin(appEl);
+  });
+
+  registerRoute('about', async () => {
+    const mod = await loadPage('about');
+    mod?.renderAbout(appEl);
+  });
+
+  registerRoute('privacy', async () => {
+    const mod = await loadPage('privacy');
+    mod?.renderPrivacy(appEl);
+  });
+
+  registerRoute('contact', async () => {
+    const mod = await loadPage('contact');
+    mod?.renderContact(appEl);
   });
 
   registerRoute('404', () => {

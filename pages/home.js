@@ -97,69 +97,120 @@ function renderHeader() {
   `;
 
   return `
-    <header class="site-header">
-      <div class="header-top">
-        <div class="header-logo" id="home-logo-btn">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 44px; max-width: 100%; object-fit: contain;" />
+    <header class="site-header" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; background: #2E062B;">
+      <div class="header-top" style="padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+        <div class="header-logo" id="home-logo-btn" style="cursor: pointer; flex-shrink: 0;">
+          <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 44px; max-width: 100%; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));" />
         </div>
 
-        <div class="header-search" id="header-search-wrap">
-          <div class="header-search-inner">
+        <div class="header-search" id="header-search-wrap" style="flex: 1; max-width: 600px;">
+          <div class="header-search-inner" style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 24px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease;">
             <input
               type="text"
               id="header-search-input"
               class="header-search-input"
-              placeholder="SEARCH PRODUCTS..."
+              placeholder="Search for products, brands and more..."
               autocomplete="off"
+              style="flex: 1; background: transparent; border: none; padding: 0.75rem 1rem; color: #fff; outline: none; font-size: 1rem; font-family: var(--font-body);"
             />
-            <button class="header-search-btn" id="search-btn" aria-label="Search">
+            <button class="header-search-btn" id="search-btn" aria-label="Search" style="background: #FFFF00; color: #2E062B; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 8px rgba(255,255,0,0.3);">
               <span class="material-icons-round">search</span>
             </button>
           </div>
-          <div class="search-overlay" id="search-overlay" style="display:none;"></div>
+          <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 8px); left: 0; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
         </div>
 
-        <div class="header-actions">
+        <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
           ${currentUser ? `
-            <button class="icon-btn" id="notification-btn" aria-label="Notifications">
+            <button class="icon-btn header-icon-btn" id="notification-btn" aria-label="Notifications">
               <span class="material-icons-round">notifications</span>
               <span class="btn-badge" style="display:none;">0</span>
             </button>
           ` : ''}
-          <button class="icon-btn" id="cart-header-btn" aria-label="Cart">
+          <button class="icon-btn header-icon-btn" id="cart-header-btn" aria-label="Cart">
             <span class="material-icons-round">shopping_cart</span>
             <span class="btn-badge" id="cart-badge" style="display:none;">0</span>
           </button>
-          <button class="icon-btn" id="orders-header-btn" aria-label="Track Orders">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
-              <rect x="2" y="9" width="12" height="9" rx="1" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
-              <path d="M14 11H18.5L21 13.5V18H14V11Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
-              <path d="M15 12.5H17.5L19 14H15V12.5Z" fill="#2E062B"/>
-              <path d="M8 3C6.343 3 5 4.343 5 6C5 8.5 8 11.5 8 11.5C8 11.5 11 8.5 11 6C11 4.343 9.657 3 8 3Z" fill="#FFFFFF"/>
-              <circle cx="8" cy="6" r="1.2" fill="#2E062B"/>
-              <circle cx="5.5" cy="18.5" r="2" fill="#2E062B" stroke="#FFFFFF" stroke-width="1"/>
-              <circle cx="16.5" cy="18.5" r="2" fill="#2E062B" stroke="#FFFFFF" stroke-width="1"/>
-            </svg>
+          <button class="icon-btn header-icon-btn" id="orders-header-btn" aria-label="Track Orders">
+            <span class="material-icons-round">local_shipping</span>
           </button>
-          <button class="icon-btn" id="profile-header-btn" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
+          <button class="icon-btn header-icon-btn" id="profile-header-btn" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
             <span class="material-icons-round">person</span>
           </button>
         </div>
       </div>
 
-      <nav class="category-nav">
-        <div class="category-nav-inner" style="position: relative;">
+      <nav class="category-nav" style="background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 2rem;">
+        <div class="category-nav-inner" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
           <div class="all-categories-btn-wrapper" id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
-            <button class="all-categories-btn" id="all-categories-btn">
+            <button class="all-categories-btn" id="all-categories-btn" style="background: transparent; color: #fff; border: none; font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.3s;">
               <span class="material-icons-round">menu</span>
-              All Categories
+              Categories
             </button>
-            <div class="categories-dropdown" id="categories-dropdown">
+            <div class="categories-dropdown" id="categories-dropdown" style="top: 100%; left: 0; margin-top: 8px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
               ${dropdownItems}
             </div>
           </div>
+          
+          <div class="main-nav-links" style="display: flex; gap: 2rem;">
+            <a id="nav-about-home" class="nav-link">About Us</a>
+            <a id="nav-privacy-home" class="nav-link">Privacy Policy</a>
+            <a id="nav-contact-home" class="nav-link">Contact Us</a>
+          </div>
         </div>
       </nav>
+      
+      <style>
+        .header-icon-btn {
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          border: none;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .header-icon-btn:hover {
+          background: #FFFF00;
+          color: #2E062B;
+          transform: translateY(-2px);
+        }
+        .nav-link {
+          color: rgba(255,255,255,0.8);
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+        .nav-link:hover {
+          color: #FFFF00;
+        }
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: -4px;
+          left: 0;
+          background-color: #FFFF00;
+          transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+          width: 100%;
+        }
+        .all-categories-btn:hover {
+          background: rgba(255,255,255,0.1) !important;
+        }
+        .header-search-input::placeholder {
+          color: rgba(255,255,255,0.6);
+        }
+      </style>
     </header>
   `;
 }
@@ -452,6 +503,11 @@ function bindHeader() {
     
     dropdown.classList.remove('show');
   });
+
+  // Main Nav Links
+  document.getElementById('nav-about-home')?.addEventListener('click', () => navigate('about'));
+  document.getElementById('nav-privacy-home')?.addEventListener('click', () => navigate('privacy'));
+  document.getElementById('nav-contact-home')?.addEventListener('click', () => navigate('contact'));
 }
 
 function bindSidebar() {
