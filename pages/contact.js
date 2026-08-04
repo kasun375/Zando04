@@ -31,15 +31,15 @@ export function renderContact(appEl) {
             <form id="contact-form" style="display: flex; flex-direction: column; gap: 1rem;">
               <div>
                 <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #333;">Name</label>
-                <input type="text" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'" />
+                <input id="contact-name" type="text" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'" />
               </div>
               <div>
                 <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #333;">Email</label>
-                <input type="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'" />
+                <input id="contact-email" type="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'" />
               </div>
               <div>
                 <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #333;">Message</label>
-                <textarea rows="5" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; resize: vertical; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'"></textarea>
+                <textarea id="contact-message" rows="5" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; resize: vertical; transition: border-color 0.3s;" onfocus="this.style.borderColor='#2E062B'" onblur="this.style.borderColor='#ccc'"></textarea>
               </div>
               <button type="submit" class="btn btn-primary" style="padding: 0.75rem; font-size: 1.1rem; border-radius: 6px; margin-top: 0.5rem; background: #2E062B; color: #FFFF00; border: none; font-weight: 700; cursor: pointer;">Send Message</button>
             </form>
@@ -59,7 +59,15 @@ export function renderContact(appEl) {
   // Bind form
   document.getElementById('contact-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    showToast('Your message has been sent successfully!', 'success');
+    
+    const name = document.getElementById('contact-name').value;
+    const email = document.getElementById('contact-email').value;
+    const message = document.getElementById('contact-message').value;
+    
+    const mailtoLink = `mailto:kasunjayaweera80@gmail.com?subject=Contact Us Message from ${encodeURIComponent(name)}&body=${encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message)}`;
+    window.location.href = mailtoLink;
+    
+    showToast('Opening your email client...', 'success');
     e.target.reset();
   });
 }
