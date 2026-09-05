@@ -16,21 +16,24 @@ let _carouselTimer = null;
 let _carouselTotal = 0;
 
 // Fallback banners
-// Fallback banners
 const FALLBACK_BANNERS = [
-  {
-    isMockup: true,
-    title: 'Carrosel Slider'
-  },
   {
     imageUrl: 'assets/images/Splash_Screen.jpg',
     title: 'Welcome to Zando',
-    subtitle: 'Shop everything you need'
+    subtitle: 'Shop everything you need — Fast & Reliable Delivery',
+    ctaText: 'Explore Now'
   },
   {
     imageUrl: 'assets/images/welcome_bg.jpg',
     title: 'Premium Collection',
-    subtitle: 'Exclusive fashion and accessories'
+    subtitle: 'Exclusive fashion, electronics & accessories',
+    ctaText: 'Shop Deals'
+  },
+  {
+    isMockup: true,
+    title: 'Special Mega Sale',
+    subtitle: 'Up to 50% OFF on top categories today!',
+    ctaText: 'Claim Discount'
   }
 ];
 
@@ -67,15 +70,17 @@ export function renderHome(appEl) {
   subscribe('categories', () => updateDropdownMenu());
   subscribe('shops', () => updateDropdownMenu());
   subscribe('banners', (newBanners) => {
-    const heroContainer = document.querySelector('.home-hero');
-    if (!heroContainer) return;
+    const heroWrapper = document.querySelector('.hero-section-wrapper');
+    if (!heroWrapper) return;
     const displayBanners = newBanners.length > 0 ? newBanners : FALLBACK_BANNERS;
     _carouselTotal = displayBanners.length;
-    const parent = heroContainer.parentElement;
+    const parent = heroWrapper.parentElement;
     const temp = document.createElement('div');
     temp.innerHTML = renderCarousel(displayBanners);
-    const newHero = temp.firstElementChild;
-    parent.replaceChild(newHero, heroContainer);
+    const newHeroWrapper = temp.querySelector('.hero-section-wrapper');
+    if (newHeroWrapper) {
+      parent.replaceChild(newHeroWrapper, heroWrapper);
+    }
     bindCarousel(displayBanners);
   });
 }
@@ -336,19 +341,38 @@ function renderTrackOrdersCard() {
 // ---- Carousel ----
 function renderCarousel(banners) {
   if (!banners.length) return '';
-  const slides = banners.map(b => {
-    if (b.isMockup) {
+  const slides = banners.map((b, i) => {
+    const title = b.title || (i === 0 ? 'Welcome to Zando' : 'Special Collection');
+    const subtitle = b.subtitle || 'Discover amazing products & unbeatable prices';
+    const cta = b.ctaText || 'Shop Now';
+
+    if (b.isMockup || !b.imageUrl) {
       return `
         <div class="carousel-slide mockup-slide">
           <div class="carousel-mockup-content">
+            <div class="carousel-badge">🔥 Limited Offer</div>
+            <h2 class="carousel-title">${title}</h2>
+            <p class="carousel-subtitle">${subtitle}</p>
+            <button class="carousel-cta-btn" onclick="document.getElementById('products-grid')?.scrollIntoView({behavior:'smooth'})">
+              ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
+            </button>
           </div>
         </div>
       `;
     }
     return `
       <div class="carousel-slide">
-        <img src="${b.imageUrl || ''}" alt="${b.title || 'Banner'}" loading="lazy"
-             onerror="this.onerror=null; this.style.display='none'; this.parentElement.style.background='#2E062B'; this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:1rem;\\'>Banner Image</div>';" />
+        <img src="${b.imageUrl}" alt="${title}" loading="lazy"
+             onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('mockup-slide'); this.parentElement.innerHTML=\`<div class=\\'carousel-mockup-content\\'><div class=\\'carousel-badge\\'>Featured</div><h2 class=\\'carousel-title\\'>${title}</h2><p class=\\'carousel-subtitle\\'>${subtitle}</p><button class=\\'carousel-cta-btn\\' onclick=\\'document.getElementById(\\\\''products-grid\\\\'')?.scrollIntoView({behavior:\\''smooth\\''})\\'>${cta}</button></div>\`;" />
+        <div class="carousel-overlay">
+          <div class="carousel-caption">
+            <h2 class="carousel-title">${title}</h2>
+            ${subtitle ? `<p class="carousel-subtitle">${subtitle}</p>` : ''}
+            <button class="carousel-cta-btn" onclick="document.getElementById('products-grid')?.scrollIntoView({behavior:'smooth'})">
+              ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
+            </button>
+          </div>
+        </div>
       </div>
     `;
   }).join('');
@@ -358,20 +382,473 @@ function renderCarousel(banners) {
   ).join('');
 
   return `
-    <div class="home-hero">
-      <div class="carousel" id="main-carousel">
-        <div class="carousel-track" id="carousel-track">${slides}</div>
-        <div class="carousel-dots" id="carousel-dots">${dots}</div>
+    <style>
+      .hero-section-wrapper {
+        display: flex;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding: 0 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto 1.5rem auto;
+        width: 100%;
+      }
+      .hero-carousel-col {
+        flex: 1 1 0%;
+        min-width: 0;
+        height: 420px;
+        position: relative;
+      }
+      .hero-carousel-col .home-hero {
+        margin: 0;
+        height: 100%;
+      }
+      .hero-carousel-col .home-hero .carousel {
+        position: relative;
+        height: 100%;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+      }
+      .hero-carousel-col .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .hero-carousel-col .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-carousel-col .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+      .hero-carousel-col .carousel-slide.mockup-slide {
+        background: linear-gradient(135deg, #2E062B 0%, #4a0d46 50%, #1a0319 100%);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: relative;
+        height: 100%;
+      }
+      .carousel-mockup-content {
+        padding: 2.5rem;
+        text-align: left;
+        max-width: 550px;
+        color: #fff;
+        z-index: 2;
+        width: 100%;
+      }
+      .carousel-badge {
+        display: inline-block;
+        background: #FFFF00;
+        color: #2E062B;
+        font-weight: 800;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.05em;
+      }
+      .carousel-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        font-family: var(--font-display, sans-serif);
+      }
+      .carousel-subtitle {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+      }
+      .carousel-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        background: #FFFF00;
+        color: #2E062B;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.6rem;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 15px rgba(255,255,0,0.3);
+      }
+      .carousel-cta-btn:hover {
+        background: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,255,255,0.4);
+      }
+      .carousel-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(46,6,43,0.35) 60%, transparent 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 2.5rem;
+        z-index: 1;
+      }
+      .carousel-caption {
+        max-width: 550px;
+        color: #fff;
+      }
+      .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(46, 6, 43, 0.75);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #FFFF00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+      .carousel-arrow:hover {
+        background: #FFFF00;
+        color: #2E062B;
+        transform: translateY(-50%) scale(1.1);
+      }
+      .carousel-arrow.prev { left: 1rem; }
+      .carousel-arrow.next { right: 1rem; }
+
+      .carousel-dots {
+        position: absolute;
+        bottom: 1.25rem;
+        right: 1.5rem;
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+      }
+      .carousel-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .carousel-dot.active {
+        width: 28px;
+        border-radius: 10px;
+        background: #FFFF00;
+      }
+
+      /* === Download App Card (Modern & Stylish QR Card) === */
+      .download-app-card {
+        flex: 0 0 320px;
+        width: 320px;
+        height: 420px;
+        border-radius: 24px;
+        background: linear-gradient(165deg, #3A0937 0%, #1e041d 45%, #0d010d 100%);
+        border: 1px solid rgba(255, 255, 0, 0.22);
+        box-shadow:
+          0 16px 40px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        padding: 1.25rem 1.1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        cursor: default;
+      }
+      .download-app-card::before {
+        content: '';
+        position: absolute;
+        top: -40%;
+        left: -30%;
+        width: 160%;
+        height: 160%;
+        background: radial-gradient(circle, rgba(255,255,0,0.08) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .download-app-card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 20px 50px rgba(0,0,0,0.6),
+          0 0 0 1px rgba(255,255,0,0.4),
+          inset 0 1px 0 rgba(255,255,255,0.15);
+      }
+
+      /* Live status badge */
+      .dac-live-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 0, 0.12);
+        border: 1px solid rgba(255, 255, 0, 0.25);
+        color: #FFFF00;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        padding: 3px 10px;
+        border-radius: 12px;
+        z-index: 3;
+        backdrop-filter: blur(4px);
+      }
+      .dac-pulse-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #FFFF00;
+        box-shadow: 0 0 0 0 rgba(255,255,0,0.6);
+        animation: dac-pulse 2s ease-in-out infinite;
+      }
+      @keyframes dac-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(255,255,0,0.6); }
+        70%  { box-shadow: 0 0 0 8px rgba(255,255,0,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,0,0); }
+      }
+
+      /* Header info */
+      .dac-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 100%;
+        margin-top: 0.1rem;
+      }
+      .dac-icon-ring {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #FFFF00 0%, #e6c800 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(255,255,0,0.35);
+        transition: transform 0.3s ease;
+      }
+      .download-app-card:hover .dac-icon-ring {
+        transform: scale(1.06) rotate(-3deg);
+      }
+      .dac-icon-ring .material-icons-round {
+        font-size: 1.5rem;
+        color: #2E062B;
+      }
+      .dac-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+        font-family: var(--font-display, sans-serif);
+      }
+      .dac-subtitle {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.65);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      /* QR centerpiece wrapper */
+      .dac-qr-container {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .dac-qr-outer {
+        padding: 3px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255,255,0,0.4) 0%, rgba(255,255,255,0.1) 100%);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .download-app-card:hover .dac-qr-outer {
+        transform: scale(1.02);
+        box-shadow: 0 12px 30px rgba(255,255,0,0.25);
+      }
+      .dac-qr-wrap {
+        width: 105px;
+        height: 105px;
+        border-radius: 12px;
+        background: #ffffff;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dac-qr-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 7px;
+        display: block;
+      }
+      .dac-scan-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .dac-scan-pill .material-icons-round {
+        font-size: 0.8rem;
+        color: #FFFF00;
+      }
+
+      /* Store Buttons Area (Prominent Large pngegg.png Badges) */
+      .dac-store-row {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .dac-badges {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        transition: all 0.3s ease;
+      }
+      .dac-badges img {
+        width: 100%;
+        max-width: 250px;
+        height: auto;
+        max-height: 76px;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        transition: transform 0.3s ease, filter 0.3s ease;
+      }
+      .dac-badges img:hover {
+        transform: scale(1.04);
+        filter: drop-shadow(0 4px 14px rgba(255,255,0,0.35));
+      }
+
+      /* Responsive Rules */
+      @media (max-width: 992px) {
+        .hero-section-wrapper {
+          flex-direction: column;
+          padding: 0 1rem;
+          gap: 1.25rem;
+        }
+        .hero-carousel-col {
+          height: 320px;
+          width: 100%;
+        }
+        .download-app-card {
+          flex: unset;
+          width: 100%;
+          height: auto;
+          flex-direction: row;
+          align-items: center;
+          gap: 1.25rem;
+          padding: 1.25rem 1.5rem;
+        }
+        .dac-header { align-items: flex-start; text-align: left; flex-direction: row; gap: 0.75rem; }
+        .dac-icon-ring { flex-shrink: 0; }
+        .dac-qr-wrap { width: 90px; height: 90px; }
+        .dac-badges img { max-width: 180px; }
+        .dac-scan-pill { display: none; }
+      }
+      @media (max-width: 576px) {
+        .hero-carousel-col {
+          height: 240px;
+        }
+        .carousel-title { font-size: 1.4rem; }
+        .carousel-subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
+        .carousel-overlay { padding: 1.25rem; }
+        .carousel-mockup-content { padding: 1.25rem; }
+        .download-app-card {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .dac-header { flex-direction: column; align-items: center; text-align: center; }
+      }
+    </style>
+
+    <div class="hero-section-wrapper">
+      <!-- Carousel column -->
+      <div class="hero-carousel-col">
+        <div class="home-hero">
+          <div class="carousel" id="main-carousel">
+            <div class="carousel-track" id="carousel-track">${slides}</div>
+            <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous slide">
+              <span class="material-icons-round">chevron_left</span>
+            </button>
+            <button class="carousel-arrow next" id="carousel-next" aria-label="Next slide">
+              <span class="material-icons-round">chevron_right</span>
+            </button>
+            <div class="carousel-dots" id="carousel-dots">${dots}</div>
+          </div>
+        </div>
       </div>
-    </div>
-    <!-- Google AdSense Ad -->
-    <div class="adsense-ad-container" style="margin: 1.5rem auto 0 auto; text-align: center; max-width: 100%; overflow: hidden;">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-1267014580635785"
-           data-ad-slot="8586663497"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
+
+      <!-- Download App Card (Modern & Stylish QR Card) -->
+      <div class="download-app-card" id="download-app-card">
+        <div class="dac-live-badge">
+          <span class="dac-pulse-dot"></span> GET APP
+        </div>
+
+        <div class="dac-header">
+          <div class="dac-icon-ring">
+            <span class="material-icons-round">smartphone</span>
+          </div>
+          <div>
+            <div class="dac-title">Get Zando App</div>
+            <div class="dac-subtitle">Shop on the go</div>
+          </div>
+        </div>
+
+        <div class="dac-qr-container">
+          <div class="dac-qr-outer">
+            <div class="dac-qr-wrap">
+              <img src="assets/images/qr-code.png" alt="Scan to download Zando app" />
+            </div>
+          </div>
+          <div class="dac-scan-pill">
+            <span class="material-icons-round">qr_code_scanner</span> Point Camera
+          </div>
+        </div>
+
+        <div class="dac-store-row">
+          <div class="dac-badges">
+            <img src="assets/images/pngegg.png" alt="Available on Google Play & App Store" />
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -380,10 +857,12 @@ function renderCarousel(banners) {
 function renderProductGrid() {
   const { filteredProducts, products } = getState();
 
+  const wrapperStart = '<div class="products-section-wrapper" style="max-width: 1400px; margin: 1.5rem auto 0 auto; padding: 0 1.5rem; width: 100%;">';
+
   // If we haven't loaded any products at all, show skeletons
   if (products.length === 0) {
     return `
-      <div>
+      ${wrapperStart}
         <div class="products-grid" id="products-grid">
           ${renderSkeletonGrid(10)}
         </div>
@@ -394,7 +873,7 @@ function renderProductGrid() {
   // If we have loaded products but the filtered list is empty, show empty state
   if (filteredProducts.length === 0) {
     return `
-      <div>
+      ${wrapperStart}
         <div class="products-grid" id="products-grid">
           <div class="empty-state" style="grid-column:1/-1;">
             <span class="material-icons-round">search_off</span>
@@ -408,7 +887,7 @@ function renderProductGrid() {
 
   const cards = filteredProducts.map(renderProductCard).join('');
   return `
-    <div>
+    ${wrapperStart}
       <div class="products-grid" id="products-grid">
         ${cards}
       </div>
@@ -616,11 +1095,26 @@ function bindCarousel(banners) {
     resetTimer();
   });
 
-  // Initialize AdSense unit
-  try {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-  } catch (err) {
-    console.warn('AdSense push failed (ad blocker or script not loaded):', err);
+  // Touch gesture support
+  const carouselEl = document.getElementById('main-carousel');
+  if (carouselEl) {
+    let startX = 0;
+    carouselEl.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+    carouselEl.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) {
+          _carouselIndex = (_carouselIndex + 1) % _carouselTotal;
+        } else {
+          _carouselIndex = (_carouselIndex - 1 + _carouselTotal) % _carouselTotal;
+        }
+        updateCarousel();
+        resetTimer();
+      }
+    }, { passive: true });
   }
 }
 
