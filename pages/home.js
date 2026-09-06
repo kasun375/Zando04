@@ -503,31 +503,8 @@ function renderCarousel(banners) {
         color: #fff;
       }
       .carousel-arrow {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: rgba(46, 6, 43, 0.75);
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: #FFFF00;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        transition: all 0.25s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: none !important;
       }
-      .carousel-arrow:hover {
-        background: #FFFF00;
-        color: #2E062B;
-        transform: translateY(-50%) scale(1.1);
-      }
-      .carousel-arrow.prev { left: 1rem; }
-      .carousel-arrow.next { right: 1rem; }
 
       .carousel-dots {
         position: absolute;
@@ -782,6 +759,11 @@ function renderCarousel(banners) {
         .dac-badges img { max-width: 180px; }
         .dac-scan-pill { display: none; }
       }
+      @media (max-width: 768px) {
+        .download-app-card {
+          display: none !important;
+        }
+      }
       @media (max-width: 576px) {
         .hero-carousel-col {
           height: 240px;
@@ -790,12 +772,6 @@ function renderCarousel(banners) {
         .carousel-subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
         .carousel-overlay { padding: 1.25rem; }
         .carousel-mockup-content { padding: 1.25rem; }
-        .download-app-card {
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-        }
-        .dac-header { flex-direction: column; align-items: center; text-align: center; }
       }
     </style>
 
@@ -805,12 +781,6 @@ function renderCarousel(banners) {
         <div class="home-hero">
           <div class="carousel" id="main-carousel">
             <div class="carousel-track" id="carousel-track">${slides}</div>
-            <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous slide">
-              <span class="material-icons-round">chevron_left</span>
-            </button>
-            <button class="carousel-arrow next" id="carousel-next" aria-label="Next slide">
-              <span class="material-icons-round">chevron_right</span>
-            </button>
             <div class="carousel-dots" id="carousel-dots">${dots}</div>
           </div>
         </div>
@@ -849,6 +819,22 @@ function renderCarousel(banners) {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Google AdSense Ad (Bottom of Carousel Slider) -->
+    <div class="adsense-hero-banner-container" id="adsense-hero-banner" style="max-width: 1400px; margin: 1.25rem auto 0.5rem auto; padding: 0 1.5rem; width: 100%; box-sizing: border-box; text-align: center; overflow: hidden; min-height: 90px;">
+      <!-- Adsense Ad01 -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-1267014580635785"
+           data-ad-slot="7240410314"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      </script>
     </div>
   `;
 }
@@ -1115,6 +1101,16 @@ function bindCarousel(banners) {
         resetTimer();
       }
     }, { passive: true });
+  }
+
+  // Safely request Google AdSense ad fill
+  try {
+    const adIns = document.querySelector('#adsense-hero-banner .adsbygoogle');
+    if (adIns && !adIns.getAttribute('data-adsbygoogle-status')) {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  } catch (err) {
+    console.debug('[AdSense] Request notice:', err);
   }
 }
 

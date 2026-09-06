@@ -441,32 +441,8 @@
 }
 
 .carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.9);
-  border: none;
-  border-radius: var(--radius-full);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-md);
+  display: none !important;
 }
-
-.carousel-arrow:hover {
-  background: white;
-  transform: translateY(-50%) scale(1.08);
-}
-
-.carousel-arrow.prev { left: 1rem; }
-.carousel-arrow.next { right: 1rem; }
-
-.carousel-arrow .material-icons-round { font-size: 1.25rem; color: var(--color-primary); }
 
 /* ====== BADGE ====== */
 .badge {

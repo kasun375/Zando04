@@ -1,0 +1,8 @@
+{
+  "name": "Zando",
+  "description": "Zando is a full-featured e-commerce web application to shop electronics, fashion, groceries, and more with real-time checkout and orders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

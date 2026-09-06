@@ -282,6 +282,12 @@
     border-radius: 0;
   }
 
+  /* QR Code / Download App Card — hidden on mobile view */
+  .download-app-card,
+  #download-app-card {
+    display: none !important;
+  }
+
   /* Track orders card */
   .track-orders-card {
     padding: var(--space-4) var(--space-4);

@@ -378,11 +378,10 @@ async function processStripePayment(amount, paymentMethodId) {
     }
   }
 
-  // 2. Fallback to Local Payment Server
+  // 2. Fallback to Payment Server
   if (!success) {
-    const host = window.location.hostname || 'localhost';
     try {
-      const res = await fetch(`http://${host}:4242/create-payment-intent`, {
+      const res = await fetch('/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -404,15 +403,15 @@ async function processStripePayment(amount, paymentMethodId) {
       }
       success = true;
     } catch (err) {
-      console.error('Local payment server failed:', err);
+      console.error('Payment server failed:', err);
       if (firebaseError) {
         throw new Error(
           `Payment failed.\n\n` +
           `Firebase error: ${firebaseError.message}\n\n` +
-          `Local server error: ${err.message}`
+          `Server error: ${err.message}`
         );
       } else {
-        throw new Error('Payment failed. Local payment server is unreachable.');
+        throw new Error(err.message || 'Payment failed. Payment server is unreachable.');
       }
     }
   }
