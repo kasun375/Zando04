@@ -29,9 +29,29 @@ function getStripe() {
   return stripeClient;
 }
 
-// ── Health Check ─────────────────────────────────────────────────────────────
+// ── Health & Diagnostic Checks ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'Zando E-Commerce Server' });
+  res.json({
+    status: 'ok',
+    service: 'Zando E-Commerce Server',
+    stripeConfigured: !!getStripe(),
+    stripeMode: process.env.STRIPE_SECRET_KEY
+      ? (process.env.STRIPE_SECRET_KEY.startsWith('sk_live_') || process.env.STRIPE_SECRET_KEY.startsWith('rk_live_') ? 'live' : 'test')
+      : 'not_configured'
+  });
+});
+
+app.get('/api/payment-status', (req, res) => {
+  const isConfigured = !!getStripe();
+  const key = process.env.STRIPE_SECRET_KEY || '';
+  const isLive = key.startsWith('sk_live_') || key.startsWith('rk_live_');
+  res.json({
+    stripeConfigured: isConfigured,
+    mode: isConfigured ? (isLive ? 'live' : 'test') : 'simulation',
+    message: isConfigured
+      ? `Stripe is active (${isLive ? 'LIVE' : 'TEST'} mode). Payments are processed directly to your Stripe account.`
+      : 'STRIPE_SECRET_KEY is not configured in Settings > Environment Variables. Running in simulation mode.'
+  });
 });
 
 // ── Payment Endpoints ─────────────────────────────────────────────────────────
@@ -72,11 +92,12 @@ app.post('/create-payment-sheet-intent', async (req, res) => {
 
 app.post('/create-payment-intent', async (req, res) => {
   const { amount, currency = 'usd', paymentMethodId } = req.body;
+  const numAmount = Math.round(Number(amount));
 
-  if (!amount || typeof amount !== 'number' || amount <= 0) {
+  if (!numAmount || isNaN(numAmount) || numAmount <= 0) {
     return res.status(400).json({ error: 'A valid amount (in cents) is required.' });
   }
-  if (amount < 50) {
+  if (numAmount < 50) {
     return res.status(400).json({ error: 'Amount must be at least 50 cents.' });
   }
   if (!paymentMethodId) {
@@ -85,25 +106,30 @@ app.post('/create-payment-intent', async (req, res) => {
 
   const stripe = getStripe();
   if (!stripe) {
-    console.warn('[ZANDO Server] STRIPE_SECRET_KEY not configured. Simulating successful checkout.');
+    console.warn('[ZANDO Stripe] STRIPE_SECRET_KEY is not configured in environment variables. Falling back to simulation mode (pi_demo_...). No real funds will be credited to Stripe.');
     return res.json({
       success: true,
       status: 'succeeded',
       paymentIntentId: 'pi_demo_' + Date.now(),
-      demoMode: true
+      demoMode: true,
+      warning: 'STRIPE_SECRET_KEY is not configured on server. Set STRIPE_SECRET_KEY in Settings > Environment Variables to receive real payments.'
     });
   }
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount),
+      amount: numAmount,
       currency: currency.toLowerCase(),
       payment_method: paymentMethodId,
       confirm: true,
-      return_url: 'https://example.com',
-      payment_method_types: ['card'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      },
       metadata: { app: 'ZANDO' },
     });
+
+    console.log('[ZANDO Stripe] Real payment succeeded! PaymentIntent ID:', paymentIntent.id, 'Amount:', numAmount, currency);
 
     return res.json({
       success: true,
@@ -111,7 +137,7 @@ app.post('/create-payment-intent', async (req, res) => {
       paymentIntentId: paymentIntent.id,
     });
   } catch (err) {
-    console.error('Stripe error:', err.message);
+    console.error('[ZANDO Stripe] Stripe API Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 });

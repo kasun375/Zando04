@@ -41,13 +41,26 @@ class OrderModel {
     return OrderModel(
       id: id,
       userId: map['userId'] ?? '',
-      items: (map['items'] as List).map((i) => OrderItem.fromMap(i)).toList(),
-      totalAmount: (map['totalAmount'] ?? 0.0).toDouble(),
+      items: (map['items'] is List)
+          ? (map['items'] as List)
+              .map((i) => OrderItem.fromMap(
+                  i is Map<String, dynamic> ? i : Map<String, dynamic>.from(i as Map)))
+              .toList()
+          : [],
+      totalAmount: (map['totalAmount'] is num)
+          ? (map['totalAmount'] as num).toDouble()
+          : 0.0,
       status: OrderStatus.values.firstWhere(
         (e) => e.toString() == 'OrderStatus.${map['status']}',
         orElse: () => OrderStatus.pending,
       ),
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: (map['createdAt'] is Timestamp)
+          ? (map['createdAt'] as Timestamp).toDate()
+          : (map['createdAt'] is DateTime
+              ? map['createdAt']
+              : (map['createdAt'] is String
+                  ? (DateTime.tryParse(map['createdAt']) ?? DateTime.now())
+                  : DateTime.now())),
       shippingAddress: map['shippingAddress'] ?? '',
       mobileNumber: map['mobileNumber'] ?? '',
       paymentMethod: map['paymentMethod'] ?? '',
@@ -99,8 +112,8 @@ class OrderItem {
     return OrderItem(
       productId: map['productId'] ?? '',
       productName: map['productName'] ?? '',
-      quantity: map['quantity'] ?? 0,
-      price: (map['price'] ?? 0.0).toDouble(),
+      quantity: (map['quantity'] is num) ? (map['quantity'] as num).toInt() : 1,
+      price: (map['price'] is num) ? (map['price'] as num).toDouble() : 0.0,
       imageUrl: map['imageUrl'] ?? '',
     );
   }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/product_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/constants.dart';
 import '../../models/order_model.dart';
 import '../checkout/checkout_sheet.dart';
+import '../auth/login_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
@@ -219,6 +221,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
+                  if (FirebaseAuth.instance.currentUser == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please sign in to proceed with purchase.'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                    return;
+                  }
+
                   final orderItem = OrderItem(
                     productId: product.id,
                     productName: product.name,

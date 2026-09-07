@@ -19,9 +19,17 @@ try {
   // dotenv not installed, using system env variables
 }
 
-const stripe  = require('stripe')(
-  process.env.STRIPE_SECRET_KEY || 'sk_live_PLACEHOLDER_CHANGE_ME'
-);
+let stripeClient = null;
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key || key.includes('PLACEHOLDER') || key.startsWith('sk_live_PLACEHOLDER')) {
+    return null;
+  }
+  if (!stripeClient) {
+    stripeClient = require('stripe')(key);
+  }
+  return stripeClient;
+}
 
 const app  = express();
 const PORT = 4242;
@@ -30,8 +38,18 @@ const PORT = 4242;
 app.use(cors());
 app.use(express.json());
 
-// ── Health check ──────────────────────────────────────
-app.get('/', (req, res) => res.json({ status: 'ok', service: 'ZANDO Payment Server' }));
+// ── Health & Diagnostics ──────────────────────────────
+app.get('/', (req, res) => {
+  const isConfigured = !!getStripe();
+  const key = process.env.STRIPE_SECRET_KEY || '';
+  const isLive = key.startsWith('sk_live_') || key.startsWith('rk_live_');
+  return res.json({
+    status: 'ok',
+    service: 'ZANDO Payment Server',
+    stripeConfigured: isConfigured,
+    mode: isConfigured ? (isLive ? 'live' : 'test') : 'simulation'
+  });
+});
 
 
 
@@ -46,6 +64,16 @@ app.post('/create-payment-sheet-intent', async (req, res) => {
 
   if (!amount || typeof amount !== 'number' || amount < 50) {
     return res.status(400).json({ error: 'A valid amount (minimum 50 cents) is required.' });
+  }
+
+  const stripe = getStripe();
+  if (!stripe) {
+    console.warn('[ZANDO Payment Server] STRIPE_SECRET_KEY not set. Returning simulation response.');
+    return res.json({
+      clientSecret: 'pi_demo_secret_' + Date.now(),
+      paymentIntentId: 'pi_demo_' + Date.now(),
+      demoMode: true
+    });
   }
 
   try {
@@ -69,27 +97,43 @@ app.post('/create-payment-intent', async (req, res) => {
   const { amount, currency = 'usd', paymentMethodId } = req.body;
 
   // ── Validation ────────────────────────────────────
-  if (!amount || typeof amount !== 'number' || amount <= 0) {
+  const numAmount = Math.round(Number(amount));
+  if (!numAmount || isNaN(numAmount) || numAmount <= 0) {
     return res.status(400).json({ error: 'A valid amount (in cents) is required.' });
   }
-  if (amount < 50) {
+  if (numAmount < 50) {
     return res.status(400).json({ error: 'Amount must be at least 50 cents.' });
   }
   if (!paymentMethodId) {
     return res.status(400).json({ error: 'paymentMethodId is required.' });
   }
 
+  const stripe = getStripe();
+  if (!stripe) {
+    console.warn('[ZANDO Payment Server] STRIPE_SECRET_KEY not configured. Falling back to simulation mode.');
+    return res.json({
+      success: true,
+      status: 'succeeded',
+      paymentIntentId: 'pi_demo_' + Date.now(),
+      demoMode: true
+    });
+  }
+
   try {
     // 1. Create & immediately confirm the PaymentIntent using paymentMethodId
     const paymentIntent = await stripe.paymentIntents.create({
-      amount:               Math.round(amount),
+      amount:               numAmount,
       currency:             currency.toLowerCase(),
       payment_method:       paymentMethodId,
       confirm:              true,
-      return_url:           'https://example.com',
-      payment_method_types: ['card'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      },
       metadata:             { app: 'ZANDO' },
     });
+
+    console.log('[ZANDO Payment Server] Real payment processed:', paymentIntent.id, numAmount, currency);
 
     return res.json({
       success:         true,

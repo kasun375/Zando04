@@ -57,29 +57,33 @@ class FirestoreService {
     return _db
         .collection('orders')
         .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
+        .map((snapshot) {
+          final orders = snapshot.docs
               .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
-              .toList(),
-        );
+              .toList();
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return orders;
+        });
   }
 
   Stream<List<OrderModel>> getAllOrders() {
     return _db
         .collection('orders')
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
+        .map((snapshot) {
+          final orders = snapshot.docs
               .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
-              .toList(),
-        );
+              .toList();
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return orders;
+        });
   }
 
   Future<void> placeOrder(OrderModel order) async {
-    await _db.collection('orders').add(order.toMap());
+    final data = order.toMap();
+    data['createdAt'] = Timestamp.fromDate(order.createdAt);
+    await _db.collection('orders').add(data);
   }
 
   Future<void> updateOrderStatus(String orderId, OrderStatus status) async {

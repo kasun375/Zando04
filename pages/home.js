@@ -920,7 +920,7 @@ function renderProductCard(product) {
         <div class="product-card-footer">
           <div class="product-card-price">${formatCurrency(product.price)}</div>
           <button class="product-card-add-btn" data-add-id="${product.id}" aria-label="Add to cart">
-            <span class="material-icons-round">add</span>
+            <span class="material-icons-round">shopping_cart</span>
           </button>
         </div>
       </div>

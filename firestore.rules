@@ -53,9 +53,9 @@ service cloud.firestore {
       allow read: if isSignedIn() &&
         (resource.data.userId == request.auth.uid || isAdmin());
 
-      // Any signed-in user can create an order for themselves
-      allow create: if isSignedIn() &&
-        request.resource.data.userId == request.auth.uid;
+      // Any signed-in user can create an order for themselves, or allow guest orders with valid data
+      allow create: if (isSignedIn() && request.resource.data.userId == request.auth.uid) ||
+                      (request.resource.data.userId == 'guest' && request.resource.data.totalAmount is number && request.resource.data.totalAmount > 0);
 
       // Only admin can update order status
       allow update: if isAdmin();

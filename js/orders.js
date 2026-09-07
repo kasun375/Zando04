@@ -14,24 +14,32 @@ export async function placeOrder({
   items, totalAmount, shippingAddress, mobileNumber, paymentMethod,
   isGift = false, recipientName = '', recipientPhone = '', giftMessage = '', giftWrap = false, estimatedDelivery = ''
 }) {
-  const { currentUser } = getState();
-  if (!currentUser) throw new Error('Must be signed in to place an order');
+  const user = getState().currentUser || window._auth?.currentUser;
+  if (!user) throw new Error('Must be signed in to place an order');
+
+  const cleanItems = (items || []).map(item => ({
+    productId: String(item.productId || item.id || ''),
+    productName: String(item.productName || item.name || 'Product'),
+    quantity: Number(item.quantity) || 1,
+    price: Number(item.price) || 0,
+    imageUrl: String(item.imageUrl || ''),
+  }));
 
   const orderData = {
-    userId: currentUser.uid,
-    items,
-    totalAmount,
+    userId: user.uid,
+    items: cleanItems,
+    totalAmount: Number(totalAmount) || 0,
     status: 'pending',
     createdAt: serverTimestamp(),
-    shippingAddress,
-    mobileNumber,
-    paymentMethod,
-    isGift,
-    recipientName,
-    recipientPhone,
-    giftMessage,
-    giftWrap,
-    estimatedDelivery,
+    shippingAddress: String(shippingAddress || ''),
+    mobileNumber: String(mobileNumber || ''),
+    paymentMethod: String(paymentMethod || 'Cash on Delivery'),
+    isGift: Boolean(isGift),
+    recipientName: String(recipientName || ''),
+    recipientPhone: String(recipientPhone || ''),
+    giftMessage: String(giftMessage || ''),
+    giftWrap: Boolean(giftWrap),
+    estimatedDelivery: String(estimatedDelivery || ''),
   };
 
   const docRef = await addDoc(collection(window._db, 'orders'), orderData);
@@ -40,12 +48,12 @@ export async function placeOrder({
 
 // Fetch user's orders
 export async function fetchMyOrders() {
-  const { currentUser } = getState();
-  if (!currentUser) return [];
+  const user = getState().currentUser || window._auth?.currentUser;
+  if (!user) return [];
 
   const q = query(
     collection(window._db, 'orders'),
-    where('userId', '==', currentUser.uid)
+    where('userId', '==', user.uid)
   );
   const snap = await getDocs(q);
   const orders = snap.docs
