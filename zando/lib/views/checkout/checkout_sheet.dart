@@ -748,15 +748,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
     // ── 4. Verify Payment Authorized ──
     if (!success) {
-      // If Stripe client SDK verified card details and generated a valid token:
-      if (paymentMethodId.isNotEmpty && paymentMethodId.startsWith('pm_')) {
-        debugPrint('Stripe payment verified via client token: $paymentMethodId');
-        success = true;
-      } else {
-        throw Exception(
-          'Card payment could not be processed. Please verify your card details or select Cash on Delivery.',
-        );
-      }
+      throw Exception(
+        'Card payment could not be completed with Stripe. Please check your card details, ensure the payment backend is online, or select Cash on Delivery.',
+      );
     }
   }
 

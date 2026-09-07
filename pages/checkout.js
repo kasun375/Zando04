@@ -371,26 +371,51 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         }
         const cardHolder = document.getElementById('card-holder').value.trim();
 
-        // Tokenize card securely using Stripe JS SDK
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-          type: 'card',
-          card: cardElement,
-          billing_details: {
-            name: cardHolder,
-          },
+        // 1. Create a real Stripe PaymentIntent on backend using Stripe secret key
+        const intentRes = await fetch('/create-payment-sheet-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: Math.round(finalTotal * 100),
+            currency: 'usd',
+          }),
         });
 
-        if (error) {
-          document.getElementById('card-element-err').textContent = error.message;
-          _isPaying = false;
-          payBtn.disabled = false;
-          payBtn.textContent = `PLACE ORDER (${formatCurrency(finalTotal)})`;
-          return;
+        if (!intentRes.ok) {
+          const errData = await intentRes.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to initialize secure payment session with Stripe.');
         }
 
-        methodDisplay = `Credit Card (**** ${paymentMethod.card.last4})`;
+        const intentData = await intentRes.json();
+        if (!intentData.clientSecret) {
+          throw new Error(intentData.error || 'Invalid payment session response from server.');
+        }
 
-        await processStripePayment(finalTotal, paymentMethod.id);
+        // 2. Confirm card payment directly with Stripe SDK (handles 3DS, SCA, and charges card)
+        const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+          intentData.clientSecret,
+          {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                name: cardHolder,
+                phone: phone,
+              },
+            },
+          }
+        );
+
+        if (confirmError) {
+          document.getElementById('card-element-err').textContent = confirmError.message;
+          throw new Error(confirmError.message);
+        }
+
+        if (!paymentIntent || (paymentIntent.status !== 'succeeded' && paymentIntent.status !== 'requires_capture')) {
+          throw new Error(`Payment could not be completed (status: ${paymentIntent ? paymentIntent.status : 'unknown'}).`);
+        }
+
+        const last4 = paymentIntent.payment_method?.card?.last4 || 'Card';
+        methodDisplay = `Credit Card (**** ${last4})`;
       }
 
       // Finalize order locally as chosen payment method
@@ -451,74 +476,4 @@ function showSuccessDialog() {
   document.body.appendChild(overlay);
   document.getElementById('success-view-orders').addEventListener('click', () => { overlay.remove(); navigate('orders'); });
   document.getElementById('success-continue').addEventListener('click', () => { overlay.remove(); navigate('home'); });
-}
-
-/**
- * Processes payment by calling the Firebase Cloud Function first (for production),
- * with a fallback to the standalone local Node.js payment server (for local development).
- */
-async function processStripePayment(amount, paymentMethodId) {
-  const amountCents = Math.round(amount * 100);
-  let success = false;
-  let firebaseError = null;
-
-  // 1. Try Firebase Cloud Function (if deployed)
-  if (window._functions) {
-    try {
-      const { httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js');
-      const createPaymentIntentFn = httpsCallable(window._functions, 'createPaymentIntent');
-      const result = await createPaymentIntentFn({
-        amount: amountCents,
-        currency: 'usd',
-        paymentMethodId: paymentMethodId,
-      });
-
-      if (result.data && (result.data.success || result.data.status === 'succeeded' || result.data.status === 'requires_capture')) {
-        success = true;
-      }
-    } catch (err) {
-      firebaseError = err;
-      console.warn('Firebase Cloud Function payment unavailable, attempting payment server:', err);
-    }
-  }
-
-  // 2. Fallback to Payment Server
-  if (!success) {
-    try {
-      const res = await fetch('/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amountCents,
-          currency: 'usd',
-          paymentMethodId: paymentMethodId,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const { status } = data;
-        if (status === 'succeeded' || status === 'requires_capture' || data.success) {
-          success = true;
-        } else {
-          throw new Error(data.error || `Payment not authorised (status: ${status}).`);
-        }
-      } else {
-        throw new Error(`Server returned HTTP ${res.status}`);
-      }
-    } catch (err) {
-      console.warn('Payment server intent creation failed:', err);
-      // If Stripe client SDK already verified card details and generated a valid paymentMethod:
-      if (paymentMethodId && paymentMethodId.startsWith('pm_')) {
-        console.info('[ZANDO] Stripe card verified on client (' + paymentMethodId + '). Completing order.');
-        success = true;
-      } else {
-        throw new Error(
-          err.message && !err.message.includes('HTTP 404')
-            ? `Card payment failed: ${err.message}. Please try again or choose Cash on Delivery.`
-            : 'Payment service temporarily unreachable. Please try again or select Cash on Delivery.'
-        );
-      }
-    }
-  }
 }

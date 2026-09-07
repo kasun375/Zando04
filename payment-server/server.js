@@ -68,11 +68,9 @@ app.post('/create-payment-sheet-intent', async (req, res) => {
 
   const stripe = getStripe();
   if (!stripe) {
-    console.warn('[ZANDO Payment Server] STRIPE_SECRET_KEY not set. Returning simulation response.');
-    return res.json({
-      clientSecret: 'pi_demo_secret_' + Date.now(),
-      paymentIntentId: 'pi_demo_' + Date.now(),
-      demoMode: true
+    console.error('[ZANDO Payment Server] STRIPE_SECRET_KEY not set. Cannot process payment.');
+    return res.status(503).json({
+      error: 'Stripe secret key is not configured on the payment server. Set STRIPE_SECRET_KEY to process real payments.'
     });
   }
 
@@ -110,12 +108,9 @@ app.post('/create-payment-intent', async (req, res) => {
 
   const stripe = getStripe();
   if (!stripe) {
-    console.warn('[ZANDO Payment Server] STRIPE_SECRET_KEY not configured. Falling back to simulation mode.');
-    return res.json({
-      success: true,
-      status: 'succeeded',
-      paymentIntentId: 'pi_demo_' + Date.now(),
-      demoMode: true
+    console.error('[ZANDO Payment Server] STRIPE_SECRET_KEY not configured. Cannot process payment.');
+    return res.status(503).json({
+      error: 'Stripe secret key is not configured on the payment server. Set STRIPE_SECRET_KEY to process real payments.'
     });
   }
 

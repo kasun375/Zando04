@@ -1,0 +1,58 @@
+name: Build Android APK and AAB
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: zando
+
+      - name: Build Android Release APK
+        run: flutter build apk --release
+        working-directory: zando
+
+      - name: Build Android Release App Bundle (AAB)
+        run: flutter build appbundle --release
+        working-directory: zando
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zando-app-release-apk
+          path: zando/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zando-app-release-aab
+          path: zando/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30

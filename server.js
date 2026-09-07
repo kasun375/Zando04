@@ -64,11 +64,9 @@ app.post('/create-payment-sheet-intent', async (req, res) => {
 
   const stripe = getStripe();
   if (!stripe) {
-    console.warn('[ZANDO Server] STRIPE_SECRET_KEY not configured. Simulating payment sheet intent.');
-    return res.json({
-      clientSecret: 'pi_demo_secret_' + Date.now(),
-      paymentIntentId: 'pi_demo_' + Date.now(),
-      demoMode: true
+    console.error('[ZANDO Server] STRIPE_SECRET_KEY not configured. Cannot process real payment.');
+    return res.status(503).json({
+      error: 'Stripe secret key is not configured on the server. Please set STRIPE_SECRET_KEY in Settings > Environment Variables.'
     });
   }
 
@@ -106,13 +104,9 @@ app.post('/create-payment-intent', async (req, res) => {
 
   const stripe = getStripe();
   if (!stripe) {
-    console.warn('[ZANDO Stripe] STRIPE_SECRET_KEY is not configured in environment variables. Falling back to simulation mode (pi_demo_...). No real funds will be credited to Stripe.');
-    return res.json({
-      success: true,
-      status: 'succeeded',
-      paymentIntentId: 'pi_demo_' + Date.now(),
-      demoMode: true,
-      warning: 'STRIPE_SECRET_KEY is not configured on server. Set STRIPE_SECRET_KEY in Settings > Environment Variables to receive real payments.'
+    console.error('[ZANDO Stripe] STRIPE_SECRET_KEY is not configured in environment variables. Cannot process real payment.');
+    return res.status(503).json({
+      error: 'STRIPE_SECRET_KEY is not configured on the payment server. Set STRIPE_SECRET_KEY in Settings > Environment Variables to receive real payments.'
     });
   }
 
