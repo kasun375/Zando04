@@ -8,7 +8,15 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.exe",
+      "**/*.bat",
+      "**/*.sh",
+      "**/*.dll",
+      "**/*.zip",
+      "zando/**",
+      "chrome-*/**",
+      "payment-server/**"
     ],
     "rewrites": [
       {
