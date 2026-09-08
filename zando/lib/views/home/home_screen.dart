@@ -815,7 +815,7 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
         await widget.authProvider.updateUserProfile(
           profileImageUrl: base64String,
         );
-        if (mounted) {
+        if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Profile picture updated successfully!'),
@@ -824,7 +824,7 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Failed to update picture: $e')));
