@@ -15,7 +15,7 @@ export async function placeOrder({
   isGift = false, recipientName = '', recipientPhone = '', giftMessage = '', giftWrap = false, estimatedDelivery = ''
 }) {
   const user = getState().currentUser || window._auth?.currentUser;
-  if (!user) throw new Error('Must be signed in to place an order');
+  const userId = user ? user.uid : 'guest';
 
   const cleanItems = (items || []).map(item => ({
     productId: String(item.productId || item.id || ''),
@@ -26,7 +26,7 @@ export async function placeOrder({
   }));
 
   const orderData = {
-    userId: user.uid,
+    userId,
     items: cleanItems,
     totalAmount: Number(totalAmount) || 0,
     status: 'pending',

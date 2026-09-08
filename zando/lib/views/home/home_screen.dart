@@ -964,7 +964,7 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedGender,
+                      initialValue: _selectedGender,
                       decoration: const InputDecoration(
                         labelText: 'Gender',
                         border: OutlineInputBorder(),
@@ -1011,7 +1011,7 @@ class _ProfileTabWidgetState extends State<ProfileTabWidget> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedLanguage,
+                      initialValue: _selectedLanguage,
                       decoration: const InputDecoration(
                         labelText: 'Preferred Language',
                         border: OutlineInputBorder(),

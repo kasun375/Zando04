@@ -206,8 +206,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
             ),
             validator: (val) {
               if (_selectedPaymentMethod == 'Credit Card') {
-                if (val == null || val.trim().isEmpty)
+                if (val == null || val.trim().isEmpty) {
                   return 'Enter cardholder name';
+                }
               }
               return null;
             },
@@ -344,7 +345,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedSavedAddress,
+                  initialValue: _selectedSavedAddress,
                   hint: const Text('Select Saved Address'),
                   decoration: _buildInputDecoration(
                     'Select from book',
