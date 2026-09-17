@@ -34,9 +34,15 @@ function getStripe() {
 const app  = express();
 const PORT = 4242;
 
-// Allow requests from any origin (web app on localhost:3000, Flutter, etc.)
-app.use(cors());
+// Allow requests from any origin (web app on localhost, published Firebase site, etc.)
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.options('*', cors());
 app.use(express.json());
+
 
 // ── Health & Diagnostics ──────────────────────────────
 app.get('/', (req, res) => {

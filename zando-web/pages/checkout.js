@@ -295,25 +295,30 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         }
 
         if (!intentData) {
-          const apiBase = (window.PAYMENT_SERVER_URL || localStorage.getItem('PAYMENT_SERVER_URL') || '').replace(/\/$/, '');
+          const apiBase = (window.PAYMENT_SERVER_URL || localStorage.getItem('PAYMENT_SERVER_URL') || 'https://zando-payment-server.onrender.com').replace(/\/$/, '');
           const endpoint = apiBase ? `${apiBase}/create-payment-sheet-intent` : '/create-payment-sheet-intent';
 
-          const intentRes = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              amount: Math.round(_checkoutTotal * 100),
-              currency: 'usd',
-            }),
-          });
+          try {
+            const intentRes = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                amount: Math.round(_checkoutTotal * 100),
+                currency: 'usd',
+              }),
+            });
 
-          if (intentRes.ok) {
-            const resData = await intentRes.json().catch(() => ({}));
-            if (resData.clientSecret) {
-              intentData = resData;
+            if (intentRes.ok) {
+              const resData = await intentRes.json().catch(() => ({}));
+              if (resData.clientSecret) {
+                intentData = resData;
+              }
             }
+          } catch (fetchErr) {
+            console.warn('[Checkout] Remote payment server fetch error:', fetchErr);
           }
         }
+
 
 
         if (intentData && intentData.clientSecret) {
