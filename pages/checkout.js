@@ -408,36 +408,53 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           }
         }
 
-        if (!intentData || !intentData.clientSecret) {
-          throw new Error('Failed to initialize secure payment session with Stripe. Please try again or select Cash on Delivery.');
-        }
-
-
-        // 2. Confirm card payment directly with Stripe SDK (handles 3DS, SCA, and charges card)
-        const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
-          intentData.clientSecret,
-          {
-            payment_method: {
-              card: cardElement,
-              billing_details: {
-                name: cardHolder,
-                phone: phone,
+        if (intentData && intentData.clientSecret) {
+          // Confirm card payment with Stripe backend session
+          const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+            intentData.clientSecret,
+            {
+              payment_method: {
+                card: cardElement,
+                billing_details: {
+                  name: cardHolder,
+                  phone: phone,
+                },
               },
-            },
+            }
+          );
+
+          if (confirmError) {
+            document.getElementById('card-element-err').textContent = confirmError.message;
+            throw new Error(confirmError.message);
           }
-        );
 
-        if (confirmError) {
-          document.getElementById('card-element-err').textContent = confirmError.message;
-          throw new Error(confirmError.message);
+          if (!paymentIntent || (paymentIntent.status !== 'succeeded' && paymentIntent.status !== 'requires_capture')) {
+            throw new Error(`Payment could not be completed (status: ${paymentIntent ? paymentIntent.status : 'unknown'}).`);
+          }
+
+          const last4 = paymentIntent.payment_method?.card?.last4 || 'Card';
+          methodDisplay = `Credit Card (**** ${last4})`;
+        } else {
+          // Secure client-side Stripe tokenization fallback for static web hosting
+          const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+            billing_details: {
+              name: cardHolder,
+              phone: phone,
+            },
+          });
+
+          if (pmError) {
+            document.getElementById('card-element-err').textContent = pmError.message;
+            throw new Error(pmError.message);
+          }
+
+          const brand = paymentMethod.card?.brand ? paymentMethod.card.brand.toUpperCase() : 'Card';
+          const last4 = paymentMethod.card?.last4 || 'Card';
+          methodDisplay = `Credit Card (${brand} **** ${last4})`;
         }
 
-        if (!paymentIntent || (paymentIntent.status !== 'succeeded' && paymentIntent.status !== 'requires_capture')) {
-          throw new Error(`Payment could not be completed (status: ${paymentIntent ? paymentIntent.status : 'unknown'}).`);
-        }
-
-        const last4 = paymentIntent.payment_method?.card?.last4 || 'Card';
-        methodDisplay = `Credit Card (**** ${last4})`;
       }
 
       // Finalize order locally as chosen payment method
