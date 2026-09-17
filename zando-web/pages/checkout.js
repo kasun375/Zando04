@@ -295,7 +295,10 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         }
 
         if (!intentData) {
-          const intentRes = await fetch('/create-payment-sheet-intent', {
+          const apiBase = (window.PAYMENT_SERVER_URL || localStorage.getItem('PAYMENT_SERVER_URL') || '').replace(/\/$/, '');
+          const endpoint = apiBase ? `${apiBase}/create-payment-sheet-intent` : '/create-payment-sheet-intent';
+
+          const intentRes = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -311,6 +314,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
             }
           }
         }
+
 
         if (intentData && intentData.clientSecret) {
           // Confirm card payment with Stripe backend session
