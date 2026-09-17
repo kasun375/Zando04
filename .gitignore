@@ -16,3 +16,10 @@ chrome-profile/
 chrome-temp-profile*/
 chrome-temp-profile-new-test-2/
 chrome-temp-profile-test/
+
+# Firebase & IDE
+.firebase/
+.vscode/
+build/
+.dart_tool/
+
