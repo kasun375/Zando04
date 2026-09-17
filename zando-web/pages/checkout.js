@@ -276,24 +276,46 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
         const cardHolder = document.getElementById('card-holder').value.trim();
 
         // 1. Create a real Stripe PaymentIntent on backend using Stripe secret key
-        const intentRes = await fetch('/create-payment-sheet-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: Math.round(_checkoutTotal * 100),
-            currency: 'usd',
-          }),
-        });
+        let intentData = null;
 
-        if (!intentRes.ok) {
-          const errData = await intentRes.json().catch(() => ({}));
-          throw new Error(errData.error || 'Failed to initialize secure payment session with Stripe.');
+        if (window._functions) {
+          try {
+            const { httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js');
+            const createCallable = httpsCallable(window._functions, 'createPaymentSheetIntent');
+            const callableRes = await createCallable({
+              amount: Math.round(_checkoutTotal * 100),
+              currency: 'usd',
+            });
+            if (callableRes.data && (callableRes.data.clientSecret || callableRes.data.paymentIntentClientSecret)) {
+              intentData = { clientSecret: callableRes.data.clientSecret || callableRes.data.paymentIntentClientSecret };
+            }
+          } catch (fnErr) {
+            console.warn('[Checkout] Firebase Callable Function unavailable, trying HTTP endpoint:', fnErr);
+          }
         }
 
-        const intentData = await intentRes.json();
-        if (!intentData.clientSecret) {
-          throw new Error(intentData.error || 'Invalid payment session response from server.');
+        if (!intentData) {
+          const intentRes = await fetch('/create-payment-sheet-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: Math.round(_checkoutTotal * 100),
+              currency: 'usd',
+            }),
+          });
+
+          if (intentRes.ok) {
+            const resData = await intentRes.json().catch(() => ({}));
+            if (resData.clientSecret) {
+              intentData = resData;
+            }
+          }
         }
+
+        if (!intentData || !intentData.clientSecret) {
+          throw new Error('Failed to initialize secure payment session with Stripe. Please try again or select Cash on Delivery.');
+        }
+
 
         // 2. Confirm card payment directly with Stripe SDK (handles 3DS, SCA, and charges card)
         const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(

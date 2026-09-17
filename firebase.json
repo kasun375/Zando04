@@ -1,4 +1,16 @@
 {
+  "functions": [
+    {
+      "source": "zando/functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
@@ -20,9 +32,22 @@
     ],
     "rewrites": [
       {
+        "source": "/create-payment-sheet-intent",
+        "function": "api"
+      },
+      {
+        "source": "/create-payment-intent",
+        "function": "api"
+      },
+      {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
   }
 }
+
