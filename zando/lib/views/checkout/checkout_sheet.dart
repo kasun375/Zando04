@@ -712,6 +712,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
     if (!success) {
       final String host = await _determineActiveHost();
       final List<String> endpoints = [
+        'https://zando-payment-server.onrender.com/create-payment-intent',
         'http://$host:4242/create-payment-intent',
         'http://$host:3000/create-payment-intent',
         'https://ais-pre-4ljegk456q6qlwsbcmmwfu-526958624760.asia-east1.run.app/create-payment-intent',
