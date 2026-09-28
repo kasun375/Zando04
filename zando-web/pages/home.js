@@ -360,8 +360,8 @@ function renderCarousel(banners) {
     }
     return `
       <div class="carousel-slide">
-        <img src="${b.imageUrl}" alt="${title}" loading="lazy"
-             onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('mockup-slide'); this.parentElement.innerHTML=\`<div class=\\'carousel-mockup-content\\'><div class=\\'carousel-badge\\'>Featured</div><h2 class=\\'carousel-title\\'>${title}</h2><p class=\\'carousel-subtitle\\'>${subtitle}</p><button class=\\'carousel-cta-btn\\' onclick=\\'document.getElementById(\\\\''products-grid\\\\'')?.scrollIntoView({behavior:\\''smooth\\''})\\'>${cta}</button></div>\`;" />
+        <img src="${b.imageUrl}" alt="${title}" loading="lazy" referrerpolicy="no-referrer"
+             onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('mockup-slide');" />
         <div class="carousel-overlay">
           <div class="carousel-caption">
             <h2 class="carousel-title">${title}</h2>
@@ -853,7 +853,7 @@ function renderProductCard(product) {
     <div class="product-card" data-product-id="${product.id}" id="product-card-${product.id}">
       <div class="product-card-image-wrap">
         ${product.imageUrl
-          ? `<img src="${product.imageUrl}" alt="${product.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23B1A7B4%22/%3E%3C/svg%3E'" />`
+          ? `<img src="${product.imageUrl}" alt="${product.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23B1A7B4%22/%3E%3C/svg%3E'" />`
           : `<div class="product-card-placeholder">Products</div>`
         }
         ${product.isFeatured ? '<span class="product-card-badge">Featured</span>' : ''}

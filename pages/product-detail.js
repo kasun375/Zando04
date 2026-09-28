@@ -59,7 +59,7 @@ export function renderProductDetail(appEl) {
               <h1 class="product-detail-name" style="font-size: 1.5rem; font-weight: 700; color: #000; margin: 0; font-family: var(--font-display);">${p.name}</h1>
 
               <div class="product-detail-price" style="font-size: 2.25rem; font-weight: 700; color: #2E062B; margin: 0.5rem 0;">
-                $${p.price}
+                ${formatCurrency(p.price)}
               </div>
 
               ${p.description ? `
