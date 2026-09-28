@@ -78,7 +78,7 @@ class GoogleSheetsService {
             id: '',
             name: name,
             description: (row[1]?.toString() ?? '').trim(),
-            price: double.tryParse((row[2]?.toString() ?? '0').trim()) ?? 0.0,
+            price: double.tryParse((row[2]?.toString() ?? '0').replaceAll(RegExp(r'[^0-9.]'), '').trim()) ?? 0.0,
             imageUrl: mainImageUrl,
             category: (row[4]?.toString() ?? '').trim(),
             shop: row.length > 6 ? (row[6]?.toString() ?? '').trim() : '',

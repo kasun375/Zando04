@@ -186,7 +186,7 @@ class AdminProductsView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    '\$${product.price}',
+                                    AppConstants.formatCurrency(product.price),
                                     style: TextStyle(
                                       color: AppColors.primary,
                                       fontSize: 16,
@@ -289,7 +289,7 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    'Total: \$${order.totalAmount.toStringAsFixed(2)}',
+                    'Total: ${AppConstants.formatCurrency(order.totalAmount)}',
                   ),
                   trailing: Container(
                     padding: const EdgeInsets.symmetric(

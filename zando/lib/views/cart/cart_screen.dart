@@ -115,7 +115,7 @@ class _CartScreenState extends State<CartScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          '\$${item.price} x ${item.quantity}',
+                          '${AppConstants.formatCurrency(item.price)} x ${item.quantity}',
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                         trailing: Row(
@@ -172,7 +172,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           Text(
-                            '\$${selectedTotal.toStringAsFixed(2)}',
+                            AppConstants.formatCurrency(selectedTotal),
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

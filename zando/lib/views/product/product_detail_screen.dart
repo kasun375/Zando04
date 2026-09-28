@@ -134,7 +134,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '\$${product.price}',
+                    AppConstants.formatCurrency(product.price),
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

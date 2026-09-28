@@ -208,7 +208,7 @@ export async function syncFromGoogleSheets() {
     return {
       name,
       description: (row[1] || '').trim(),
-      price: parseFloat((row[2] || '0').trim()) || 0.0,
+      price: parseFloat((row[2] || '0').replace(/[^0-9.]/g, '').trim()) || 0.0,
       imageUrl: mainImageUrl,
       category: (row[4] || '').trim(),
       shop: row.length > 6 ? (row[6] || '').trim() : '',

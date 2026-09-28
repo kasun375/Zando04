@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
 // without raw card numbers ever leaving Stripe's servers.
 // Body: { amount: number (cents), currency: string }
 app.post('/create-payment-sheet-intent', async (req, res) => {
-  const { amount, currency = 'usd' } = req.body;
+  const { amount, currency = 'lkr' } = req.body;
 
   if (!amount || typeof amount !== 'number' || amount < 50) {
     return res.status(400).json({ error: 'A valid amount (minimum 50 cents) is required.' });
@@ -98,7 +98,7 @@ app.post('/create-payment-sheet-intent', async (req, res) => {
   }
 });
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, currency = 'usd', paymentMethodId } = req.body;
+  const { amount, currency = 'lkr', paymentMethodId } = req.body;
 
   // ── Validation ────────────────────────────────────
   const numAmount = Math.round(Number(amount));

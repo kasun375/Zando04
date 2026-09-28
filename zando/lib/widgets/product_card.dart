@@ -71,7 +71,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+                      AppConstants.formatCurrency(product.price),
                       style: const TextStyle(
                         color: AppColors.accent, // Neon Yellow accent for price
                         fontSize: 12,

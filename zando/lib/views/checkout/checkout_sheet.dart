@@ -291,7 +291,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
     final addresses = user?.savedAddresses ?? [];
 
     final baseAmount = widget.buyNowTotal ?? cart.totalAmount;
-    final finalTotal = baseAmount + (_isGift && _giftWrap ? 5.00 : 0.0);
+    final finalTotal = baseAmount + (_isGift && _giftWrap ? 500.0 : 0.0);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
@@ -474,7 +474,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         const SizedBox(height: 8),
                         CheckboxListTile(
                           title: const Text(
-                            'Add Gift Wrapping (+\$5.00)',
+                            'Add Gift Wrapping (+LKR 500.00)',
                             style: TextStyle(fontSize: 12),
                           ),
                           value: _giftWrap,
@@ -542,7 +542,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                           style: TextStyle(fontSize: 13, color: Colors.grey),
                         ),
                         Text(
-                          '\$${baseAmount.toStringAsFixed(2)}',
+                          AppConstants.formatCurrency(baseAmount),
                           style: const TextStyle(
                             fontSize: 13,
                             color: Colors.grey,
@@ -559,9 +559,9 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                             'Gift Wrapping',
                             style: TextStyle(fontSize: 13, color: Colors.grey),
                           ),
-                          const Text(
-                            '\$5.00',
-                            style: TextStyle(fontSize: 13, color: Colors.grey),
+                          Text(
+                            AppConstants.formatCurrency(500.0),
+                            style: const TextStyle(fontSize: 13, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -579,7 +579,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                           ),
                         ),
                         Text(
-                          '\$${finalTotal.toStringAsFixed(2)}',
+                          AppConstants.formatCurrency(finalTotal),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
@@ -616,7 +616,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'PLACE ORDER \$${finalTotal.toStringAsFixed(2)}',
+                          'PLACE ORDER ${AppConstants.formatCurrency(finalTotal)}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -693,7 +693,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
       final result = await callable.call({
         'amount': (amount * 100).round(),
-        'currency': 'usd',
+        'currency': 'lkr',
         'paymentMethodId': paymentMethodId,
       });
 
@@ -727,7 +727,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                 headers: {'Content-Type': 'application/json'},
                 body: jsonEncode({
                   'amount': (amount * 100).round(),
-                  'currency': 'usd',
+                  'currency': 'lkr',
                   'paymentMethodId': paymentMethodId,
                 }),
               )

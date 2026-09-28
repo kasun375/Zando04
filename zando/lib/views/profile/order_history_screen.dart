@@ -310,7 +310,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '\$${item.price.toStringAsFixed(2)} × ${item.quantity}',
+                                        '${AppConstants.formatCurrency(item.price)} × ${item.quantity}',
                                         style: TextStyle(
                                           color: Colors.grey.shade500,
                                           fontSize: 11,
@@ -320,7 +320,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${(item.price * item.quantity).toStringAsFixed(2)}',
+                                  AppConstants.formatCurrency(item.price * item.quantity),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
@@ -451,7 +451,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                               ),
                             ),
                             Text(
-                              'Total: \$${order.totalAmount.toStringAsFixed(2)}',
+                              'Total: ${AppConstants.formatCurrency(order.totalAmount)}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,

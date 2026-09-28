@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             trailing: Text(
-                              '\$${product.price.toStringAsFixed(2)}',
+                              AppConstants.formatCurrency(product.price),
                               style: const TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.bold,

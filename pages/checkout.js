@@ -101,7 +101,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           </div>
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;margin-top:0.75rem;font-size:var(--text-xs);color:var(--color-text-body);">
             <input type="checkbox" id="checkout-gift-wrap" style="width:16px;height:16px;accent-color:var(--color-primary);" />
-            <span>Add Gift Wrapping (+$5.00)</span>
+            <span>Add Gift Wrapping (+LKR 500.00)</span>
           </label>
         </div>
       </div>
@@ -163,7 +163,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           <span>Subtotal</span><span>${formatCurrency(_checkoutTotal)}</span>
         </div>
         <div class="checkout-summary-row" id="gift-wrap-summary-row" style="display:none;">
-          <span>Gift Wrapping</span><span>$5.00</span>
+          <span>Gift Wrapping</span><span>LKR 500.00</span>
         </div>
         <div class="checkout-summary-row">
           <span>Delivery</span><span style="color:var(--color-success);">FREE</span>
@@ -264,7 +264,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   function updateCheckoutTotalDisplay() {
     let currentTotal = _checkoutTotal;
     if (isGiftCheckbox?.checked && giftWrapCheckbox?.checked) {
-      currentTotal += 5.00;
+      currentTotal += 500.00;
     }
     const formatted = formatCurrency(currentTotal);
     const totalDisp = document.getElementById('checkout-total-display');
@@ -353,7 +353,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
     const recipientName = isGift ? document.getElementById('gift-recipient-name').value.trim() : '';
     const recipientPhone = isGift ? document.getElementById('gift-recipient-phone').value.trim() : '';
     const giftMessage = isGift ? document.getElementById('gift-message').value.trim() : '';
-    const finalTotal = isGift && giftWrap ? _checkoutTotal + 5.00 : _checkoutTotal;
+    const finalTotal = isGift && giftWrap ? _checkoutTotal + 500.00 : _checkoutTotal;
 
     const payBtn = document.getElementById('checkout-pay-btn');
     payBtn.disabled = true;
@@ -380,7 +380,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
             const createCallable = httpsCallable(window._functions, 'createPaymentSheetIntent');
             const callableRes = await createCallable({
               amount: Math.round(finalTotal * 100),
-              currency: 'usd',
+              currency: 'lkr',
             });
             if (callableRes.data && (callableRes.data.clientSecret || callableRes.data.paymentIntentClientSecret)) {
               intentData = { clientSecret: callableRes.data.clientSecret || callableRes.data.paymentIntentClientSecret };
@@ -400,7 +400,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 amount: Math.round(finalTotal * 100),
-                currency: 'usd',
+                currency: 'lkr',
               }),
             });
 
