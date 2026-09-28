@@ -53,7 +53,7 @@ class AppThemes {
 class AppConstants {
   static const String vapidKey = 'YOUR_PUBLIC_VAPID_KEY';
   static String formatCurrency(double amount) {
-    return 'LKR ${amount.toStringAsFixed(2)}';
+    return 'Rs. ${amount.toStringAsFixed(2)}';
   }
   static const List<String> categories = [
     'Mobile Phones',

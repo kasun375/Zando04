@@ -848,7 +848,6 @@ function renderProductCard(product) {
     </div>
   ` : '';
 
-  const formatCurrency = (amount) => `$${Number(amount).toFixed(2)}`;
 
   return `
     <div class="product-card" data-product-id="${product.id}" id="product-card-${product.id}">

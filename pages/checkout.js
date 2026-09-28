@@ -101,7 +101,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           </div>
           <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;margin-top:0.75rem;font-size:var(--text-xs);color:var(--color-text-body);">
             <input type="checkbox" id="checkout-gift-wrap" style="width:16px;height:16px;accent-color:var(--color-primary);" />
-            <span>Add Gift Wrapping (+LKR 500.00)</span>
+            <span>Add Gift Wrapping (+Rs. 500.00)</span>
           </label>
         </div>
       </div>
@@ -163,7 +163,7 @@ export function renderCheckoutModal(items, total, checkoutItemIds = null) {
           <span>Subtotal</span><span>${formatCurrency(_checkoutTotal)}</span>
         </div>
         <div class="checkout-summary-row" id="gift-wrap-summary-row" style="display:none;">
-          <span>Gift Wrapping</span><span>LKR 500.00</span>
+          <span>Gift Wrapping</span><span>Rs. 500.00</span>
         </div>
         <div class="checkout-summary-row">
           <span>Delivery</span><span style="color:var(--color-success);">FREE</span>

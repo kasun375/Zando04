@@ -28,7 +28,7 @@ export function showToast(message, type = 'info', duration = 3000) {
 // Format currency
 export function formatCurrency(amount) {
   const num = Number(amount) || 0;
-  return `LKR ${num.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `Rs. ${num.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 // Format date

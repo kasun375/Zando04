@@ -474,7 +474,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                         const SizedBox(height: 8),
                         CheckboxListTile(
                           title: const Text(
-                            'Add Gift Wrapping (+LKR 500.00)',
+                            'Add Gift Wrapping (+Rs. 500.00)',
                             style: TextStyle(fontSize: 12),
                           ),
                           value: _giftWrap,
