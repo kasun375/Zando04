@@ -6,21 +6,24 @@
 /* === CSS Custom Properties (Design Tokens) === */
 :root {
   /* Brand Colors */
-  --color-primary: #2E062B;
-  --color-primary-light: #4a0e44;
-  --color-primary-dark: #1a0318;
+  --color-primary: #280026;
+  --color-primary-light: #3B0A37;
+  --color-primary-dark: #1A0019;
   --color-accent: #FFFF00;
   --color-accent-dark: #e6e600;
+  --color-promo-bg: #5B0068;
+  --color-footer-bg: #4A4A4A;
+  --color-footer-top-bg: #3A3A3A;
 
   /* Semantic */
   --color-bg: #F8F9FA;
   --color-surface: #ffffff;
   --color-surface-2: #F4F4F6;
-  --color-cream-card: #FFF2CC;
+  --color-cream-card: #FFF8D0;
   --color-product-card: #B1A7B4;
-  --color-nav-bar: #E0E0E0;
+  --color-nav-bar: #280026;
   --color-border: #E8E8EC;
-  --color-text-head: #1A1A1A;
+  --color-text-head: #280026;
   --color-text-body: #333333;
   --color-text-muted: #888888;
   --color-success: #28A745;
@@ -92,7 +95,7 @@
   --header-height: 72px;
   --nav-height: 48px;
   --sidebar-width: 260px;
-  --content-max-width: 1400px;
+  --content-max-width: 100%;
 }
 
 /* === CSS Reset === */

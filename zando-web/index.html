@@ -107,7 +107,7 @@
       window._db   = getFirestore(fbApp);
 
       const functions = getFunctions(fbApp);
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
+      if (window.USE_EMULATOR && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         connectFunctionsEmulator(functions, window.location.hostname, 5001);
       }
       window._functions = functions;

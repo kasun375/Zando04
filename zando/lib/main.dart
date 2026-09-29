@@ -28,19 +28,24 @@ void main() async {
     } catch (e) {
       debugPrint('Mobile Ads SDK initialization failed: $e');
     }
-  }
 
-  // ── Stripe publishable key (safe to be in client code) ──
-  Stripe.publishableKey =
-      'pk_live_51Ted5APDNJFdc8fiVuKPhOpSNZblzFGXW9FSUEUiOdC5YWgplyJ23EHagAyJqN2GOn3HXl4uMeYXsGhDLOWYFizC00hUBu6tBU';
-  await Stripe.instance.applySettings();
+    try {
+      Stripe.publishableKey =
+          'pk_live_51Ted5APDNJFdc8fiVuKPhOpSNZblzFGXW9FSUEUiOdC5YWgplyJ23EHagAyJqN2GOn3HXl4uMeYXsGhDLOWYFizC00hUBu6tBU';
+      await Stripe.instance.applySettings();
+    } catch (e) {
+      debugPrint('Stripe initialization failed: $e');
+    }
+  }
 
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     try {
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      if (!kIsWeb) {
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      }
     } catch (e) {
       debugPrint(
         'Firebase Messaging background handler not supported on this platform: $e',

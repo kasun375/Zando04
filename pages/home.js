@@ -1,32 +1,39 @@
 // =====================================================
 // ZANDO WEB — pages/home.js
-// Home page — header, carousel, categories, product grid
+// Home page — header, carousel, featured products, popular categories, suggestions, promo banner, footer
 // =====================================================
 
 import { getState, setState, subscribe, getCartCount } from '../js/state.js';
 import { setSearchQuery, setCategory, clearFilters } from '../js/products.js';
 import { addToCart } from '../js/state.js';
 import { toggleWishlist } from '../js/auth.js';
-import { showToast, formatCurrency, renderStars, debounce, imgFallback, renderFooter } from '../js/utils.js';
+import { showToast, formatCurrency, renderStars, debounce, renderFooter } from '../js/utils.js';
 import { navigate } from '../js/router.js';
 
 // Carousel state
 let _carouselIndex = 0;
 let _carouselTimer = null;
 let _carouselTotal = 0;
+let _sugCarouselIndex = 0;
+
+// Auto Scroll & Infinite Scroll state
+let _autoScrollTimer = null;
+let _isAutoScrollActive = false;
+let _loadedProductCount = 21;
+let _isAppendingProducts = false;
 
 // Fallback banners
 const FALLBACK_BANNERS = [
   {
     imageUrl: 'assets/images/Splash_Screen.jpg',
     title: 'Welcome to Zando',
-    subtitle: 'Shop everything you need — Fast & Reliable Delivery',
+    subtitle: 'Shop everything you need — Fast &amp; Reliable Delivery',
     ctaText: 'Explore Now'
   },
   {
     imageUrl: 'assets/images/welcome_bg.jpg',
     title: 'Premium Collection',
-    subtitle: 'Exclusive fashion, electronics & accessories',
+    subtitle: 'Exclusive fashion, electronics &amp; accessories',
     ctaText: 'Shop Deals'
   },
   {
@@ -41,15 +48,21 @@ export function renderHome(appEl) {
   const { currentUser, userModel, filteredProducts, shops, categories, banners, selectedCategory } = getState();
   const displayBanners = banners.length > 0 ? banners : FALLBACK_BANNERS;
   _carouselTotal = displayBanners.length;
+  _loadedProductCount = 21;
+  _isAppendingProducts = false;
 
   appEl.innerHTML = `
     <div class="app-layout">
       ${renderHeader()}
       <div class="page-content">
         <div class="page-content-inner">
-          <main class="main-area" style="padding: 1.5rem 0 0 0; width: 100%;">
+          <main class="main-area" style="padding: 0; width: 100%;">
+            ${renderAllCategoriesBar()}
             ${renderCarousel(displayBanners)}
-            ${renderProductGrid()}
+            ${renderFeaturedProductsSection()}
+            ${renderPopularCategoriesSection()}
+            ${renderSuggestionsSection()}
+            ${renderSellWithZandoBanner()}
           </main>
         </div>
       </div>
@@ -62,6 +75,8 @@ export function renderHome(appEl) {
   bindHeader();
   bindCarousel(displayBanners);
   bindProductGrid();
+  bindPopularCategories();
+  bindAutoAndInfiniteScroll();
   updateCartBadge();
   updateNotificationBadge();
   bindBottomNav();
@@ -87,7 +102,61 @@ export function renderHome(appEl) {
 
 // ---- Header ----
 function renderHeader() {
-  const { currentUser, shops, categories, selectedCategory } = getState();
+  const { currentUser } = getState();
+
+  return `
+    <header class="site-header" style="background: #280026; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+      <div class="header-top-container" style="max-width: 100%; margin: 0 auto; padding: 0.75rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+        <!-- Logo -->
+        <div id="home-logo-btn" style="cursor: pointer; flex-shrink: 0; display: flex; align-items: center;">
+          <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 42px; max-width: 100%; object-fit: contain;" />
+        </div>
+
+        <!-- Search Bar (White input + Yellow square search button) -->
+        <div id="header-search-wrap" style="flex: 1; max-width: 650px; position: relative;">
+          <div style="display: flex; align-items: center; background: #ffffff; border-radius: 4px; overflow: hidden; height: 40px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+            <input
+              type="text"
+              id="header-search-input"
+              class="header-search-input"
+              placeholder="Search products..."
+              autocomplete="off"
+              style="flex: 1; border: none; padding: 0 1rem; color: #333; font-size: 0.9rem; outline: none; background: transparent;"
+            />
+            <button id="search-btn" class="header-search-btn" aria-label="Search" style="background: #FFFF00; color: #000; border: none; width: 44px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+              <span class="material-icons-round" style="font-size: 1.3rem; color: #000;">search</span>
+            </button>
+          </div>
+          <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- Header Actions (Icons without circular background) -->
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+          ${currentUser ? `
+            <button class="icon-btn header-icon-btn" id="notification-btn" title="Notifications" aria-label="Notifications" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+              <span class="material-icons-round" style="font-size: 1.4rem;">notifications</span>
+              <span class="btn-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
+            </button>
+          ` : ''}
+          <button class="icon-btn header-icon-btn" id="cart-header-btn" title="Shopping Cart" aria-label="Cart" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+            <span class="material-icons-round" style="font-size: 1.4rem;">shopping_cart</span>
+            <span class="btn-badge" id="cart-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
+          </button>
+          <button class="icon-btn header-icon-btn" id="orders-header-btn" title="Track Orders" aria-label="Track Orders" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-icons-round" style="font-size: 1.4rem;">local_shipping</span>
+          </button>
+          <button class="icon-btn header-icon-btn" id="profile-header-btn" title="${currentUser ? 'My Profile' : 'Sign In'}" aria-label="${currentUser ? 'Profile' : 'Sign In'}" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-icons-round" style="font-size: 1.4rem;">person</span>
+          </button>
+        </div>
+      </div>
+    </header>
+  `;
+}
+
+// ---- All Categories Bar (Placed OUTSIDE navigation bar) ----
+function renderAllCategoriesBar() {
+  const { categories, shops, selectedCategory } = getState();
   const allCategories = [...new Set([...categories, ...shops])];
 
   const dropdownItems = `
@@ -102,181 +171,17 @@ function renderHeader() {
   `;
 
   return `
-    <header class="site-header" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; background: #2E062B;">
-      <div class="header-top header-top-responsive">
-        <div class="header-logo" id="home-logo-btn" style="cursor: pointer; flex-shrink: 0;">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" class="header-logo-img" style="height: 44px; max-width: 100%; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));" />
-        </div>
-
-        <div class="header-search" id="header-search-wrap" style="flex: 1; max-width: 600px; width: 100%;">
-          <div class="header-search-inner" style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 24px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease;">
-            <input
-              type="text"
-              id="header-search-input"
-              class="header-search-input"
-              placeholder="Search for products, brands and more..."
-              autocomplete="off"
-              style="flex: 1; background: transparent; border: none; padding: 0.75rem 1rem; color: #fff; outline: none; font-size: 1rem; font-family: var(--font-body);"
-            />
-            <button class="header-search-btn" id="search-btn" aria-label="Search" style="background: #FFFF00; color: #2E062B; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 8px rgba(255,255,0,0.3);">
-              <span class="material-icons-round">search</span>
-            </button>
-          </div>
-          <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 8px); left: 0; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
-        </div>
-
-        <div class="header-actions header-actions-responsive">
-          ${currentUser ? `
-            <button class="icon-btn header-icon-btn" id="notification-btn" aria-label="Notifications">
-              <span class="material-icons-round">notifications</span>
-              <span class="btn-badge" style="display:none;">0</span>
-            </button>
-          ` : ''}
-          <button class="icon-btn header-icon-btn" id="cart-header-btn" aria-label="Cart">
-            <span class="material-icons-round">shopping_cart</span>
-            <span class="btn-badge" id="cart-badge" style="display:none;">0</span>
-          </button>
-          <button class="icon-btn header-icon-btn" id="orders-header-btn" aria-label="Track Orders">
-            <span class="material-icons-round">local_shipping</span>
-          </button>
-          <button class="icon-btn header-icon-btn" id="profile-header-btn" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
-            <span class="material-icons-round">person</span>
-          </button>
+    <div class="all-categories-outside-section" style="padding: 0.85rem 2.5rem; background: #ffffff; border-bottom: 1px solid #eeeeee; width: 100%;">
+      <div id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
+        <button id="all-categories-btn" class="all-categories-btn" style="background: #280026; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.6rem 1.4rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(40,0,38,0.25); transition: background 0.2s;">
+          <span class="material-icons-round" style="font-size: 1.25rem;">menu</span>
+          All Categories
+        </button>
+        <div class="categories-dropdown" id="categories-dropdown" style="top: 100%; left: 0; margin-top: 6px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1100;">
+          ${dropdownItems}
         </div>
       </div>
-
-      <nav class="category-nav" style="background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 2rem;">
-        <div class="category-nav-inner category-nav-responsive">
-          <div class="all-categories-btn-wrapper" id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
-            <button class="all-categories-btn" id="all-categories-btn" style="background: transparent; color: #fff; border: none; font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.3s;">
-              <span class="material-icons-round">menu</span>
-              Categories
-            </button>
-            <div class="categories-dropdown" id="categories-dropdown" style="top: 100%; left: 0; margin-top: 8px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-              ${dropdownItems}
-            </div>
-          </div>
-          
-          <div class="main-nav-links main-nav-responsive">
-            <a id="nav-about-home" class="nav-link">About Us</a>
-            <a id="nav-privacy-home" class="nav-link">Privacy Policy</a>
-            <a id="nav-contact-home" class="nav-link">Contact Us</a>
-          </div>
-        </div>
-      </nav>
-      
-      <style>
-        .header-top-responsive {
-          padding: 1rem 2rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 2rem;
-        }
-        .header-actions-responsive {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
-        .category-nav-responsive {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          max-width: 1400px;
-          margin: 0 auto;
-        }
-        .main-nav-responsive {
-          display: flex;
-          gap: 2rem;
-        }
-        @media (max-width: 768px) {
-          .header-top-responsive {
-            flex-wrap: wrap;
-            padding: 0.8rem 1rem;
-            gap: 1rem;
-          }
-          .header-logo {
-            flex: 1 1 auto;
-          }
-          .header-search {
-            order: 3;
-            flex: 1 1 100%;
-            max-width: 100% !important;
-          }
-          .header-actions-responsive {
-            order: 2;
-            width: auto;
-            justify-content: flex-end;
-            gap: 0.5rem;
-          }
-          .category-nav-responsive {
-            flex-direction: column;
-            gap: 1rem;
-          }
-          .main-nav-responsive {
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-          }
-          .header-icon-btn {
-            width: 36px;
-            height: 36px;
-          }
-          .header-icon-btn .material-icons-round {
-            font-size: 1.2rem;
-          }
-        }
-        .header-icon-btn {
-          background: rgba(255,255,255,0.1);
-          color: #fff;
-          border: none;
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .header-icon-btn:hover {
-          background: #FFFF00;
-          color: #2E062B;
-          transform: translateY(-2px);
-        }
-        .nav-link {
-          color: rgba(255,255,255,0.8);
-          text-decoration: none;
-          font-weight: 500;
-          font-size: 0.95rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          position: relative;
-        }
-        .nav-link:hover {
-          color: #FFFF00;
-        }
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          width: 0;
-          height: 2px;
-          bottom: -4px;
-          left: 0;
-          background-color: #FFFF00;
-          transition: width 0.3s ease;
-        }
-        .nav-link:hover::after {
-          width: 100%;
-        }
-        .all-categories-btn:hover {
-          background: rgba(255,255,255,0.1) !important;
-        }
-        .header-search-input::placeholder {
-          color: rgba(255,255,255,0.6);
-        }
-      </style>
-    </header>
+    </div>
   `;
 }
 
@@ -299,46 +204,7 @@ function updateDropdownMenu() {
   `;
 }
 
-// ---- Sidebar ----
-function renderSidebar() {
-  const { shops, categories, selectedCategory } = getState();
-  const all = [...new Set([...categories, ...shops])];
-  return `
-    <aside class="sidebar" id="main-sidebar">
-      <div class="sidebar-section-title">Categories</div>
-      <div class="sidebar-item ${!selectedCategory ? 'active' : ''}" data-sidebar-cat="">
-        <span class="material-icons-round">grid_view</span> All Products
-      </div>
-      ${all.map(c => `
-        <div class="sidebar-item ${selectedCategory === c ? 'active' : ''}" data-sidebar-cat="${c}">
-          <span class="material-icons-round">chevron_right</span> ${c}
-        </div>
-      `).join('')}
-    </aside>
-  `;
-}
-
-// ---- Track Orders card ----
-function renderTrackOrdersCard() {
-  const { currentUser } = getState();
-  if (!currentUser) return '';
-  return `
-    <div class="track-orders-card" id="track-orders-card">
-      <div class="track-orders-icon">
-        <span class="material-icons-round">local_shipping</span>
-      </div>
-      <div class="track-orders-text">
-        <div class="track-orders-title">Track My Orders</div>
-        <div class="track-orders-sub">View active shipments &amp; history</div>
-      </div>
-      <div class="track-orders-arrow">
-        <span class="material-icons-round">chevron_right</span>
-      </div>
-    </div>
-  `;
-}
-
-// ---- Carousel ----
+// ---- Carousel Slider ----
 function renderCarousel(banners) {
   if (!banners.length) return '';
   const slides = banners.map((b, i) => {
@@ -350,10 +216,10 @@ function renderCarousel(banners) {
       return `
         <div class="carousel-slide mockup-slide">
           <div class="carousel-mockup-content">
-            <div class="carousel-badge">🔥 Limited Offer</div>
-            <h2 class="carousel-title">${title}</h2>
-            <p class="carousel-subtitle">${subtitle}</p>
-            <button class="carousel-cta-btn" onclick="document.getElementById('products-grid')?.scrollIntoView({behavior:'smooth'})">
+            <div class="carousel-badge" style="color:#ffffff;">🔥 Limited Offer</div>
+            <h2 class="carousel-title" style="color: #ffffff !important;">${title}</h2>
+            <p class="carousel-subtitle" style="color: #ffffff !important;">${subtitle}</p>
+            <button class="carousel-cta-btn" onclick="document.getElementById('featured-products-section')?.scrollIntoView({behavior:'smooth'})">
               ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
             </button>
           </div>
@@ -366,9 +232,9 @@ function renderCarousel(banners) {
              onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('mockup-slide');" />
         <div class="carousel-overlay">
           <div class="carousel-caption">
-            <h2 class="carousel-title">${title}</h2>
-            ${subtitle ? `<p class="carousel-subtitle">${subtitle}</p>` : ''}
-            <button class="carousel-cta-btn" onclick="document.getElementById('products-grid')?.scrollIntoView({behavior:'smooth'})">
+            <h2 class="carousel-title" style="color: #ffffff !important;">${title}</h2>
+            ${subtitle ? `<p class="carousel-subtitle" style="color: #ffffff !important;">${subtitle}</p>` : ''}
+            <button class="carousel-cta-btn" onclick="document.getElementById('featured-products-section')?.scrollIntoView({behavior:'smooth'})">
               ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
             </button>
           </div>
@@ -382,568 +248,350 @@ function renderCarousel(banners) {
   ).join('');
 
   return `
-    <style>
-      .hero-section-wrapper {
-        display: flex;
-        align-items: stretch;
-        gap: 1.5rem;
-        padding: 0 1.5rem;
-        max-width: 1400px;
-        margin: 0 auto 1.5rem auto;
-        width: 100%;
-      }
-      .hero-carousel-col {
-        flex: 1 1 0%;
-        min-width: 0;
-        height: 420px;
-        position: relative;
-      }
-      .hero-carousel-col .home-hero {
-        margin: 0;
-        height: 100%;
-      }
-      .hero-carousel-col .home-hero .carousel {
-        position: relative;
-        height: 100%;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
-      }
-      .hero-carousel-col .carousel-track {
-        display: flex;
-        height: 100%;
-        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-      }
-      .hero-carousel-col .carousel-slide {
-        min-width: 100%;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-      }
-      .hero-carousel-col .carousel-slide img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-      }
-      .hero-carousel-col .carousel-slide.mockup-slide {
-        background: linear-gradient(135deg, #2E062B 0%, #4a0d46 50%, #1a0319 100%);
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        position: relative;
-        height: 100%;
-      }
-      .carousel-mockup-content {
-        padding: 2.5rem;
-        text-align: left;
-        max-width: 550px;
-        color: #fff;
-        z-index: 2;
-        width: 100%;
-      }
-      .carousel-badge {
-        display: inline-block;
-        background: #FFFF00;
-        color: #2E062B;
-        font-weight: 800;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        padding: 4px 14px;
-        border-radius: 20px;
-        margin-bottom: 0.75rem;
-        letter-spacing: 0.05em;
-      }
-      .carousel-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        color: #ffffff;
-        line-height: 1.2;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        font-family: var(--font-display, sans-serif);
-      }
-      .carousel-subtitle {
-        font-size: 1.05rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 1.5rem;
-        line-height: 1.4;
-      }
-      .carousel-cta-btn {
-        display: inline-flex;
-        align-items: center;
-        background: #FFFF00;
-        color: #2E062B;
-        font-weight: 700;
-        font-size: 0.95rem;
-        padding: 0.75rem 1.6rem;
-        border-radius: 30px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        box-shadow: 0 4px 15px rgba(255,255,0,0.3);
-      }
-      .carousel-cta-btn:hover {
-        background: #fff;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255,255,255,0.4);
-      }
-      .carousel-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(46,6,43,0.35) 60%, transparent 100%);
-        display: flex;
-        align-items: flex-end;
-        padding: 2.5rem;
-        z-index: 1;
-      }
-      .carousel-caption {
-        max-width: 550px;
-        color: #fff;
-      }
-      .carousel-arrow {
-        display: none !important;
-      }
-
-      .carousel-dots {
-        position: absolute;
-        bottom: 1.25rem;
-        right: 1.5rem;
-        display: flex;
-        gap: 8px;
-        z-index: 10;
-      }
-      .carousel-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-      .carousel-dot.active {
-        width: 28px;
-        border-radius: 10px;
-        background: #FFFF00;
-      }
-
-      /* === Download App Card (Modern & Stylish QR Card) === */
-      .download-app-card {
-        flex: 0 0 320px;
-        width: 320px;
-        height: 420px;
-        border-radius: 24px;
-        background: linear-gradient(165deg, #3A0937 0%, #1e041d 45%, #0d010d 100%);
-        border: 1px solid rgba(255, 255, 0, 0.22);
-        box-shadow:
-          0 16px 40px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        padding: 1.25rem 1.1rem 1.1rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-        cursor: default;
-      }
-      .download-app-card::before {
-        content: '';
-        position: absolute;
-        top: -40%;
-        left: -30%;
-        width: 160%;
-        height: 160%;
-        background: radial-gradient(circle, rgba(255,255,0,0.08) 0%, transparent 60%);
-        pointer-events: none;
-      }
-      .download-app-card:hover {
-        transform: translateY(-5px);
-        box-shadow:
-          0 20px 50px rgba(0,0,0,0.6),
-          0 0 0 1px rgba(255,255,0,0.4),
-          inset 0 1px 0 rgba(255,255,255,0.15);
-      }
-
-      /* Live status badge */
-      .dac-live-badge {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(255, 255, 0, 0.12);
-        border: 1px solid rgba(255, 255, 0, 0.25);
-        color: #FFFF00;
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        padding: 3px 10px;
-        border-radius: 12px;
-        z-index: 3;
-        backdrop-filter: blur(4px);
-      }
-      .dac-pulse-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #FFFF00;
-        box-shadow: 0 0 0 0 rgba(255,255,0,0.6);
-        animation: dac-pulse 2s ease-in-out infinite;
-      }
-      @keyframes dac-pulse {
-        0%   { box-shadow: 0 0 0 0 rgba(255,255,0,0.6); }
-        70%  { box-shadow: 0 0 0 8px rgba(255,255,0,0); }
-        100% { box-shadow: 0 0 0 0 rgba(255,255,0,0); }
-      }
-
-      /* Header info */
-      .dac-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.35rem;
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        width: 100%;
-        margin-top: 0.1rem;
-      }
-      .dac-icon-ring {
-        width: 44px;
-        height: 44px;
-        border-radius: 13px;
-        background: linear-gradient(135deg, #FFFF00 0%, #e6c800 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 6px 20px rgba(255,255,0,0.35);
-        transition: transform 0.3s ease;
-      }
-      .download-app-card:hover .dac-icon-ring {
-        transform: scale(1.06) rotate(-3deg);
-      }
-      .dac-icon-ring .material-icons-round {
-        font-size: 1.5rem;
-        color: #2E062B;
-      }
-      .dac-title {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: 0.02em;
-        line-height: 1.2;
-        font-family: var(--font-display, sans-serif);
-      }
-      .dac-subtitle {
-        font-size: 0.72rem;
-        color: rgba(255,255,255,0.65);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-
-      /* QR centerpiece wrapper */
-      .dac-qr-container {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.35rem;
-      }
-      .dac-qr-outer {
-        padding: 3px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, rgba(255,255,0,0.4) 0%, rgba(255,255,255,0.1) 100%);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      .download-app-card:hover .dac-qr-outer {
-        transform: scale(1.02);
-        box-shadow: 0 12px 30px rgba(255,255,0,0.25);
-      }
-      .dac-qr-wrap {
-        width: 105px;
-        height: 105px;
-        border-radius: 12px;
-        background: #ffffff;
-        padding: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .dac-qr-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 7px;
-        display: block;
-      }
-      .dac-scan-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 0.62rem;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 20px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-      .dac-scan-pill .material-icons-round {
-        font-size: 0.8rem;
-        color: #FFFF00;
-      }
-
-      /* Store Buttons Area (Prominent Large pngegg.png Badges) */
-      .dac-store-row {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .dac-badges {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-        transition: all 0.3s ease;
-      }
-      .dac-badges img {
-        width: 100%;
-        max-width: 250px;
-        height: auto;
-        max-height: 76px;
-        object-fit: contain;
-        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-        transition: transform 0.3s ease, filter 0.3s ease;
-      }
-      .dac-badges img:hover {
-        transform: scale(1.04);
-        filter: drop-shadow(0 4px 14px rgba(255,255,0,0.35));
-      }
-
-      /* Responsive Rules */
-      @media (max-width: 992px) {
-        .hero-section-wrapper {
-          flex-direction: column;
-          padding: 0 1rem;
-          gap: 1.25rem;
-        }
-        .hero-carousel-col {
-          height: 320px;
-          width: 100%;
-        }
-        .download-app-card {
-          flex: unset;
-          width: 100%;
-          height: auto;
-          flex-direction: row;
-          align-items: center;
-          gap: 1.25rem;
-          padding: 1.25rem 1.5rem;
-        }
-        .dac-header { align-items: flex-start; text-align: left; flex-direction: row; gap: 0.75rem; }
-        .dac-icon-ring { flex-shrink: 0; }
-        .dac-qr-wrap { width: 90px; height: 90px; }
-        .dac-badges img { max-width: 180px; }
-        .dac-scan-pill { display: none; }
-      }
-      @media (max-width: 768px) {
-        .download-app-card {
-          display: none !important;
-        }
-      }
-      @media (max-width: 576px) {
-        .hero-carousel-col {
-          height: 240px;
-        }
-        .carousel-title { font-size: 1.4rem; }
-        .carousel-subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
-        .carousel-overlay { padding: 1.25rem; }
-        .carousel-mockup-content { padding: 1.25rem; }
-      }
-    </style>
-
-    <div class="hero-section-wrapper">
-      <!-- Carousel column -->
-      <div class="hero-carousel-col">
-        <div class="home-hero">
-          <div class="carousel" id="main-carousel">
-            <div class="carousel-track" id="carousel-track">${slides}</div>
-            <div class="carousel-dots" id="carousel-dots">${dots}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Download App Card (Modern & Stylish QR Card) -->
-      <div class="download-app-card" id="download-app-card">
-        <div class="dac-live-badge">
-          <span class="dac-pulse-dot"></span> GET APP
-        </div>
-
-        <div class="dac-header">
-          <div class="dac-icon-ring">
-            <span class="material-icons-round">smartphone</span>
-          </div>
-          <div>
-            <div class="dac-title">Get Zando App</div>
-            <div class="dac-subtitle">Shop on the go</div>
-          </div>
-        </div>
-
-        <div class="dac-qr-container">
-          <div class="dac-qr-outer">
-            <div class="dac-qr-wrap">
-              <img src="assets/images/qr-code.png" alt="Scan to download Zando app" />
+    <div style="background: #280026; width: 100%; padding: 0; margin-bottom: 2rem;">
+      <div class="hero-section-wrapper" style="max-width: 100%; margin: 0 auto; padding: 0; width: 100%;">
+        <div class="hero-carousel-col" style="height: 560px; position: relative;">
+          <div class="home-hero" style="height: 100%;">
+            <div class="carousel" id="main-carousel" style="height: 100%; position: relative; overflow: hidden;">
+              <div class="carousel-track" id="carousel-track" style="height: 100%; display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);">${slides}</div>
+              <div class="carousel-dots" id="carousel-dots" style="position: absolute; bottom: 1.5rem; right: 2rem; display: flex; gap: 8px; z-index: 10;">${dots}</div>
             </div>
           </div>
-          <div class="dac-scan-pill">
-            <span class="material-icons-round">qr_code_scanner</span> Point Camera
-          </div>
-        </div>
-
-        <div class="dac-store-row">
-          <div class="dac-badges">
-            <img src="assets/images/pngegg.png" alt="Available on Google Play & App Store" />
-          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Google AdSense Ad (Bottom of Carousel Slider) -->
-    <div class="adsense-hero-banner-container" id="adsense-hero-banner" style="max-width: 1400px; margin: 1.25rem auto 0.5rem auto; padding: 0 1.5rem; width: 100%; box-sizing: border-box; text-align: center; overflow: hidden; min-height: 90px;">
-      <!-- Adsense Ad01 -->
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-1267014580635785"
-           data-ad-slot="7240410314"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
-      </script>
     </div>
   `;
 }
 
-// ---- Product Grid ----
-function renderProductGrid() {
+// ---- Featured Products Section ----
+function renderFeaturedProductsSection() {
   const { filteredProducts, products } = getState();
+  const displayItems = filteredProducts.length > 0 ? filteredProducts : products;
 
-  const wrapperStart = '<div class="products-section-wrapper" style="max-width: 1400px; margin: 1.5rem auto 0 auto; padding: 0 1.5rem; width: 100%;">';
+  // Render initial 21 cards (3 rows x 7 cols) matching Image 1 design mockup
+  const targetCount = Math.max(displayItems.length, 21);
+  const cardItems = Array.from({ length: targetCount }, (_, idx) => {
+    const item = displayItems[idx % (displayItems.length || 1)];
+    return renderProductCard(item, idx);
+  }).join('');
 
-  // If we haven't loaded any products at all, show skeletons
-  if (products.length === 0) {
-    return `
-      ${wrapperStart}
-        <div class="products-grid" id="products-grid">
-          ${renderSkeletonGrid(10)}
-        </div>
-      </div>
-    `;
-  }
-
-  // If we have loaded products but the filtered list is empty, show empty state
-  if (filteredProducts.length === 0) {
-    return `
-      ${wrapperStart}
-        <div class="products-grid" id="products-grid">
-          <div class="empty-state" style="grid-column:1/-1;">
-            <span class="material-icons-round">search_off</span>
-            <h4>No products found</h4>
-            <p>Try a different search or browse a category</p>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  const cards = filteredProducts.map(renderProductCard).join('');
   return `
-    ${wrapperStart}
-      <div class="products-grid" id="products-grid">
-        ${cards}
+    <section id="featured-products-section" style="max-width: 100%; margin: 0 auto 3.5rem auto; padding: 0 2.5rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: #280026; margin: 0; font-family: var(--font-display);">Featured Products</h2>
       </div>
-    </div>
+      <div class="featured-products-grid" id="products-grid">
+        ${cardItems}
+      </div>
+    </section>
+
+    <style>
+      .featured-products-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1.25rem 1.1rem;
+      }
+      @media (min-width: 1600px) {
+        .featured-products-grid { grid-template-columns: repeat(7, 1fr); }
+      }
+      @media (max-width: 1200px) {
+        .featured-products-grid { grid-template-columns: repeat(5, 1fr); }
+      }
+      @media (max-width: 992px) {
+        .featured-products-grid { grid-template-columns: repeat(4, 1fr); }
+      }
+      @media (max-width: 768px) {
+        .featured-products-grid { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+      }
+      @media (max-width: 480px) {
+        .featured-products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+      }
+    </style>
   `;
 }
 
-function renderProductCard(product) {
-  if (product.id.startsWith('dummy') || !product.name) {
+// ---- Popular Categories Section ----
+function renderPopularCategoriesSection() {
+  return `
+    <section style="max-width: 100%; margin: 0 auto 3.5rem auto; padding: 0 2.5rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: #280026; margin: 0 0 1.25rem 0; font-family: var(--font-display);">Popular Categories</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;" class="popular-cat-grid">
+        <!-- Card 1: Flower Shop (Gray #D5D5D8) -->
+        <div class="pop-cat-card" data-cat="Flower Shop" style="background: #D5D5D8; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Top Award Winners</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Flower Shop</div>
+        </div>
+
+        <!-- Card 2: Chocolates (Soft Yellow #FFF8D0) -->
+        <div class="pop-cat-card" data-cat="Chocolets" style="background: #FFF8D0; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Special Everyday Sale</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Chocolates</div>
+        </div>
+
+        <!-- Card 3: Cosmetics (Soft Lime Green #E8FFD0) -->
+        <div class="pop-cat-card" data-cat="Electronics" style="background: #E8FFD0; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Always Stay In Trend</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Cosmetics</div>
+        </div>
+
+        <!-- Card 4: Food / Restaurant (Soft Yellow #FFF8D0 - Spans 2 Cols) -->
+        <div class="pop-cat-card pop-cat-wide" data-cat="Grocery Items" style="background: #FFF8D0; border-radius: 16px; padding: 2.2rem 1.6rem; cursor: pointer; grid-column: span 2; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Good Food, Good Mood</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Food / Restaurant</div>
+        </div>
+
+        <!-- Card 5: Jewellery (Gray #D5D5D8) -->
+        <div class="pop-cat-card" data-cat="Fashion" style="background: #D5D5D8; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Sparkle With Every Step</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Jewellery</div>
+        </div>
+
+        <!-- Card 6: Cakes (Soft Cyan #D0F8FF) -->
+        <div class="pop-cat-card" data-cat="Cake Shop" style="background: #D0F8FF; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">For The Love of Food</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Cakes</div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .pop-cat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      }
+      @media (max-width: 768px) {
+        .popular-cat-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .pop-cat-wide {
+          grid-column: span 1 !important;
+        }
+      }
+    </style>
+  `;
+}
+
+// ---- Your Suggestions Section (Auto 1-by-1 horizontal slider, 4 cards visible on right side) ----
+function renderSuggestionsSection() {
+  const { products } = getState();
+
+  const defaultItems = [
+    { name: 'Extravaganza Hamper', price: 16750 },
+    { name: 'Extravaganza Hamper', price: 16750 },
+    { name: 'Extravaganza Hamper', price: 16750 },
+    { name: 'Extravaganza Hamper', price: 16750 },
+    { name: 'Red Vintage Pattern Bag', price: 12500 },
+    { name: 'Leather Strap Watch', price: 14200 },
+    { name: 'Wireless Bluetooth Earbuds', price: 9800 },
+    { name: 'Classic Denim Jacket', price: 18500 },
+    { name: 'Running Sports Shoes', price: 16750 },
+    { name: 'Smart Fitness Band', price: 11400 },
+    { name: 'Trendy Sunglasses', price: 8900 },
+    { name: 'Designer Handbag', price: 21000 }
+  ];
+
+  const totalItems = Array.from({ length: 12 }, (_, idx) => {
+    return products[idx] ? products[idx] : {
+      id: `suggestion-prod-${idx + 1}`,
+      name: defaultItems[idx].name,
+      price: defaultItems[idx].price,
+      imageUrl: '',
+      category: 'Suggestions'
+    };
+  });
+
+  const cardsHtml = totalItems.map((item) => {
+    const priceText = `RS. ${Number(item.price || 16750).toLocaleString('en-LK')}`;
+    const nameText = item.name || 'Extravaganza Hamper';
+
     return `
-      <div class="product-card mockup-product-card" data-product-id="${product.id}" id="product-card-${product.id}">
-        <div class="product-card-placeholder">Products</div>
+      <div class="sug-card-item" data-product-id="${item.id || ''}">
+        <div class="sug-card-img-wrap">
+          ${item.imageUrl
+            ? `<img src="${item.imageUrl}" alt="${nameText}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'color:#ffffff;font-size:1rem;font-weight:500;\\'>Products</span>';" />`
+            : `<span style="color: #ffffff; font-size: 1rem; font-weight: 500;">Products</span>`
+          }
+        </div>
+        <div style="margin-top: 0.6rem;">
+          <div style="font-size: 0.82rem; color: #333333; font-weight: 500; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nameText}</div>
+          <div style="font-size: 0.88rem; font-weight: 900; color: #280026; margin-top: 3px; font-family: var(--font-display);">${priceText}</div>
+        </div>
       </div>
     `;
-  }
-
-  const { userModel } = getState();
-  const inWishlist = userModel?.wishlist?.includes(product.id);
-  const stars = product.rating > 0 ? `
-    <div class="product-card-rating">
-      <span class="stars">${'★'.repeat(Math.round(product.rating))}${'☆'.repeat(5 - Math.round(product.rating))}</span>
-      <span>${Number(product.rating || 0).toFixed(1)} (${product.reviewsCount || 0})</span>
-    </div>
-  ` : '';
-
+  }).join('');
 
   return `
-    <div class="product-card" data-product-id="${product.id}" id="product-card-${product.id}">
-      <div class="product-card-image-wrap">
-        ${product.imageUrl
-          ? `<img src="${product.imageUrl}" alt="${product.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23B1A7B4%22/%3E%3C/svg%3E'" />`
-          : `<div class="product-card-placeholder">Products</div>`
-        }
-        ${product.isFeatured ? '<span class="product-card-badge">Featured</span>' : ''}
-        <button class="product-card-wishlist ${inWishlist ? 'active' : ''}" data-wishlist-id="${product.id}" aria-label="Wishlist">
-          <span class="material-icons-round">${inWishlist ? 'favorite' : 'favorite_border'}</span>
-        </button>
-      </div>
-      <div class="product-card-body">
-        ${product.shop ? `<div class="product-card-shop">${product.shop}</div>` : ''}
-        <div class="product-card-name">${product.name}</div>
-        ${stars}
-        <div class="product-card-footer">
-          <div class="product-card-price">${formatCurrency(product.price)}</div>
-          <button class="product-card-add-btn" data-add-id="${product.id}" aria-label="Add to cart">
-            <span class="material-icons-round">shopping_cart</span>
+    <section style="max-width: 100%; margin: 0 auto 3rem auto; padding: 0 2.5rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #280026; margin: 0; font-family: var(--font-display);">Your Suggestions</h2>
+        <!-- Prev/Next Controls -->
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+          <button id="sug-prev-btn" aria-label="Previous product" style="background: rgba(40,0,38,0.08); color: #280026; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
+            <span class="material-icons-round" style="font-size: 1.2rem;">chevron_left</span>
+          </button>
+          <button id="sug-next-btn" aria-label="Next product" style="background: #280026; color: #ffffff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
+            <span class="material-icons-round" style="font-size: 1.2rem;">chevron_right</span>
           </button>
         </div>
       </div>
-    </div>
+
+      <!-- Backdrop container with exact #B1A7B4 grey background matching screenshot -->
+      <div style="background: #B1A7B4; border-radius: 4px; padding: 1.8rem 1.8rem; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: flex-end;" id="suggestions-container-wrap">
+        <!-- Viewport occupying right 65% of container, leaving left side space open -->
+        <div style="width: 65%; max-width: 65%; margin-left: auto; overflow: hidden;" id="sug-cards-viewport">
+          <div id="sug-carousel-track" style="display: flex; gap: 1rem; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); width: 100%;">
+            ${cardsHtml}
+          </div>
+        </div>
+
+        <div id="sug-dots-container" style="display: flex; justify-content: flex-end; gap: 8px; width: 65%; margin-top: 1.2rem; padding-right: 0.5rem;">
+          <div class="sug-dot active" data-sug-dot="0" style="width: 8px; height: 8px; border-radius: 50%; background: #280026; cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="1" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="2" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="3" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .sug-card-item {
+        background: #ffffff;
+        padding: 0.85rem 0.85rem 1.1rem 0.85rem;
+        border-radius: 4px;
+        flex: 0 0 calc((100% - 3rem) / 4);
+        width: calc((100% - 3rem) / 4);
+        flex-shrink: 0;
+        box-sizing: border-box;
+        cursor: pointer;
+        text-align: left;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .sug-card-img-wrap {
+        width: 100%;
+        aspect-ratio: 3/4;
+        background: #A095A3;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .sug-card-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+      }
+      @media (max-width: 1200px) {
+        #sug-cards-viewport, #sug-dots-container {
+          width: 80% !important;
+          max-width: 80% !important;
+        }
+      }
+      @media (max-width: 768px) {
+        #sug-cards-viewport, #sug-dots-container {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .sug-card-item {
+          flex: 0 0 calc((100% - 1rem) / 2) !important;
+          width: calc((100% - 1rem) / 2) !important;
+        }
+      }
+    </style>
   `;
 }
 
-function renderSkeletonGrid(count) {
-  return Array.from({ length: count }, () => `
-    <div class="product-card mockup-product-card">
-      <div class="product-card-placeholder">Products</div>
+// ---- Sell with Zando Promo Banner ----
+function renderSellWithZandoBanner() {
+  return `
+    <section style="background: #5B0068; color: #ffffff; padding: 4rem 2.5rem; width: 100%; margin: 0 0 0 0; text-align: left;">
+      <div style="max-width: 100%; margin: 0 auto;">
+        <h2 style="font-size: 3.2rem; font-weight: 900; color: #ffffff; letter-spacing: 0.02em; line-height: 1.15; margin: 0 0 1.2rem 0; text-transform: uppercase; font-family: var(--font-display);">
+          SELL WITH ZANDO AND<br />GROW YOUR BUSINESS
+        </h2>
+        <div style="font-size: 2rem; font-weight: 800; color: #ffffff; letter-spacing: 0.05em; font-family: var(--font-display);">
+          076 089 12 62
+        </div>
+      </div>
+    </section>
+
+    <style>
+      @media (max-width: 768px) {
+        section[style*="background: #5B0068"] h2 {
+          font-size: 2rem !important;
+        }
+        section[style*="background: #5B0068"] div {
+          font-size: 1.4rem !important;
+        }
+      }
+    </style>
+  `;
+}
+
+// ---- Single Product Card Renderer (Description OUT of rectangle, directly under) ----
+function renderProductCard(product, idx = 0) {
+  const defaultNames = [
+    'Cat eye glasses for female',
+    'Red vintage pattern bag',
+    'Leather strap watch',
+    'Wireless bluetooth earbuds',
+    'Cotton casual t-shirt',
+    'Classic denim jacket',
+    'Running sports shoes',
+    'Smart fitness band',
+    'Trendy sunglasses',
+    'Canvas travel backpack',
+    'Designer handbag',
+    'Minimalist wallet',
+    'Floral summer dress',
+    'Stainless water bottle',
+    'Luxury perfume 100ml',
+    'Over-ear headphones',
+    'Ceramic coffee mug',
+    'Unisex hoodie jacket',
+    'Portable power bank',
+    'Casual sneakers',
+    'Leather belt for men'
+  ];
+
+  const name = product?.name || defaultNames[idx % defaultNames.length];
+  const price = product?.price ? formatCurrency(product.price) : 'Rs. 1,500';
+  const imageUrl = product?.imageUrl || '';
+  const { userModel } = getState();
+  const inWishlist = product?.id && userModel?.wishlist?.includes(product.id);
+
+  return `
+    <div class="product-card" data-product-id="${product?.id || ''}" style="cursor: pointer; display: flex; flex-direction: column; text-align: left; background: transparent; border: none; padding: 0;">
+      <!-- Top Image Rectangle -->
+      <div class="product-card-image-wrap" style="position: relative; width: 100%; aspect-ratio: 1; background: #B1A7B4; border-radius: 2px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        ${imageUrl
+          ? `<img src="${imageUrl}" alt="${name}" loading="lazy" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'product-card-placeholder\\' style=\\'color:#ffffff; font-weight:500; font-size:1rem; font-family:var(--font-primary);\\'>Products</div>';" />`
+          : `<div class="product-card-placeholder" style="color: #ffffff; font-weight: 500; font-size: 1rem; font-family: var(--font-primary);">Products</div>`
+        }
+        ${product?.id ? `
+          <button class="product-card-wishlist ${inWishlist ? 'active' : ''}" data-wishlist-id="${product.id}" aria-label="Wishlist" style="position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+            <span class="material-icons-round" style="font-size: 0.95rem; color: ${inWishlist ? '#DC3545' : '#666'};">${inWishlist ? 'favorite' : 'favorite_border'}</span>
+          </button>
+        ` : ''}
+      </div>
+      <!-- Description & Price OUT of rectangle, directly under -->
+      <div class="product-card-info" style="margin-top: 6px; padding: 2px 0;">
+        <div class="product-card-name" style="font-size: 0.78rem; font-weight: 500; color: #222222; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</div>
+        <div class="product-card-price" style="font-size: 0.82rem; font-weight: 800; color: #280026; margin-top: 3px; font-family: var(--font-display);">${price}</div>
+      </div>
     </div>
-  `).join('');
+  `;
 }
 
 // ---- Bindings ----
 function bindHeader() {
-  // Logo → home
   document.getElementById('home-logo-btn')?.addEventListener('click', () => {
     clearFilters();
     navigate('home');
   });
 
-  // Search
   const searchInput = document.getElementById('header-search-input');
   const searchOverlay = document.getElementById('search-overlay');
 
@@ -959,10 +607,6 @@ function bindHeader() {
     }
   }, 300));
 
-  searchInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') searchOverlay.style.display = 'none';
-  });
-
   document.getElementById('search-btn')?.addEventListener('click', () => {
     const q = searchInput?.value.trim() || '';
     setSearchQuery(q);
@@ -977,25 +621,17 @@ function bindHeader() {
     }
   }, { capture: true });
 
-  // Notifications
   document.getElementById('notification-btn')?.addEventListener('click', () => navigate('notifications'));
-
-  // Cart
   document.getElementById('cart-header-btn')?.addEventListener('click', () => navigate('cart'));
-
-  // Orders
   document.getElementById('orders-header-btn')?.addEventListener('click', () => {
     const { currentUser } = getState();
     navigate(currentUser ? 'orders' : 'login');
   });
-
-  // Profile
   document.getElementById('profile-header-btn')?.addEventListener('click', () => {
     const { currentUser } = getState();
     navigate(currentUser ? 'profile' : 'login');
   });
 
-  // Categories Dropdown Menu
   const dropdown = document.getElementById('categories-dropdown');
   const allCatWrapper = document.getElementById('all-categories-btn-wrapper');
   
@@ -1004,49 +640,24 @@ function bindHeader() {
     dropdown?.classList.toggle('show');
   });
 
-  // Close dropdown on click outside
   document.addEventListener('click', (e) => {
     if (dropdown && allCatWrapper && !allCatWrapper.contains(e.target)) {
       dropdown.classList.remove('show');
     }
   });
 
-  // Handle category selections inside dropdown
   dropdown?.addEventListener('click', (e) => {
     const item = e.target.closest('[data-drop-cat]');
     if (!item) return;
-    
     const cat = item.dataset.dropCat;
     setCategory(cat);
     updateProductGrid();
-    
-    // Update active class in dropdown items
-    dropdown.querySelectorAll('[data-drop-cat]').forEach(el => {
-      el.classList.toggle('active', el.dataset.dropCat === cat);
-    });
-    
     dropdown.classList.remove('show');
   });
 
-  // Main Nav Links
   document.getElementById('nav-about-home')?.addEventListener('click', () => navigate('about'));
   document.getElementById('nav-privacy-home')?.addEventListener('click', () => navigate('privacy'));
   document.getElementById('nav-contact-home')?.addEventListener('click', () => navigate('contact'));
-}
-
-function bindSidebar() {
-  document.getElementById('main-sidebar')?.addEventListener('click', (e) => {
-    const item = e.target.closest('[data-sidebar-cat]');
-    if (item === null) return;
-    const cat = item.dataset.sidebarCat;
-    setCategory(cat);
-    updateProductGrid();
-    updateActiveCategoryLinks(cat);
-    // Update sidebar active states
-    document.querySelectorAll('[data-sidebar-cat]').forEach(el => {
-      el.classList.toggle('active', el.dataset.sidebarCat === cat);
-    });
-  });
 }
 
 function bindCarousel(banners) {
@@ -1060,65 +671,17 @@ function bindCarousel(banners) {
     updateCarousel();
   }, 4000);
 
-  document.getElementById('carousel-prev')?.addEventListener('click', () => {
-    _carouselIndex = (_carouselIndex - 1 + _carouselTotal) % _carouselTotal;
-    updateCarousel();
-    resetTimer();
-  });
-
-  document.getElementById('carousel-next')?.addEventListener('click', () => {
-    _carouselIndex = (_carouselIndex + 1) % _carouselTotal;
-    updateCarousel();
-    resetTimer();
-  });
-
   document.getElementById('carousel-dots')?.addEventListener('click', (e) => {
     const dot = e.target.closest('[data-idx]');
     if (!dot) return;
     _carouselIndex = parseInt(dot.dataset.idx);
     updateCarousel();
-    resetTimer();
+    if (_carouselTimer) clearInterval(_carouselTimer);
+    _carouselTimer = setInterval(() => {
+      _carouselIndex = (_carouselIndex + 1) % _carouselTotal;
+      updateCarousel();
+    }, 4000);
   });
-
-  // Touch gesture support
-  const carouselEl = document.getElementById('main-carousel');
-  if (carouselEl) {
-    let startX = 0;
-    carouselEl.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    }, { passive: true });
-    carouselEl.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const diff = startX - endX;
-      if (Math.abs(diff) > 40) {
-        if (diff > 0) {
-          _carouselIndex = (_carouselIndex + 1) % _carouselTotal;
-        } else {
-          _carouselIndex = (_carouselIndex - 1 + _carouselTotal) % _carouselTotal;
-        }
-        updateCarousel();
-        resetTimer();
-      }
-    }, { passive: true });
-  }
-
-  // Safely request Google AdSense ad fill
-  try {
-    const adIns = document.querySelector('#adsense-hero-banner .adsbygoogle');
-    if (adIns && !adIns.getAttribute('data-adsbygoogle-status')) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    }
-  } catch (err) {
-    console.debug('[AdSense] Request notice:', err);
-  }
-}
-
-function resetTimer() {
-  if (_carouselTimer) clearInterval(_carouselTimer);
-  _carouselTimer = setInterval(() => {
-    _carouselIndex = (_carouselIndex + 1) % _carouselTotal;
-    updateCarousel();
-  }, 4000);
 }
 
 function updateCarousel() {
@@ -1130,61 +693,83 @@ function updateCarousel() {
   });
 }
 
+function bindPopularCategories() {
+  document.querySelectorAll('.pop-cat-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const cat = card.dataset.cat;
+      if (cat) {
+        setCategory(cat);
+        updateProductGrid();
+        document.getElementById('featured-products-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
+
 function bindProductGrid() {
-  const grid = document.getElementById('products-grid');
-  if (!grid) return;
+  const containers = [
+    document.getElementById('products-grid'),
+    document.getElementById('suggestions-grid'),
+    document.getElementById('suggestions-container-wrap')
+  ];
 
-  grid.addEventListener('click', async (e) => {
-    // Add to cart
-    const addBtn = e.target.closest('[data-add-id]');
-    if (addBtn) {
-      e.stopPropagation();
-      const productId = addBtn.dataset.addId;
-      const product = getState().products.find(p => p.id === productId);
-      if (!product) return;
-      addToCart(product);
-      updateCartBadge();
-      showToast(`${product.name} added to cart!`, 'success', 2000);
-      return;
-    }
+  containers.forEach(container => {
+    if (!container) return;
 
-    // Wishlist
-    const wishBtn = e.target.closest('[data-wishlist-id]');
-    if (wishBtn) {
-      e.stopPropagation();
-      const { currentUser } = getState();
-      if (!currentUser) { showToast('Sign in to save to wishlist', 'info'); return; }
-      const productId = wishBtn.dataset.wishlistId;
-      await toggleWishlist(productId);
-      const { userModel } = getState();
-      wishBtn.classList.toggle('active', userModel?.wishlist?.includes(productId));
-      wishBtn.querySelector('.material-icons-round').textContent =
-        userModel?.wishlist?.includes(productId) ? 'favorite' : 'favorite_border';
-      return;
-    }
+    container.addEventListener('click', async (e) => {
+      // Wishlist button click
+      const wishBtn = e.target.closest('[data-wishlist-id]');
+      if (wishBtn) {
+        e.stopPropagation();
+        const { currentUser } = getState();
+        if (!currentUser) { showToast('Sign in to save to wishlist', 'info'); return; }
+        const productId = wishBtn.dataset.wishlistId;
+        await toggleWishlist(productId);
+        const { userModel } = getState();
+        wishBtn.classList.toggle('active', userModel?.wishlist?.includes(productId));
+        wishBtn.querySelector('.material-icons-round').textContent =
+          userModel?.wishlist?.includes(productId) ? 'favorite' : 'favorite_border';
+        return;
+      }
 
-    // Navigate to product detail
-    const card = e.target.closest('[data-product-id]');
-    if (card) {
-      const productId = card.dataset.productId;
-      const product = getState().products.find(p => p.id === productId);
-      if (product) {
+      // Card click -> Navigate to Product Detail page
+      const card = e.target.closest('[data-product-id]');
+      if (card) {
+        const productId = card.dataset.productId;
+        let product = getState().products.find(p => p.id === productId);
+
+        if (!product) {
+          const cardName = card.querySelector('.product-card-name')?.textContent ||
+                           card.querySelector('div[style*="font-size: 0.82rem"]')?.textContent ||
+                           'Extravaganza Hamper';
+          const cardPriceText = card.querySelector('.product-card-price')?.textContent ||
+                                card.querySelector('div[style*="font-weight: 900"]')?.textContent ||
+                                'RS. 16,750';
+          const cardPrice = parseInt(cardPriceText.replace(/[^0-9]/g, '')) || 16750;
+          product = {
+            id: productId || `product-${Date.now()}`,
+            name: cardName,
+            price: cardPrice,
+            description: 'High-quality item selected from Zando catalog.',
+            imageUrl: card.querySelector('img')?.src || '',
+            category: 'Suggestions',
+            rating: 4.8,
+            reviewsCount: 12
+          };
+        }
+
         setState({ currentProduct: product });
         navigate('product');
       }
-    }
+    });
   });
-
-  // Track Orders Card
-  document.getElementById('track-orders-card')?.addEventListener('click', () => navigate('orders'));
 }
 
-// Update products grid without full re-render
 function updateProductGrid() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
   const { filteredProducts, products } = getState();
-  const items = filteredProducts;
+  const items = filteredProducts.length > 0 ? filteredProducts : products;
 
   if (items.length === 0) {
     grid.innerHTML = `
@@ -1198,12 +783,6 @@ function updateProductGrid() {
   }
 
   grid.innerHTML = items.map(renderProductCard).join('');
-}
-
-function updateActiveCategoryLinks(cat) {
-  document.querySelectorAll('[data-cat]').forEach(el => {
-    el.classList.toggle('active', el.dataset.cat === cat);
-  });
 }
 
 function updateCartBadge() {
@@ -1242,56 +821,17 @@ function showSearchOverlay(products, overlayEl) {
     item.addEventListener('click', () => {
       const product = getState().products.find(p => p.id === item.dataset.resultId);
       if (product) {
+        addToCart(product);
+        updateCartBadge();
         setState({ currentProduct: product });
         overlayEl.style.display = 'none';
-        navigate('product');
+        showToast(`${product.name} added! Proceeding to checkout...`, 'success', 1500);
+        navigate('checkout');
       }
     });
   });
 }
 
-function showCategoryDrawer() {
-  const { shops, categories, selectedCategory } = getState();
-  const all = [...new Set([...categories, ...shops])];
-
-  const overlay = document.createElement('div');
-  overlay.className = 'drawer-overlay';
-  const drawer = document.createElement('div');
-  drawer.className = 'drawer';
-  drawer.innerHTML = `
-    <div class="drawer-header">
-      <span class="drawer-title">All Categories</span>
-      <span class="material-icons-round drawer-close" id="drawer-close-btn">close</span>
-    </div>
-    <div class="sidebar-item ${!selectedCategory ? 'active' : ''}" data-drawer-cat="">
-      <span class="material-icons-round">grid_view</span> All Products
-    </div>
-    ${all.map(c => `
-      <div class="sidebar-item ${selectedCategory === c ? 'active' : ''}" data-drawer-cat="${c}">
-        <span class="material-icons-round">chevron_right</span> ${c}
-      </div>
-    `).join('')}
-  `;
-
-  document.body.appendChild(overlay);
-  document.body.appendChild(drawer);
-
-  const close = () => { overlay.remove(); drawer.remove(); };
-  overlay.addEventListener('click', close);
-  document.getElementById('drawer-close-btn')?.addEventListener('click', close);
-
-  drawer.querySelectorAll('[data-drawer-cat]').forEach(item => {
-    item.addEventListener('click', () => {
-      const cat = item.dataset.drawerCat;
-      setCategory(cat);
-      updateProductGrid();
-      updateActiveCategoryLinks(cat);
-      close();
-    });
-  });
-}
-
-// ---- Bottom Navigation (mobile) ----
 export function renderBottomNav(activePage) {
   const { currentUser } = getState();
   const cartCount = getCartCount();
@@ -1316,7 +856,7 @@ export function renderBottomNav(activePage) {
 
 export function bindBottomNav() {
   document.getElementById('bnav-home')?.addEventListener('click', () => {
-    import('../js/products.js').then(({ clearFilters }) => clearFilters());
+    clearFilters();
     navigate('home');
   });
 
@@ -1332,5 +872,148 @@ export function bindBottomNav() {
   });
 }
 
-// Export for external re-renders
+// ---- Auto Scroll & Infinite Scroll ----
+let _sugItemIndex = 0;
+let _sugAutoTimer = null;
+const SUG_TOTAL = 12;
+const SUG_VISIBLE = 4;
+
+function bindAutoAndInfiniteScroll() {
+  _isAutoScrollActive = false;
+  if (_autoScrollTimer) {
+    clearInterval(_autoScrollTimer);
+    _autoScrollTimer = null;
+  }
+
+  // Suggestions 1-by-1 Auto Horizontal Slider
+  _sugItemIndex = 0;
+  const maxSteps = SUG_TOTAL - SUG_VISIBLE + 1; // 9 steps (indices 0..8)
+
+  const updateSugSlider = () => {
+    const track = document.getElementById('sug-carousel-track');
+    if (!track) return;
+    const cards = track.querySelectorAll('.sug-card-item');
+    if (!cards.length) return;
+
+    const firstCard = cards[0];
+    const style = window.getComputedStyle(track);
+    const gap = parseFloat(style.gap) || 20;
+    const cardWidth = firstCard.offsetWidth;
+    const movePx = _sugItemIndex * (cardWidth + gap);
+
+    track.style.transform = `translateX(-${movePx}px)`;
+
+    // Update dot indicators
+    const dots = document.querySelectorAll('[data-sug-dot]');
+    dots.forEach((dot, idx) => {
+      const activeIdx = Math.min(
+        dots.length - 1,
+        Math.floor((_sugItemIndex / (maxSteps - 1)) * dots.length)
+      );
+      dot.style.background = idx === activeIdx ? '#280026' : 'rgba(40,0,38,0.25)';
+    });
+  };
+
+  const startSugAutoPlay = () => {
+    if (_sugAutoTimer) clearInterval(_sugAutoTimer);
+    _sugAutoTimer = setInterval(() => {
+      _sugItemIndex = (_sugItemIndex + 1) % maxSteps;
+      updateSugSlider();
+    }, 3000);
+  };
+
+  const stopSugAutoPlay = () => {
+    if (_sugAutoTimer) {
+      clearInterval(_sugAutoTimer);
+      _sugAutoTimer = null;
+    }
+  };
+
+  document.getElementById('sug-prev-btn')?.addEventListener('click', () => {
+    _sugItemIndex = (_sugItemIndex - 1 + maxSteps) % maxSteps;
+    updateSugSlider();
+  });
+
+  document.getElementById('sug-next-btn')?.addEventListener('click', () => {
+    _sugItemIndex = (_sugItemIndex + 1) % maxSteps;
+    updateSugSlider();
+  });
+
+  document.getElementById('sug-dots-container')?.addEventListener('click', (e) => {
+    const dot = e.target.closest('[data-sug-dot]');
+    if (!dot) return;
+    const dotIdx = parseInt(dot.dataset.sugDot, 10);
+    _sugItemIndex = Math.round((dotIdx / 3) * (maxSteps - 1));
+    updateSugSlider();
+  });
+
+  const wrap = document.getElementById('suggestions-container-wrap');
+  wrap?.addEventListener('mouseenter', stopSugAutoPlay);
+  wrap?.addEventListener('mouseleave', startSugAutoPlay);
+
+  if (window._sugResizeHandler) {
+    window.removeEventListener('resize', window._sugResizeHandler);
+  }
+  window._sugResizeHandler = () => updateSugSlider();
+  window.addEventListener('resize', window._sugResizeHandler);
+
+  // Initial update and auto-play
+  setTimeout(updateSugSlider, 50);
+  startSugAutoPlay();
+
+  // Infinite Scroll window listener
+  if (window._homeScrollHandler) {
+    window.removeEventListener('scroll', window._homeScrollHandler);
+  }
+
+  window._homeScrollHandler = () => {
+    const grid = document.getElementById('products-grid');
+    if (!grid) return;
+    const scrollBottom = window.innerHeight + window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (documentHeight - scrollBottom < 700) {
+      appendMoreProducts();
+    }
+  };
+
+  window.addEventListener('scroll', window._homeScrollHandler, { passive: true });
+}
+
+function appendMoreProducts() {
+  if (_isAppendingProducts) return;
+  _isAppendingProducts = true;
+
+  const grid = document.getElementById('products-grid');
+  if (!grid) {
+    _isAppendingProducts = false;
+    return;
+  }
+
+  const { filteredProducts, products } = getState();
+  const displayItems = filteredProducts.length > 0 ? filteredProducts : products;
+  if (!displayItems || displayItems.length === 0) {
+    _isAppendingProducts = false;
+    return;
+  }
+
+  const addCount = 14; // Append 2 full rows (14 product cards)
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < addCount; i++) {
+    const idx = _loadedProductCount + i;
+    const item = displayItems[idx % displayItems.length];
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = renderProductCard(item, idx);
+    if (wrapper.firstElementChild) {
+      fragment.appendChild(wrapper.firstElementChild);
+    }
+  }
+
+  grid.appendChild(fragment);
+  _loadedProductCount += addCount;
+  _isAppendingProducts = false;
+}
+
 export { updateCartBadge, updateNotificationBadge, updateProductGrid as _refreshGrid };
+

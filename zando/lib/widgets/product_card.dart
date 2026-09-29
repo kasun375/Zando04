@@ -17,74 +17,73 @@ class ProductCard extends StatelessWidget {
         ),
       ),
       child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.productCard,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Product Image
-              Image.network(
-                product.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: AppColors.productCard,
-                  child: const Center(
-                    child: Icon(Icons.image, color: Colors.white54, size: 40),
-                  ),
-                ),
-              ),
-              // Gradient Overlay
-              Container(
+        color: Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Top Image Box (Lavender/Grey background)
+            Expanded(
+              child: Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.8),
-                      Colors.transparent,
-                    ],
-                  ),
+                  color: AppColors.productCard, // Color(0xFFB1A7B4)
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(2),
+                  child: product.imageUrl.isNotEmpty
+                      ? Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholder(),
+                        )
+                      : _buildPlaceholder(),
                 ),
               ),
-              // Product Name and Price
-              Positioned(
-                bottom: 12,
-                left: 12,
-                right: 12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      product.name.isNotEmpty ? product.name : 'Product',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      AppConstants.formatCurrency(product.price),
-                      style: const TextStyle(
-                        color: AppColors.accent, // Neon Yellow accent for price
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 6),
+            // Product Name
+            Text(
+              product.name.isNotEmpty ? product.name : 'Extravagant Bouquet',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF333333),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 2),
+            // Product Price
+            Text(
+              AppConstants.formatCurrency(product.price > 0 ? product.price : 15700),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      color: AppColors.productCard,
+      alignment: Alignment.center,
+      child: const Text(
+        'Products',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.normal,
         ),
       ),
     );
   }
 }
+

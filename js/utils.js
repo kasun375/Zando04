@@ -133,60 +133,128 @@ export function imgFallback(imgEl) {
   };
 }
 
-// Render site footer HTML string
+// Render site footer HTML string matching provided mockup image
 export function renderFooter() {
   return `
-    <footer class="site-footer">
-      <div class="footer-container">
-        <div class="footer-col footer-brand">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" class="footer-brand-logo" onerror="this.style.display='none'" />
-          <p class="footer-desc">Zando is your ultimate online shopping destination. Discover premium fashion, electronics, lifestyle products and more with fast delivery and easy returns.</p>
-          <div class="footer-socials">
-            <a href="#" class="footer-social-icon" aria-label="Facebook"><span class="material-icons-round">facebook</span></a>
-            <a href="#" class="footer-social-icon" aria-label="Instagram"><span class="material-icons-round">camera_alt</span></a>
-            <a href="#" class="footer-social-icon" aria-label="Twitter"><span class="material-icons-round">alternate_email</span></a>
+    <footer class="site-footer" style="background: #545454; color: #ffffff; padding: 2.2rem 3rem 1.5rem 3rem; width: 100%; font-family: 'Inter', system-ui, -apple-system, sans-serif; box-sizing: border-box;">
+      <div style="width: 100%; max-width: 100%; margin: 0 auto;">
+        
+        <!-- Top WhatsApp Header -->
+        <div style="text-align: center; margin-bottom: 1.8rem;">
+          <h2 style="color: #ffffff; font-size: 1.5rem; font-weight: 700; margin: 0 0 0.35rem 0; letter-spacing: 0.05em; text-transform: uppercase;">ODER ON WHATSAPP</h2>
+          <p style="color: #ffffff; font-size: 0.9rem; margin: 0; font-weight: 400;">Tell us what you need - we'll find it,price it, and deliver it.Open 24/7</p>
+        </div>
+
+        <!-- Main Top Row: Left About | Center Buttons | Right Badges & QR -->
+        <div class="footer-top-grid" style="display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 2.5rem; align-items: center; margin-bottom: 2.2rem; width: 100%;">
+          
+          <!-- Left: About Text & Yellow Links -->
+          <div style="font-size: 0.9rem; line-height: 1.5;">
+            <p style="margin: 0 0 0.8rem 0; color: #ffffff; font-weight: 400;">
+              Zando is your ultimate online shopping destination. Discover premium fashion, electronics, lifestyle products and more with fast delivery and easy returns.
+            </p>
+            <div style="color: #dce319; font-weight: 600; font-size: 0.9rem;">
+              <a href="#contact" onclick="window.navigate && window.navigate('contact')" style="color: #dce319; text-decoration: none;">Contact Us</a>
+              <span style="color: #ffffff; margin: 0 0.4rem;">|</span>
+              <a href="#about" onclick="window.navigate && window.navigate('about')" style="color: #dce319; text-decoration: none;">About Us</a>
+              <span style="color: #ffffff; margin: 0 0.4rem;">|</span>
+              <a href="#privacy" onclick="window.navigate && window.navigate('privacy')" style="color: #dce319; text-decoration: none;">Privacy Policy</a>
+            </div>
           </div>
-        </div>
-        <div class="footer-col">
-          <h3 class="footer-title">Quick Links</h3>
-          <div class="footer-links">
-            <a href="#home" class="footer-link">Home</a>
-            <a href="#categories" class="footer-link">Categories</a>
-            <a href="#cart" class="footer-link">Shopping Cart</a>
-            <a href="#profile" class="footer-link">My Profile</a>
+
+          <!-- Center: White Button & Phone Box -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <!-- White WhatsApp Button -->
+            <a href="https://wa.me/94760891262" target="_blank" rel="noopener noreferrer"
+               style="background: #ffffff; color: #000000; padding: 0.5rem 1.4rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 0.88rem; text-decoration: none; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+              <img src="assets/images/logo-whatsapp-png-46068.png" alt="WhatsApp" style="height: 24px; width: auto; object-fit: contain;" />
+              <span>ODER ON WHATSAPP</span>
+            </a>
+
+            <!-- Grey Phone Box -->
+            <div style="background: #6c6c6c; color: #ffffff; padding: 0.55rem 1.4rem; border-radius: 6px; font-size: 0.82rem; font-weight: 500; text-align: center; width: max-content;">
+              To Oder by phone, call - 076 089 12 62
+            </div>
           </div>
-        </div>
-        <div class="footer-col">
-          <h3 class="footer-title">Customer Care</h3>
-          <div class="footer-links">
-            <a href="#orders" class="footer-link">Track Orders</a>
-            <a href="#" class="footer-link">Help & Support</a>
-            <a href="#" class="footer-link">Returns & Refunds</a>
-            <a href="#" class="footer-link">FAQ</a>
+
+          <!-- Right: App Store Badges & QR Code -->
+          <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" style="display: block;">
+                <img src="assets/images/pngegg.png" alt="Get it on Google Play & App Store" style="height: 80px; width: auto; object-fit: contain;" />
+              </a>
+            </div>
+            <div>
+              <img src="assets/images/qr-code.png" alt="ZANDO QR Code" style="height: 80px; width: 80px; object-fit: contain; border-radius: 4px; background: #ffffff; padding: 2px;" />
+            </div>
           </div>
+
         </div>
-        <div class="footer-col">
-          <h3 class="footer-title">Contact Us</h3>
-          <div class="footer-links">
-            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">email</span> kasunjayaweera80@gmail.com
-            </span>
-            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">phone</span> +94760891262
-            </span>
-            <span class="footer-link" style="padding-left:0; cursor:default; pointer-events:none;">
-              <span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:4px;">place</span> Zando Stores, No 49, Paniyandoowa Rd, Ambalangoda
-            </span>
+
+        <!-- Links Columns Grid: Quick Links | Customer Care | Contact Us -->
+        <div class="footer-links-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3rem; align-items: start; margin-top: 1.8rem; width: 100%;">
+          
+          <!-- Col 1: Quick Links -->
+          <div>
+            <h4 style="color: #dce319; font-size: 1rem; font-weight: 700; margin: 0 0 0.6rem 0;">Quick Links</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; color: #ffffff;">
+              <li><a href="#home" onclick="window.navigate && window.navigate('home')" style="color: #ffffff; text-decoration: none;">Home</a></li>
+              <li><a href="#categories" onclick="window.navigate && window.navigate('categories')" style="color: #ffffff; text-decoration: none;">Categories</a></li>
+              <li><a href="#cart" onclick="window.navigate && window.navigate('cart')" style="color: #ffffff; text-decoration: none;">Shopping Cart</a></li>
+              <li><a href="#profile" onclick="window.navigate && window.navigate('profile')" style="color: #ffffff; text-decoration: none;">My Profile</a></li>
+            </ul>
           </div>
+
+          <!-- Col 2: Customer Care -->
+          <div>
+            <h4 style="color: #dce319; font-size: 1rem; font-weight: 700; margin: 0 0 0.6rem 0;">Customer Care</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; color: #ffffff;">
+              <li><a href="#orders" onclick="window.navigate && window.navigate('orders')" style="color: #ffffff; text-decoration: none;">Track Orders</a></li>
+              <li><a href="#contact" onclick="window.navigate && window.navigate('contact')" style="color: #ffffff; text-decoration: none;">Help &amp; Support</a></li>
+              <li><a href="#contact" onclick="window.navigate && window.navigate('contact')" style="color: #ffffff; text-decoration: none;">Returns &amp; Refunds</a></li>
+              <li><a href="#contact" onclick="window.navigate && window.navigate('contact')" style="color: #ffffff; text-decoration: none;">FAQ</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Contact Us -->
+          <div>
+            <h4 style="color: #dce319; font-size: 1rem; font-weight: 700; margin: 0 0 0.6rem 0;">Contact Us</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; color: #ffffff;">
+              <li>Email Us</li>
+              <li>076081262</li>
+              <li style="line-height: 1.4;">Zando Stores,No 49,<br />Paniyandoowa Rd,<br />Ambalangoda.</li>
+            </ul>
+          </div>
+
         </div>
-      </div>
-      <div class="footer-bottom">
-        <div>&copy; ${new Date().getFullYear()} ZANDO. All rights reserved.</div>
-        <div style="display:flex; gap:1.5rem;">
-          <a href="#" class="footer-link">Privacy Policy</a>
-          <a href="#" class="footer-link">Terms of Service</a>
+
+        <!-- Copyright Bar -->
+        <div style="margin-top: 2.2rem; text-align: center; color: #ffffff; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem;">
+          &copy; 2026 ZANDO. All rights reserved.
         </div>
+
       </div>
     </footer>
+
+    <style>
+      @media (max-width: 900px) {
+        .footer-top-grid {
+          grid-template-columns: 1fr !important;
+          text-align: center !important;
+        }
+        .footer-top-grid > div {
+          justify-content: center !important;
+        }
+        .footer-links-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+      }
+      @media (max-width: 600px) {
+        .footer-links-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
+    </style>
   `;
 }
+

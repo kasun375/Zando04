@@ -28,6 +28,39 @@ function ensureStripeLoaded() {
   });
 }
 
+// Main entry point for route navigation
+export function renderCheckout(appEl) {
+  const { cart, currentProduct } = getState();
+  let items = cart;
+  
+  if (items.length === 0 && currentProduct) {
+    items = [{
+      id: currentProduct.id || `product-${Date.now()}`,
+      name: currentProduct.name || 'Extravaganza Hamper',
+      price: currentProduct.price || 16750,
+      quantity: 1,
+      imageUrl: currentProduct.imageUrl || ''
+    }];
+  }
+
+  const total = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+  if (appEl) {
+    appEl.innerHTML = `
+      <div class="app-layout" style="min-height: 80vh; background: #f8f9fa;">
+        <div class="page-content" style="padding: 2rem;">
+          <div class="page-content-inner">
+            <h2 style="font-family: var(--font-display); color: #280026; margin-bottom: 1rem;">Checkout</h2>
+            <p style="color: #666;">Opening secure checkout modal...</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  renderCheckoutModal(items, total);
+}
+
 // Main entry point — renders consolidated modal bottom sheet
 export function renderCheckoutModal(items, total, checkoutItemIds = null) {
   _checkoutItems = items;

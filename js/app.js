@@ -21,6 +21,7 @@ const PAGES = {
   register:      () => import('../pages/register.js'),
   product:       () => import('../pages/product-detail.js'),
   cart:          () => import('../pages/cart.js'),
+  checkout:      () => import('../pages/checkout.js'),
   profile:       () => import('../pages/profile.js'),
   orders:        () => import('../pages/order-history.js'),
   notifications: () => import('../pages/notifications.js'),
@@ -97,6 +98,11 @@ export async function bootstrapApp() {
   registerRoute('cart', async () => {
     const mod = await loadPage('cart');
     mod?.renderCart(appEl);
+  });
+
+  registerRoute('checkout', async () => {
+    const mod = await loadPage('checkout');
+    mod?.renderCheckout(appEl);
   });
 
   registerRoute('profile', async () => {
