@@ -132,18 +132,32 @@ export async function bootstrapApp() {
     mod?.renderCategories(appEl);
   });
 
+  registerRoute('search', async () => {
+    const mod = await loadPage('home');
+    mod?.renderHome(appEl);
+    updateCartBadge();
+    setTimeout(() => {
+      document.getElementById('header-search-input')?.focus();
+    }, 100);
+  });
+
+  registerRoute('about', async () => {
+    const mod = await loadPage('home');
+    mod?.renderHome(appEl);
+  });
+
+  registerRoute('privacy', async () => {
+    const mod = await loadPage('home');
+    mod?.renderHome(appEl);
+  });
+
+  registerRoute('contact', async () => {
+    const mod = await loadPage('home');
+    mod?.renderHome(appEl);
+  });
+
   registerRoute('404', () => {
-    appEl.innerHTML = `
-      <div class="app-layout">
-        <div class="empty-state" style="min-height:100vh;">
-          <span class="material-icons-round" style="font-size:5rem;">sentiment_dissatisfied</span>
-          <h2>Page Not Found</h2>
-          <p>The page you're looking for doesn't exist.</p>
-          <button class="btn btn-primary" id="err-home-btn">GO HOME</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('err-home-btn')?.addEventListener('click', () => navigate('home'));
+    navigate('home');
   });
 
   // Helper to start products/banners listeners
@@ -287,9 +301,10 @@ export async function bootstrapApp() {
 
     const iconMap = {
       home: { active: 'home', inactive: 'home_outlined' },
+      search: { active: 'search', inactive: 'search' },
       profile: { active: 'person', inactive: 'person_outline' },
       cart: { active: 'shopping_cart', inactive: 'shopping_cart_outlined' },
-      categories: { active: 'grid_view', inactive: 'grid_view_outlined' }
+      categories: { active: 'grid_view', inactive: 'grid_view' }
     };
 
     document.querySelectorAll('.mobile-nav-item').forEach(item => {
@@ -312,7 +327,13 @@ export async function bootstrapApp() {
     const item = e.target.closest('.mobile-nav-item');
     if (!item) return;
     const target = item.getAttribute('data-nav');
-    if (target === 'profile') {
+    if (target === 'search') {
+      navigate('home');
+      setTimeout(() => {
+        const input = document.getElementById('header-search-input');
+        input?.focus();
+      }, 100);
+    } else if (target === 'profile') {
       const { currentUser } = getState();
       navigate(currentUser ? 'profile' : 'login');
     } else {

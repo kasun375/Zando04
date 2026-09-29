@@ -46,22 +46,22 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: 6),
             // Product Name
             Text(
-              product.name.isNotEmpty ? product.name : 'Extravagant Bouquet',
+              product.name.isNotEmpty ? product.name : 'Extravaganza Hamper',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Color(0xFF333333),
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
               ),
             ),
             const SizedBox(height: 2),
             // Product Price
             Text(
-              AppConstants.formatCurrency(product.price > 0 ? product.price : 15700),
+              AppConstants.formatCurrency(product.price > 0 ? product.price : 16750),
               style: const TextStyle(
-                color: Colors.black,
-                fontSize: 11,
+                color: AppColors.primary,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -947,6 +947,21 @@ function bindAutoAndInfiniteScroll() {
     updateSugSlider();
   });
 
+  document.querySelectorAll('.sug-card-item').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const prodId = card.dataset.productId;
+      if (prodId && !prodId.startsWith('suggestion-prod-')) {
+        navigate('product', { id: prodId });
+      } else {
+        const { products } = getState();
+        if (products.length > 0) {
+          navigate('product', { id: products[0].id });
+        }
+      }
+    });
+  });
+
   const wrap = document.getElementById('suggestions-container-wrap');
   wrap?.addEventListener('mouseenter', stopSugAutoPlay);
   wrap?.addEventListener('mouseleave', startSugAutoPlay);

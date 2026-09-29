@@ -57,13 +57,12 @@ class AppThemes {
 class AppConstants {
   static const String vapidKey = 'YOUR_PUBLIC_VAPID_KEY';
   static String formatCurrency(double amount) {
-    // Format double to integer format if no decimals or formatted nicely
     int intAmount = amount.toInt();
     String formattedStr = intAmount.toString().replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (Match m) => '${m[1]},',
     );
-    return 'Rs. $formattedStr';
+    return 'RS. $formattedStr';
   }
   static const List<String> categories = [
     'Mobile Phones',

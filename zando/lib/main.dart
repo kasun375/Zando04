@@ -44,7 +44,9 @@ void main() async {
     );
     try {
       if (!kIsWeb) {
-        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+        FirebaseMessaging.onBackgroundMessage(
+          firebaseMessagingBackgroundHandler,
+        );
       }
     } catch (e) {
       debugPrint(

@@ -46,10 +46,10 @@ export function renderHome(appEl) {
   appEl.innerHTML = `
     <div class="app-layout">
       ${renderHeader()}
+      ${renderAllCategoriesBar()}
       <div class="page-content">
         <div class="page-content-inner">
           <main class="main-area" style="padding: 0; width: 100%;">
-            ${renderAllCategoriesBar()}
             ${renderCarousel(displayBanners)}
             ${renderFeaturedProductsSection()}
             ${renderPopularCategoriesSection()}
@@ -59,7 +59,6 @@ export function renderHome(appEl) {
         </div>
       </div>
       ${renderFooter()}
-      ${renderBottomNav('home')}
     </div>
   `;
 
@@ -71,7 +70,6 @@ export function renderHome(appEl) {
   bindAutoAndInfiniteScroll();
   updateCartBadge();
   updateNotificationBadge();
-  bindBottomNav();
 
   // Reactive subscription to state changes for the categories dropdown
   subscribe('categories', () => updateDropdownMenu());
@@ -98,22 +96,22 @@ function renderHeader() {
 
   return `
     <header class="site-header" style="background: #280026; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-      <div class="header-top-container" style="max-width: 100%; margin: 0 auto; padding: 0.75rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+      <div class="header-top-container" style="max-width: 100%; margin: 0 auto; padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
         <!-- Logo -->
         <div id="home-logo-btn" style="cursor: pointer; flex-shrink: 0; display: flex; align-items: center;">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 42px; max-width: 100%; object-fit: contain;" />
+          <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 38px; max-width: 100%; object-fit: contain;" />
         </div>
 
         <!-- Search Bar (White input + Yellow square search button) -->
-        <div id="header-search-wrap" style="flex: 1; max-width: 650px; position: relative;">
-          <div style="display: flex; align-items: center; background: #ffffff; border-radius: 4px; overflow: hidden; height: 40px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <div id="header-search-wrap" style="flex: 1; max-width: 600px; position: relative;">
+          <div style="display: flex; align-items: center; background: #ffffff; border-radius: 6px; overflow: hidden; height: 38px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
             <input
               type="text"
               id="header-search-input"
               class="header-search-input"
-              placeholder="Search products..."
+              placeholder="SEARCH PRODUCTS..."
               autocomplete="off"
-              style="flex: 1; border: none; padding: 0 1rem; color: #333; font-size: 0.9rem; outline: none; background: transparent;"
+              style="flex: 1; border: none; padding: 0 1rem; color: #333; font-size: 0.85rem; outline: none; background: transparent;"
             />
             <button id="search-btn" class="header-search-btn" aria-label="Search" style="background: #FFFF00; color: #000; border: none; width: 44px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
               <span class="material-icons-round" style="font-size: 1.3rem; color: #000;">search</span>
@@ -123,27 +121,29 @@ function renderHeader() {
         </div>
 
         <!-- Header Actions (Icons) -->
-        <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
           ${currentUser ? `
-            <button class="icon-btn header-icon-btn" id="notification-btn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
-              <span class="material-icons-round" style="font-size: 1.3rem;">notifications</span>
+            <button class="icon-btn header-icon-btn" id="notification-btn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+              <span class="material-icons-round" style="font-size: 1.25rem;">notifications</span>
               <span class="btn-badge" style="display:none; position: absolute; top: 2px; right: 2px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
             </button>
           ` : ''}
-          <button class="icon-btn header-icon-btn" id="cart-header-btn" title="Shopping Cart" aria-label="Cart" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
-            <span class="material-icons-round" style="font-size: 1.3rem;">shopping_cart</span>
+          <button class="icon-btn header-icon-btn" id="cart-header-btn" title="Shopping Cart" aria-label="Cart" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+            <span class="material-icons-round" style="font-size: 1.25rem;">shopping_cart</span>
             <span class="btn-badge" id="cart-badge" style="display:none; position: absolute; top: 2px; right: 2px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
           </button>
-          <button class="icon-btn header-icon-btn" id="orders-header-btn" title="Track Orders" aria-label="Track Orders" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <span class="material-icons-round" style="font-size: 1.3rem;">local_shipping</span>
-          </button>
-          <button class="icon-btn header-icon-btn" id="profile-header-btn" title="${currentUser ? 'My Profile' : 'Sign In'}" aria-label="${currentUser ? 'Profile' : 'Sign In'}" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <span class="material-icons-round" style="font-size: 1.3rem;">person</span>
+          <button class="icon-btn header-icon-btn" id="profile-header-btn" title="${currentUser ? 'My Profile' : 'Sign In'}" aria-label="${currentUser ? 'Profile' : 'Sign In'}" style="background: rgba(255,255,255,0.12); color: #fff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-icons-round" style="font-size: 1.25rem;">person</span>
           </button>
         </div>
       </div>
     </header>
   `;
+}
+
+// ---- Track My Orders Card (Removed) ----
+function renderTrackOrdersCard() {
+  return '';
 }
 
 // ---- All Categories Bar (Placed OUTSIDE navigation bar) ----
@@ -358,6 +358,9 @@ function renderPopularCategoriesSection() {
         }
       }
     </style>
+  `;
+}
+
 // ---- Your Suggestions Section (Auto 1-by-1 horizontal slider, 4 cards visible on right side) ----
 function renderSuggestionsSection() {
   const { products } = getState();
@@ -610,6 +613,10 @@ function bindHeader() {
 
   document.getElementById('notification-btn')?.addEventListener('click', () => navigate('notifications'));
   document.getElementById('cart-header-btn')?.addEventListener('click', () => navigate('cart'));
+  document.getElementById('track-orders-home-btn')?.addEventListener('click', () => {
+    const { currentUser } = getState();
+    navigate(currentUser ? 'orders' : 'login');
+  });
   document.getElementById('orders-header-btn')?.addEventListener('click', () => {
     const { currentUser } = getState();
     navigate(currentUser ? 'orders' : 'login');
@@ -928,6 +935,21 @@ function bindAutoAndInfiniteScroll() {
     const dotIdx = parseInt(dot.dataset.sugDot, 10);
     _sugItemIndex = Math.round((dotIdx / 3) * (maxSteps - 1));
     updateSugSlider();
+  });
+
+  document.querySelectorAll('.sug-card-item').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const prodId = card.dataset.productId;
+      if (prodId && !prodId.startsWith('suggestion-prod-')) {
+        navigate('product', { id: prodId });
+      } else {
+        const { products } = getState();
+        if (products.length > 0) {
+          navigate('product', { id: products[0].id });
+        }
+      }
+    });
   });
 
   const wrap = document.getElementById('suggestions-container-wrap');
