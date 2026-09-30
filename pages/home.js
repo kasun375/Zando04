@@ -318,9 +318,12 @@ function renderFeaturedProductsSection() {
           padding: 0 16px !important;
           margin-bottom: 2rem !important;
         }
-        .featured-products-grid {
+        .featured-products-grid,
+        .products-grid {
+          display: grid !important;
           grid-template-columns: repeat(2, 1fr) !important;
           gap: 16px 12px !important;
+          width: 100% !important;
         }
       }
     </style>
