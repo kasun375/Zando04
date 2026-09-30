@@ -27,6 +27,9 @@ const PAGES = {
   notifications: () => import('../pages/notifications.js'),
   admin:         () => import('../pages/admin.js'),
   categories:    () => import('../pages/categories.js'),
+  about:         () => import('../pages/about.js'),
+  privacy:       () => import('../pages/privacy.js'),
+  contact:       () => import('../pages/contact.js'),
 };
 
 async function loadPage(name) {
@@ -107,6 +110,11 @@ export async function bootstrapApp() {
     mod?.renderProfile(appEl);
   });
 
+  registerRoute('categories', async () => {
+    const mod = await loadPage('categories');
+    mod?.renderCategories(appEl);
+  });
+
   registerRoute('orders', async () => {
     const mod = await loadPage('orders');
     await mod?.renderOrderHistory(appEl);
@@ -127,37 +135,33 @@ export async function bootstrapApp() {
     await mod?.renderAdmin(appEl);
   });
 
-  registerRoute('categories', async () => {
-    const mod = await loadPage('categories');
-    mod?.renderCategories(appEl);
-  });
-
-  registerRoute('search', async () => {
-    const mod = await loadPage('home');
-    mod?.renderHome(appEl);
-    updateCartBadge();
-    setTimeout(() => {
-      document.getElementById('header-search-input')?.focus();
-    }, 100);
-  });
-
   registerRoute('about', async () => {
-    const mod = await loadPage('home');
-    mod?.renderHome(appEl);
+    const mod = await loadPage('about');
+    mod?.renderAbout(appEl);
   });
 
   registerRoute('privacy', async () => {
-    const mod = await loadPage('home');
-    mod?.renderHome(appEl);
+    const mod = await loadPage('privacy');
+    mod?.renderPrivacy(appEl);
   });
 
   registerRoute('contact', async () => {
-    const mod = await loadPage('home');
-    mod?.renderHome(appEl);
+    const mod = await loadPage('contact');
+    mod?.renderContact(appEl);
   });
 
   registerRoute('404', () => {
-    navigate('home');
+    appEl.innerHTML = `
+      <div class="app-layout">
+        <div class="empty-state" style="min-height:100vh;">
+          <span class="material-icons-round" style="font-size:5rem;">sentiment_dissatisfied</span>
+          <h2>Page Not Found</h2>
+          <p>The page you're looking for doesn't exist.</p>
+          <button class="btn btn-primary" id="err-home-btn">GO HOME</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('err-home-btn')?.addEventListener('click', () => navigate('home'));
   });
 
   // Helper to start products/banners listeners
@@ -279,65 +283,6 @@ export async function bootstrapApp() {
       import('../pages/notifications.js').then(mod => {
         mod.renderNotifications(appEl);
       }).catch(() => {});
-    }
-  });
-
-  // ── Mobile Bottom Navigation Sync & Events ─────────────────────────────────
-  function syncMobileNav() {
-    const hash = window.location.hash.slice(1) || 'home';
-    const base = hash.split('/')[0];
-    
-    // Group related routes under tabs
-    let activeTab = base;
-    if (['login', 'register', 'orders', 'order-history', 'profile'].includes(base)) {
-      activeTab = 'profile';
-    } else if (['cart'].includes(base)) {
-      activeTab = 'cart';
-    } else if (['categories'].includes(base)) {
-      activeTab = 'categories';
-    } else {
-      activeTab = 'home';
-    }
-
-    const iconMap = {
-      home: { active: 'home', inactive: 'home_outlined' },
-      search: { active: 'search', inactive: 'search' },
-      profile: { active: 'person', inactive: 'person_outline' },
-      cart: { active: 'shopping_cart', inactive: 'shopping_cart_outlined' },
-      categories: { active: 'grid_view', inactive: 'grid_view' }
-    };
-
-    document.querySelectorAll('.mobile-nav-item').forEach(item => {
-      const tabName = item.getAttribute('data-nav');
-      const iconEl = item.querySelector('.material-icons-round');
-      if (tabName === activeTab) {
-        item.classList.add('active');
-        if (iconEl && iconMap[tabName]) iconEl.textContent = iconMap[tabName].active;
-      } else {
-        item.classList.remove('active');
-        if (iconEl && iconMap[tabName]) iconEl.textContent = iconMap[tabName].inactive;
-      }
-    });
-  }
-
-  window.addEventListener('hashchange', syncMobileNav);
-  syncMobileNav(); // Run on init
-
-  document.getElementById('mobile-bottom-nav')?.addEventListener('click', (e) => {
-    const item = e.target.closest('.mobile-nav-item');
-    if (!item) return;
-    const target = item.getAttribute('data-nav');
-    if (target === 'search') {
-      navigate('home');
-      setTimeout(() => {
-        const input = document.getElementById('header-search-input');
-        input?.focus();
-      }, 100);
-    } else if (target === 'profile') {
-      const { currentUser } = getState();
-      navigate(currentUser ? 'profile' : 'login');
-    } else {
-      navigate(target);
     }
   });
 }

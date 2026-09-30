@@ -107,3 +107,11 @@ export async function toggleWishlist(productId) {
   setState({ userModel: { ...userModel, wishlist } });
   return wishlist;
 }
+
+// Update user profile fields (gender, birthday, language, savedAddresses)
+export async function updateUserProfile(uid, fields) {
+  const { userModel } = getState();
+  await setDoc(doc(window._db, 'users', uid), fields, { merge: true });
+  setState({ userModel: { ...userModel, ...fields } });
+}
+
