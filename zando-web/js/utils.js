@@ -165,7 +165,7 @@ export function renderFooter() {
           <!-- Center: White Button & Phone Box -->
           <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
             <!-- White WhatsApp Button -->
-            <a href="https://wa.me/94760891262" target="_blank" rel="noopener noreferrer"
+            <a href="https://wa.me/94766341872" target="_blank" rel="noopener noreferrer"
                style="background: #ffffff; color: #000000; padding: 0.5rem 1.4rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 0.88rem; text-decoration: none; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
               <img src="assets/images/logo-whatsapp-png-46068.png" alt="WhatsApp" style="height: 24px; width: auto; object-fit: contain;" />
               <span>ODER ON WHATSAPP</span>

@@ -1068,7 +1068,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () async {
-                          final url = Uri.parse('https://wa.me/94760891262');
+                          final url = Uri.parse('https://wa.me/94766341872');
                           if (await canLaunchUrl(url)) {
                             await launchUrl(url, mode: LaunchMode.externalApplication);
                           }
@@ -1107,7 +1107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
-                          'To Oder by phone, call - 076 089 12 62',
+                          'To Order by phone, call - 076 089 12 62',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -1185,7 +1185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    final url = Uri.parse('https://wa.me/94760891262');
+                    final url = Uri.parse('https://wa.me/94766341872');
                     if (await canLaunchUrl(url)) {
                       await launchUrl(url, mode: LaunchMode.externalApplication);
                     }
@@ -1224,7 +1224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
-                    'To Oder by phone, call - 076 089 12 62',
+                    'To Order by phone, call - 076 089 12 62',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -1293,7 +1293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 8),
                     Text('Email Us', style: TextStyle(color: Colors.white, fontSize: 13)),
                     SizedBox(height: 4),
-                    Text('076081262', style: TextStyle(color: Colors.white, fontSize: 13)),
+                    Text('0760891262', style: TextStyle(color: Colors.white, fontSize: 13)),
                     SizedBox(height: 4),
                     Text(
                       'Zando Stores,No 49,\nPaniyandoowa Rd,\nAmbalangoda.',
