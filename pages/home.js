@@ -106,55 +106,92 @@ function renderHeader() {
 
   return `
     <header class="site-header" style="background: #280026; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-      <div class="header-top-container" style="max-width: 100%; margin: 0 auto; padding: 0.75rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
-        <!-- Logo -->
-        <div id="home-logo-btn" style="cursor: pointer; flex-shrink: 0; display: flex; align-items: center;">
-          <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 42px; max-width: 100%; object-fit: contain;" />
-        </div>
+      <div class="header-top-container container-fluid" style="padding: 0.75rem 1.5rem;">
+        <!-- Desktop Layout (≥769px) -->
+        <div class="d-none d-md-flex align-items-center justify-content-between gap-3">
+          <!-- Logo -->
+          <div id="home-logo-btn" style="cursor: pointer; flex-shrink: 0;" class="d-flex align-items-center">
+            <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 38px; object-fit: contain;" />
+          </div>
 
-        <!-- Search Bar (White input + Yellow square search button) -->
-        <div id="header-search-wrap" style="flex: 1; max-width: 650px; position: relative;">
-          <div style="display: flex; align-items: center; background: #ffffff; border-radius: 4px; overflow: hidden; height: 40px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-            <input
-              type="text"
-              id="header-search-input"
-              class="header-search-input"
-              placeholder="Search products..."
-              autocomplete="off"
-              style="flex: 1; border: none; padding: 0 1rem; color: #333; font-size: 0.9rem; outline: none; background: transparent;"
-            />
-            <button id="search-btn" class="header-search-btn" aria-label="Search" style="background: #FFFF00; color: #000; border: none; width: 44px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
-              <span class="material-icons-round" style="font-size: 1.3rem; color: #000;">search</span>
+          <!-- Search Bar (White input + Yellow square search button) -->
+          <div id="header-search-wrap" style="flex: 1; max-width: 600px; position: relative;">
+            <div style="display: flex; align-items: center; background: #ffffff; border-radius: 6px; overflow: hidden; height: 38px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <input
+                type="text"
+                id="header-search-input"
+                class="header-search-input"
+                placeholder="SEARCH PRODUCTS..."
+                autocomplete="off"
+                style="flex: 1; border: none; padding: 0 1rem; color: #333; font-size: 0.85rem; outline: none; background: transparent;"
+              />
+              <button id="search-btn" class="header-search-btn" aria-label="Search" style="background: #FFFF00; color: #000; border: none; width: 44px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+                <span class="material-icons-round" style="font-size: 1.3rem; color: #000;">search</span>
+              </button>
+            </div>
+            <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
+          </div>
+
+          <!-- Header Actions -->
+          <div class="d-flex align-items-center gap-3">
+            ${currentUser ? `
+              <button class="icon-btn header-icon-btn" id="notification-btn" title="Notifications" aria-label="Notifications" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+                <span class="material-icons-round" style="font-size: 1.4rem;">notifications</span>
+                <span class="btn-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
+              </button>
+            ` : ''}
+            <button class="icon-btn header-icon-btn" id="cart-header-btn" title="Shopping Cart" aria-label="Cart" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+              <span class="material-icons-round" style="font-size: 1.4rem;">shopping_cart</span>
+              <span class="btn-badge" id="cart-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
+            </button>
+            <button class="icon-btn header-icon-btn" id="orders-header-btn" title="Track Orders" aria-label="Track Orders" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <span class="material-icons-round" style="font-size: 1.4rem;">local_shipping</span>
+            </button>
+            <button class="icon-btn header-icon-btn" id="profile-header-btn" title="${currentUser ? 'My Profile' : 'Sign In'}" aria-label="${currentUser ? 'Profile' : 'Sign In'}" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <span class="material-icons-round" style="font-size: 1.4rem;">person</span>
             </button>
           </div>
-          <div class="search-overlay" id="search-overlay" style="display:none; position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 1000; max-height: 400px; overflow-y: auto;"></div>
         </div>
 
-        <!-- Header Actions (Icons without circular background) -->
-        <div style="display: flex; align-items: center; gap: 1.25rem;">
-          ${currentUser ? `
-            <button class="icon-btn header-icon-btn" id="notification-btn" title="Notifications" aria-label="Notifications" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
-              <span class="material-icons-round" style="font-size: 1.4rem;">notifications</span>
-              <span class="btn-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
-            </button>
-          ` : ''}
-          <button class="icon-btn header-icon-btn" id="cart-header-btn" title="Shopping Cart" aria-label="Cart" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
-            <span class="material-icons-round" style="font-size: 1.4rem;">shopping_cart</span>
-            <span class="btn-badge" id="cart-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
-          </button>
-          <button class="icon-btn header-icon-btn" id="orders-header-btn" title="Track Orders" aria-label="Track Orders" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <span class="material-icons-round" style="font-size: 1.4rem;">local_shipping</span>
-          </button>
-          <button class="icon-btn header-icon-btn" id="profile-header-btn" title="${currentUser ? 'My Profile' : 'Sign In'}" aria-label="${currentUser ? 'Profile' : 'Sign In'}" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <span class="material-icons-round" style="font-size: 1.4rem;">person</span>
-          </button>
+        <!-- Mobile Layout matching Mobile App UI (≤768px) -->
+        <div class="d-flex d-md-none flex-column gap-2" style="padding: 0.2rem 0;">
+          <!-- Row 1: Logo & Notifications -->
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div id="home-logo-btn-mobile" style="cursor: pointer;" class="d-flex align-items-center">
+              <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 34px; object-fit: contain;" />
+            </div>
+            ${currentUser ? `
+              <button class="icon-btn header-icon-btn" id="notification-btn-mobile" title="Notifications" aria-label="Notifications" style="background: transparent; color: #fff; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+                <span class="material-icons-round" style="font-size: 1.4rem;">notifications_none</span>
+                <span class="btn-badge" style="display:none; position: absolute; top: -2px; right: -4px; background: #FFFF00; color: #000; font-weight: 800; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">0</span>
+              </button>
+            ` : ''}
+          </div>
+
+          <!-- Row 2: Search Input Box with Yellow Button -->
+          <div id="header-search-wrap-mobile" style="width: 100%; position: relative;">
+            <div style="display: flex; align-items: center; background: #ffffff; border-radius: 6px; overflow: hidden; height: 38px; width: 100%;">
+              <input
+                type="text"
+                id="header-search-input-mobile"
+                class="header-search-input"
+                placeholder="SEARCH PRODUCTS..."
+                autocomplete="off"
+                style="flex: 1; border: none; padding: 0 0.85rem; color: #333; font-size: 0.8rem; outline: none; background: transparent;"
+              />
+              <button id="search-btn-mobile" class="header-search-btn" aria-label="Search" style="background: #FFFF00; color: #000; border: none; width: 44px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+                <span class="material-icons-round" style="font-size: 1.2rem; color: #000;">search</span>
+              </button>
+            </div>
+            <div class="search-overlay" id="search-overlay-mobile" style="display:none; position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 1000; max-height: 350px; overflow-y: auto;"></div>
+          </div>
         </div>
       </div>
     </header>
   `;
 }
 
-// ---- All Categories Bar (Placed OUTSIDE navigation bar) ----
+// ---- All Categories Bar (Placed OUTSIDE navigation bar — Hidden on Mobile view) ----
 function renderAllCategoriesBar() {
   const { categories, shops, selectedCategory } = getState();
   const allCategories = [...new Set([...categories, ...shops])];
@@ -171,7 +208,7 @@ function renderAllCategoriesBar() {
   `;
 
   return `
-    <div class="all-categories-outside-section" style="padding: 0.85rem 2.5rem; background: #ffffff; border-bottom: 1px solid #eeeeee; width: 100%;">
+    <div class="all-categories-outside-section d-none d-md-block" style="padding: 0.85rem 2.5rem; background: #ffffff; border-bottom: 1px solid #eeeeee; width: 100%;">
       <div id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
         <button id="all-categories-btn" class="all-categories-btn" style="background: #280026; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.6rem 1.4rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(40,0,38,0.25); transition: background 0.2s;">
           <span class="material-icons-round" style="font-size: 1.25rem;">menu</span>
@@ -208,37 +245,13 @@ function updateDropdownMenu() {
 function renderCarousel(banners) {
   if (!banners.length) return '';
   const slides = banners.map((b, i) => {
-    const title = b.title || (i === 0 ? 'Welcome to Zando' : 'Special Collection');
-    const subtitle = b.subtitle || 'Discover amazing products & unbeatable prices';
-    const cta = b.ctaText || 'Shop Now';
+    const imgUrl = b.imageUrl || (i === 0 ? 'assets/images/Splash_Screen.jpg' : 'assets/images/welcome_bg.jpg');
 
-    if (b.isMockup || !b.imageUrl) {
-      return `
-        <div class="carousel-slide mockup-slide">
-          <div class="carousel-mockup-content">
-            <div class="carousel-badge" style="color:#ffffff;">🔥 Limited Offer</div>
-            <h2 class="carousel-title" style="color: #ffffff !important;">${title}</h2>
-            <p class="carousel-subtitle" style="color: #ffffff !important;">${subtitle}</p>
-            <button class="carousel-cta-btn" onclick="document.getElementById('featured-products-section')?.scrollIntoView({behavior:'smooth'})">
-              ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-      `;
-    }
     return `
-      <div class="carousel-slide">
-        <img src="${b.imageUrl}" alt="${title}" loading="lazy" referrerpolicy="no-referrer"
-             onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('mockup-slide');" />
-        <div class="carousel-overlay">
-          <div class="carousel-caption">
-            <h2 class="carousel-title" style="color: #ffffff !important;">${title}</h2>
-            ${subtitle ? `<p class="carousel-subtitle" style="color: #ffffff !important;">${subtitle}</p>` : ''}
-            <button class="carousel-cta-btn" onclick="document.getElementById('featured-products-section')?.scrollIntoView({behavior:'smooth'})">
-              ${cta} <span class="material-icons-round" style="font-size:1.1rem;margin-left:4px;">arrow_forward</span>
-            </button>
-          </div>
-        </div>
+      <div class="carousel-slide" style="border: none;">
+        <img src="${imgUrl}" alt="Zando Banner" loading="lazy" referrerpolicy="no-referrer"
+             style="width: 100%; height: 100%; object-fit: cover; display: block; border: none;"
+             onerror="this.onerror=null; this.src='assets/images/Splash_Screen.jpg';" />
       </div>
     `;
   }).join('');
@@ -248,13 +261,13 @@ function renderCarousel(banners) {
   ).join('');
 
   return `
-    <div style="background: #280026; width: 100%; padding: 0; margin-bottom: 2rem;">
-      <div class="hero-section-wrapper" style="max-width: 100%; margin: 0 auto; padding: 0; width: 100%;">
-        <div class="hero-carousel-col" style="height: 560px; position: relative;">
-          <div class="home-hero" style="height: 100%;">
-            <div class="carousel" id="main-carousel" style="height: 100%; position: relative; overflow: hidden;">
-              <div class="carousel-track" id="carousel-track" style="height: 100%; display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);">${slides}</div>
-              <div class="carousel-dots" id="carousel-dots" style="position: absolute; bottom: 1.5rem; right: 2rem; display: flex; gap: 8px; z-index: 10;">${dots}</div>
+    <div class="hero-carousel-section" style="background: #280026; width: 100%; padding: 0; margin-bottom: 1rem; border: none; border-bottom: none; outline: none; box-shadow: none;">
+      <div class="hero-section-wrapper" style="max-width: 100%; margin: 0 auto; padding: 0; width: 100%; border: none; outline: none;">
+        <div class="hero-carousel-col" style="border: none; outline: none;">
+          <div class="home-hero" style="height: 100%; margin: 0; border: none; outline: none;">
+            <div class="carousel" id="main-carousel" style="height: 100%; position: relative; overflow: hidden; border: none; outline: none; box-shadow: none;">
+              <div class="carousel-track" id="carousel-track" style="height: 100%; display: flex; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); border: none;">${slides}</div>
+              <div class="carousel-dots" id="carousel-dots" style="position: absolute; bottom: 0.75rem; right: 1.5rem; display: flex; gap: 8px; z-index: 10;">${dots}</div>
             </div>
           </div>
         </div>
@@ -298,13 +311,17 @@ function renderFeaturedProductsSection() {
         .featured-products-grid { grid-template-columns: repeat(5, 1fr); }
       }
       @media (max-width: 992px) {
-        .featured-products-grid { grid-template-columns: repeat(4, 1fr); }
+        .featured-products-grid { grid-template-columns: repeat(3, 1fr); }
       }
       @media (max-width: 768px) {
-        .featured-products-grid { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
-      }
-      @media (max-width: 480px) {
-        .featured-products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+        #featured-products-section {
+          padding: 0 16px !important;
+          margin-bottom: 2rem !important;
+        }
+        .featured-products-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 16px 12px !important;
+        }
       }
     </style>
   `;
@@ -587,11 +604,14 @@ function renderProductCard(product, idx = 0) {
 
 // ---- Bindings ----
 function bindHeader() {
-  document.getElementById('home-logo-btn')?.addEventListener('click', () => {
+  const onLogoClick = () => {
     clearFilters();
     navigate('home');
-  });
+  };
+  document.getElementById('home-logo-btn')?.addEventListener('click', onLogoClick);
+  document.getElementById('home-logo-btn-mobile')?.addEventListener('click', onLogoClick);
 
+  // Desktop search input & overlay
   const searchInput = document.getElementById('header-search-input');
   const searchOverlay = document.getElementById('search-overlay');
 
@@ -600,9 +620,9 @@ function bindHeader() {
     const results = setSearchQuery(q);
     updateProductGrid();
 
-    if (q.length > 0 && results.length > 0) {
+    if (q.length > 0 && results.length > 0 && searchOverlay) {
       showSearchOverlay(results.slice(0, 6), searchOverlay);
-    } else {
+    } else if (searchOverlay) {
       searchOverlay.style.display = 'none';
     }
   }, 300));
@@ -611,17 +631,45 @@ function bindHeader() {
     const q = searchInput?.value.trim() || '';
     setSearchQuery(q);
     updateProductGrid();
-    searchOverlay.style.display = 'none';
+    if (searchOverlay) searchOverlay.style.display = 'none';
+  });
+
+  // Mobile search input & overlay
+  const searchInputMobile = document.getElementById('header-search-input-mobile');
+  const searchOverlayMobile = document.getElementById('search-overlay-mobile');
+
+  searchInputMobile?.addEventListener('input', debounce((e) => {
+    const q = e.target.value.trim();
+    const results = setSearchQuery(q);
+    updateProductGrid();
+
+    if (q.length > 0 && results.length > 0 && searchOverlayMobile) {
+      showSearchOverlay(results.slice(0, 6), searchOverlayMobile);
+    } else if (searchOverlayMobile) {
+      searchOverlayMobile.style.display = 'none';
+    }
+  }, 300));
+
+  document.getElementById('search-btn-mobile')?.addEventListener('click', () => {
+    const q = searchInputMobile?.value.trim() || '';
+    setSearchQuery(q);
+    updateProductGrid();
+    if (searchOverlayMobile) searchOverlayMobile.style.display = 'none';
   });
 
   document.addEventListener('click', (e) => {
     const wrap = document.getElementById('header-search-wrap');
-    if (wrap && !wrap.contains(e.target)) {
+    if (wrap && searchOverlay && !wrap.contains(e.target)) {
       searchOverlay.style.display = 'none';
+    }
+    const wrapMobile = document.getElementById('header-search-wrap-mobile');
+    if (wrapMobile && searchOverlayMobile && !wrapMobile.contains(e.target)) {
+      searchOverlayMobile.style.display = 'none';
     }
   }, { capture: true });
 
   document.getElementById('notification-btn')?.addEventListener('click', () => navigate('notifications'));
+  document.getElementById('notification-btn-mobile')?.addEventListener('click', () => navigate('notifications'));
   document.getElementById('cart-header-btn')?.addEventListener('click', () => navigate('cart'));
   document.getElementById('orders-header-btn')?.addEventListener('click', () => {
     const { currentUser } = getState();
@@ -837,17 +885,20 @@ export function renderBottomNav(activePage) {
   const cartCount = getCartCount();
   return `
     <nav class="bottom-nav" id="bottom-nav">
-      <button class="bottom-nav-item ${activePage === 'home' ? 'active' : ''}" id="bnav-home" aria-label="Home">
+      <button class="bottom-nav-item ${activePage === 'home' ? 'active' : ''}" id="bnav-home" aria-label="Home" title="Home">
         <span class="material-icons-round">home</span>
       </button>
-      <button class="bottom-nav-item ${activePage === 'profile' ? 'active' : ''}" id="bnav-profile" aria-label="${currentUser ? 'Profile' : 'Sign In'}">
+      <button class="bottom-nav-item ${activePage === 'search' ? 'active' : ''}" id="bnav-search" aria-label="Search" title="Search">
+        <span class="material-icons-round">search</span>
+      </button>
+      <button class="bottom-nav-item ${activePage === 'profile' ? 'active' : ''}" id="bnav-profile" aria-label="${currentUser ? 'Profile' : 'Sign In'}" title="Profile">
         <span class="material-icons-round">person</span>
       </button>
-      <button class="bottom-nav-item ${activePage === 'cart' ? 'active' : ''}" id="bnav-cart" aria-label="Cart" style="position:relative;">
+      <button class="bottom-nav-item ${activePage === 'cart' ? 'active' : ''}" id="bnav-cart" aria-label="Cart" title="Cart" style="position:relative;">
         <span class="material-icons-round">shopping_cart</span>
         ${cartCount > 0 ? `<span class="bottom-nav-badge">${cartCount}</span>` : ''}
       </button>
-      <button class="bottom-nav-item ${activePage === 'categories' ? 'active' : ''}" id="bnav-categories" aria-label="Categories">
+      <button class="bottom-nav-item ${activePage === 'categories' ? 'active' : ''}" id="bnav-categories" aria-label="Categories" title="Categories">
         <span class="material-icons-round">grid_view</span>
       </button>
     </nav>
@@ -858,6 +909,16 @@ export function bindBottomNav() {
   document.getElementById('bnav-home')?.addEventListener('click', () => {
     clearFilters();
     navigate('home');
+  });
+
+  document.getElementById('bnav-search')?.addEventListener('click', () => {
+    const searchInput = document.getElementById('header-search-input');
+    if (searchInput) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      searchInput.focus();
+    } else {
+      navigate('home');
+    }
   });
 
   document.getElementById('bnav-profile')?.addEventListener('click', () => {

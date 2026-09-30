@@ -1150,7 +1150,7 @@
   color: white;
   padding: 4rem 2rem 2rem 2rem;
   margin-top: 4rem;
-  border-top: 4px solid var(--color-accent);
+  border-top: none;
   font-size: var(--text-sm);
 }
 
