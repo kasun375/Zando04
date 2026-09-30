@@ -274,11 +274,11 @@
     padding: var(--space-3) var(--space-3) calc(var(--space-3) + 70px);
   }
 
-  /* Products grid — 2 columns on mobile matching Flutter mobile app */
+  /* Products grid — 2 columns on mobile */
   .featured-products-grid,
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px 12px !important;
+    gap: 22px 14px !important;
   }
 
   /* Hero carousel — 180px on mobile matching Flutter mobile app */
@@ -359,7 +359,7 @@
     font-size: var(--text-xs);
   }
 
-  /* Product cards — Mobile View matching Flutter mobile app screenshot */
+  /* Product cards — Mobile View (2 per row, larger card size) */
   .product-card {
     position: relative !important;
     display: flex !important;
@@ -380,11 +380,12 @@
     aspect-ratio: 1 / 1 !important;
     height: auto !important;
     background: #B1A7B4 !important;
-    border-radius: 2px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
   }
 
   .product-card-image-wrap img {
@@ -398,8 +399,8 @@
     height: 100% !important;
     background: #B1A7B4 !important;
     color: #ffffff !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -407,20 +408,23 @@
 
   .product-card-info {
     position: static !important;
-    margin-top: 6px !important;
-    padding: 0 !important;
+    margin-top: 8px !important;
+    padding: 2px 0 !important;
     background: transparent !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 2px !important;
+    gap: 4px !important;
   }
 
   .product-card-name {
     color: #280026 !important;
-    font-size: 0.78rem !important;
-    font-weight: 500 !important;
-    line-height: 1.25 !important;
-    white-space: nowrap !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     text-shadow: none !important;
@@ -428,20 +432,26 @@
 
   .product-card-price {
     color: #280026 !important;
-    font-size: 0.82rem !important;
+    font-size: 1.05rem !important;
     font-weight: 800 !important;
     font-family: var(--font-display) !important;
-    margin-top: 2px !important;
+    margin-top: 4px !important;
     text-shadow: none !important;
   }
 
-  /* Hide wishlist, add-to-cart, rating, and shop on mobile to match the image precisely */
-  .product-card-wishlist,
-  .product-card-add-btn,
-  .product-card-rating,
-  .product-card-shop,
-  .product-card-badge {
-    display: none !important;
+  .product-card-wishlist {
+    display: flex !important;
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
   }
 
   /* Cart */
@@ -651,24 +661,19 @@
   .featured-products-grid,
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px 12px !important;
+    gap: 18px 12px !important;
   }
 
   .auth-logo {
     font-size: 2.5rem;
   }
 
-  /* Make product cards more compact */
-  .product-card-body {
-    padding: 0.5rem 0.625rem;
-  }
-
   .product-card-name {
-    font-size: 0.7rem;
+    font-size: 0.9rem !important;
   }
 
   .product-card-price {
-    font-size: var(--text-sm);
+    font-size: 1rem !important;
   }
 
   .track-orders-card {

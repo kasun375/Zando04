@@ -221,7 +221,7 @@ export function renderFooter() {
             <h4 style="color: #dce319; font-size: 1rem; font-weight: 700; margin: 0 0 0.6rem 0;">Contact Us</h4>
             <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; color: #ffffff;">
               <li>Email Us</li>
-              <li>076081262</li>
+              <li>0760891262</li>
               <li style="line-height: 1.4;">Zando Stores,No 49,<br />Paniyandoowa Rd,<br />Ambalangoda.</li>
             </ul>
           </div>

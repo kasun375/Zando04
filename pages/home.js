@@ -318,12 +318,9 @@ function renderFeaturedProductsSection() {
           padding: 0 16px !important;
           margin-bottom: 2rem !important;
         }
-        .featured-products-grid,
-        .products-grid {
-          display: grid !important;
+        .featured-products-grid {
           grid-template-columns: repeat(2, 1fr) !important;
           gap: 16px 12px !important;
-          width: 100% !important;
         }
       }
     </style>
@@ -583,23 +580,23 @@ function renderProductCard(product, idx = 0) {
   const inWishlist = product?.id && userModel?.wishlist?.includes(product.id);
 
   return `
-    <div class="product-card" data-product-id="${product?.id || ''}" style="cursor: pointer; display: flex; flex-direction: column; text-align: left; background: transparent; border: none; padding: 0;">
+    <div class="product-card" data-product-id="${product?.id || ''}">
       <!-- Top Image Rectangle -->
-      <div class="product-card-image-wrap" style="position: relative; width: 100%; aspect-ratio: 1; background: #B1A7B4; border-radius: 2px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+      <div class="product-card-image-wrap">
         ${imageUrl
-          ? `<img src="${imageUrl}" alt="${name}" loading="lazy" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'product-card-placeholder\\' style=\\'color:#ffffff; font-weight:500; font-size:1rem; font-family:var(--font-primary);\\'>Products</div>';" />`
-          : `<div class="product-card-placeholder" style="color: #ffffff; font-weight: 500; font-size: 1rem; font-family: var(--font-primary);">Products</div>`
+          ? `<img src="${imageUrl}" alt="${name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'product-card-placeholder\\'>Products</div>';" />`
+          : `<div class="product-card-placeholder">Products</div>`
         }
         ${product?.id ? `
-          <button class="product-card-wishlist ${inWishlist ? 'active' : ''}" data-wishlist-id="${product.id}" aria-label="Wishlist" style="position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+          <button class="product-card-wishlist ${inWishlist ? 'active' : ''}" data-wishlist-id="${product.id}" aria-label="Wishlist">
             <span class="material-icons-round" style="font-size: 0.95rem; color: ${inWishlist ? '#DC3545' : '#666'};">${inWishlist ? 'favorite' : 'favorite_border'}</span>
           </button>
         ` : ''}
       </div>
       <!-- Description & Price OUT of rectangle, directly under -->
-      <div class="product-card-info" style="margin-top: 6px; padding: 2px 0;">
-        <div class="product-card-name" style="font-size: 0.78rem; font-weight: 500; color: #222222; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</div>
-        <div class="product-card-price" style="font-size: 0.82rem; font-weight: 800; color: #280026; margin-top: 3px; font-family: var(--font-display);">${price}</div>
+      <div class="product-card-info">
+        <div class="product-card-name">${name}</div>
+        <div class="product-card-price">${price}</div>
       </div>
     </div>
   `;

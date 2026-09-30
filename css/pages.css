@@ -860,10 +860,8 @@
   }
 
   .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px 12px !important;
-    width: 100% !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
   }
 
   .home-hero {
@@ -878,10 +876,8 @@
   .header-search-input { font-size: var(--text-xs); }
   .auth-logo { font-size: 2.75rem; }
   .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px 12px !important;
-    width: 100% !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
   }
 }
 
