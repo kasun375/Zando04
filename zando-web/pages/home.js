@@ -979,11 +979,11 @@ function bindAutoAndInfiniteScroll() {
   };
 
   const startSugAutoPlay = () => {
-    if (_sugAutoTimer) clearInterval(_sugAutoTimer);
-    _sugAutoTimer = setInterval(() => {
-      _sugItemIndex = (_sugItemIndex + 1) % maxSteps;
-      updateSugSlider();
-    }, 3000);
+    if (_sugAutoTimer) {
+      clearInterval(_sugAutoTimer);
+      _sugAutoTimer = null;
+    }
+    // Auto-sliding movement disabled per user request
   };
 
   const stopSugAutoPlay = () => {
@@ -1028,7 +1028,7 @@ function bindAutoAndInfiniteScroll() {
 
   const wrap = document.getElementById('suggestions-container-wrap');
   wrap?.addEventListener('mouseenter', stopSugAutoPlay);
-  wrap?.addEventListener('mouseleave', startSugAutoPlay);
+  wrap?.addEventListener('mouseleave', stopSugAutoPlay);
 
   if (window._sugResizeHandler) {
     window.removeEventListener('resize', window._sugResizeHandler);
@@ -1036,25 +1036,34 @@ function bindAutoAndInfiniteScroll() {
   window._sugResizeHandler = () => updateSugSlider();
   window.addEventListener('resize', window._sugResizeHandler);
 
-  // Initial update and auto-play
+  // Initial update (auto-play stopped)
   setTimeout(updateSugSlider, 50);
-  startSugAutoPlay();
 
-  // Infinite Scroll window listener
+  // Infinite Scroll window listener (throttled & capped to prevent footer trembling/jumping)
   if (window._homeScrollHandler) {
     window.removeEventListener('scroll', window._homeScrollHandler);
   }
 
-  window._homeScrollHandler = () => {
+  const MAX_PRODUCT_LOAD_LIMIT = 35; // Maximum cards to display (prevents endless footer displacement)
+
+  window._homeScrollHandler = debounce(() => {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
+
+    if (_loadedProductCount >= MAX_PRODUCT_LOAD_LIMIT) {
+      if (window._homeScrollHandler) {
+        window.removeEventListener('scroll', window._homeScrollHandler);
+      }
+      return;
+    }
+
     const scrollBottom = window.innerHeight + window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
 
-    if (documentHeight - scrollBottom < 700) {
+    if (documentHeight - scrollBottom < 200) {
       appendMoreProducts();
     }
-  };
+  }, 200);
 
   window.addEventListener('scroll', window._homeScrollHandler, { passive: true });
 }
@@ -1076,7 +1085,7 @@ function appendMoreProducts() {
     return;
   }
 
-  const addCount = 14; // Append 2 full rows (14 product cards)
+  const addCount = 14; // Append 2 rows
   const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < addCount; i++) {
@@ -1092,6 +1101,11 @@ function appendMoreProducts() {
   grid.appendChild(fragment);
   _loadedProductCount += addCount;
   _isAppendingProducts = false;
+
+  // Unbind scroll handler if max capacity reached
+  if (_loadedProductCount >= 35 && window._homeScrollHandler) {
+    window.removeEventListener('scroll', window._homeScrollHandler);
+  }
 }
 
 export { updateCartBadge, updateNotificationBadge, updateProductGrid as _refreshGrid };

@@ -1152,6 +1152,8 @@
   margin-top: 4rem;
   border-top: none;
   font-size: var(--text-sm);
+  contain: layout style;
+  transform: translateZ(0);
 }
 
 .footer-container {
