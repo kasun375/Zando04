@@ -583,7 +583,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: AppColors.primary,
+                            color: Colors.black,
                           ),
                         ),
                       ],

@@ -121,7 +121,7 @@
 
 .form-control:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(46,6,43,0.1);
+  box-shadow: 0 0 0 3px rgba(255,87,34,0.15);
 }
 
 .form-control.has-icon {
@@ -351,7 +351,7 @@
 .product-card-price {
   font-size: var(--text-lg);
   font-weight: 800;
-  color: var(--color-primary);
+  color: #000000;
   font-family: var(--font-display);
 }
 
@@ -759,7 +759,7 @@
 .payment-method-btn.active {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  background: rgba(46,6,43,0.05);
+  background: rgba(255,87,34,0.06);
   font-weight: 700;
 }
 
@@ -847,7 +847,7 @@
 .qty-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  background: rgba(46,6,43,0.05);
+  background: rgba(255,87,34,0.06);
 }
 
 .qty-value {
@@ -907,7 +907,7 @@
 .search-result-price {
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-primary);
+  color: #000000;
 }
 
 /* ====== CHECKOUT TOTAL SUMMARY ====== */
@@ -936,7 +936,7 @@
 }
 
 .checkout-summary-row.total span:last-child {
-  color: var(--color-primary);
+  color: #000000;
 }
 
 /* ====== CART ITEM ====== */
@@ -995,7 +995,7 @@
 .cart-item-subtotal {
   font-size: var(--text-base);
   font-weight: 700;
-  color: var(--color-primary);
+  color: #000000;
 }
 
 /* ====== ORDER CARD ====== */
@@ -1049,7 +1049,7 @@
 }
 
 .notification-item:hover { background: var(--color-surface-2); }
-.notification-item.unread { background: rgba(46,6,43,0.04); }
+.notification-item.unread { background: rgba(255,87,34,0.06); }
 
 .notification-icon {
   width: 42px;

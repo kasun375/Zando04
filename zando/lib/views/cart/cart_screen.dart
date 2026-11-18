@@ -176,7 +176,7 @@ class _CartScreenState extends State<CartScreen> {
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: Colors.black,
                             ),
                           ),
                         ],

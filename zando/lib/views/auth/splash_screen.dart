@@ -62,11 +62,11 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background welcome image
-          Positioned.fill(
+          // Centered Logo with smooth animation
+          Center(
             child: AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
@@ -75,8 +75,10 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Opacity(
                     opacity: _fadeAnimation.value,
                     child: Image.asset(
-                      'assets/images/Splash_Screen.jpg',
-                      fit: BoxFit.cover,
+                      'assets/images/zando_logo.png',
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 );
@@ -92,12 +94,12 @@ class _SplashScreenState extends State<SplashScreen>
               opacity: _fadeAnimation,
               child: const Column(
                 children: [
-                  SpinKitDoubleBounce(color: AppColors.accent, size: 40.0),
+                  SpinKitDoubleBounce(color: AppColors.primary, size: 40.0),
                   SizedBox(height: 16),
                   Text(
                     'LOADING...',
                     style: TextStyle(
-                      color: Colors.white60,
+                      color: Colors.black45,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 3.0,

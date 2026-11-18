@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF2E062B); // Deep plum/purple
+  static const Color primary = Color(0xFFFF5722); // Vibrant Brand Orange #FF5722
+  static const Color primaryLight = Color(0xFFFF8A50);
+  static const Color primaryDark = Color(0xFFE64A19);
   static const Color secondary = Color(0xFFE5E5E5);
   static const Color accent = Color(0xFFFFFF00); // Bright Yellow #FFFF00
   static const Color background = Color(0xFFFFFFFF);
-  static const Color textBody = Color(0xFF333333);
-  static const Color textHead = Color(0xFF2E062B); // Plum section titles
+  static const Color textBody = Color(0xFF000000);
+  static const Color textHead = Color(0xFF000000);
   static const Color error = Color(0xFFDC3545);
   static const Color success = Color(0xFF28A745);
 

@@ -12,8 +12,8 @@ export function renderAbout(appEl) {
       ${renderHeader()}
       <div class="page-content" style="min-height: calc(100vh - 120px); padding-top: 2rem;">
         <div class="main-area" style="max-width: 800px; margin: 0 auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.05);">
-          <h1 style="font-family: var(--font-display); font-size: 2.5rem; color: #2E062B; margin-bottom: 1.5rem; text-align: center;">About Zando</h1>
-          <div style="font-size: 1.1rem; line-height: 1.8; color: #4A4A4A;">
+          <h1 style="font-family: var(--font-display); font-size: 2.5rem; color: #000000; margin-bottom: 1.5rem; text-align: center;">About Zando</h1>
+          <div style="font-size: 1.1rem; line-height: 1.8; color: #000000;">
             <p style="margin-bottom: 1rem;">
               Welcome to Zando, your ultimate destination for everything you need! We are an innovative e-commerce platform dedicated to providing our customers with a seamless, enjoyable, and secure shopping experience.
             </p>
@@ -42,7 +42,7 @@ export function renderAbout(appEl) {
 
 function renderHeader() {
   return `
-    <header class="site-header" style="background: #2E062B; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+    <header class="site-header" style="background: #FF5722; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
       <div class="header-logo" id="home-logo-btn" style="cursor: pointer;">
         <img src="assets/images/zando_logo.png" alt="ZANDO" style="height: 44px;" />
       </div>

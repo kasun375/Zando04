@@ -105,7 +105,7 @@ function renderHeader() {
   const { currentUser } = getState();
 
   return `
-    <header class="site-header" style="background: #280026; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+    <header class="site-header" style="background: #FF5722; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
       <div class="header-top-container container-fluid" style="padding: 0.75rem 1.5rem;">
         <!-- Desktop Layout (≥769px) -->
         <div class="d-none d-md-flex align-items-center justify-content-between gap-3">
@@ -210,7 +210,7 @@ function renderAllCategoriesBar() {
   return `
     <div class="all-categories-outside-section d-none d-md-block" style="padding: 0.85rem 2.5rem; background: #ffffff; border-bottom: 1px solid #eeeeee; width: 100%;">
       <div id="all-categories-btn-wrapper" style="position: relative; display: inline-block;">
-        <button id="all-categories-btn" class="all-categories-btn" style="background: #280026; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.6rem 1.4rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(40,0,38,0.25); transition: background 0.2s;">
+        <button id="all-categories-btn" class="all-categories-btn" style="background: #E64A19; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.6rem 1.4rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(255,87,34,0.25); transition: background 0.2s;">
           <span class="material-icons-round" style="font-size: 1.25rem;">menu</span>
           All Categories
         </button>
@@ -261,7 +261,7 @@ function renderCarousel(banners) {
   ).join('');
 
   return `
-    <div class="hero-carousel-section" style="background: #280026; width: 100%; padding: 0; margin-bottom: 1rem; border: none; border-bottom: none; outline: none; box-shadow: none;">
+    <div class="hero-carousel-section" style="background: #FF5722; width: 100%; padding: 0; margin-bottom: 1rem; border: none; border-bottom: none; outline: none; box-shadow: none;">
       <div class="hero-section-wrapper" style="max-width: 100%; margin: 0 auto; padding: 0; width: 100%; border: none; outline: none;">
         <div class="hero-carousel-col" style="border: none; outline: none;">
           <div class="home-hero" style="height: 100%; margin: 0; border: none; outline: none;">
@@ -291,7 +291,7 @@ function renderFeaturedProductsSection() {
   return `
     <section id="featured-products-section" style="max-width: 100%; margin: 0 auto 3.5rem auto; padding: 0 2.5rem;">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-        <h2 style="font-size: 1.5rem; font-weight: 800; color: #280026; margin: 0; font-family: var(--font-display);">Featured Products</h2>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: #000000; margin: 0; font-family: var(--font-display);">Featured Products</h2>
       </div>
       <div class="featured-products-grid" id="products-grid">
         ${cardItems}
@@ -318,9 +318,12 @@ function renderFeaturedProductsSection() {
           padding: 0 16px !important;
           margin-bottom: 2rem !important;
         }
-        .featured-products-grid {
+        .featured-products-grid,
+        .products-grid {
+          display: grid !important;
           grid-template-columns: repeat(2, 1fr) !important;
           gap: 16px 12px !important;
+          width: 100% !important;
         }
       }
     </style>
@@ -331,42 +334,42 @@ function renderFeaturedProductsSection() {
 function renderPopularCategoriesSection() {
   return `
     <section style="max-width: 100%; margin: 0 auto 3.5rem auto; padding: 0 2.5rem;">
-      <h2 style="font-size: 1.5rem; font-weight: 800; color: #280026; margin: 0 0 1.25rem 0; font-family: var(--font-display);">Popular Categories</h2>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: #000000; margin: 0 0 1.25rem 0; font-family: var(--font-display);">Popular Categories</h2>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;" class="popular-cat-grid">
         <!-- Card 1: Flower Shop (Gray #D5D5D8) -->
         <div class="pop-cat-card" data-cat="Flower Shop" style="background: #D5D5D8; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Top Award Winners</div>
-          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Flower Shop</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">Top Award Winners</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Flower Shop</div>
         </div>
 
         <!-- Card 2: Chocolates (Soft Yellow #FFF8D0) -->
         <div class="pop-cat-card" data-cat="Chocolets" style="background: #FFF8D0; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Special Everyday Sale</div>
-          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Chocolates</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">Special Everyday Sale</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Chocolates</div>
         </div>
 
         <!-- Card 3: Cosmetics (Soft Lime Green #E8FFD0) -->
         <div class="pop-cat-card" data-cat="Electronics" style="background: #E8FFD0; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Always Stay In Trend</div>
-          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Cosmetics</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">Always Stay In Trend</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Cosmetics</div>
         </div>
 
         <!-- Card 4: Food / Restaurant (Soft Yellow #FFF8D0 - Spans 2 Cols) -->
         <div class="pop-cat-card pop-cat-wide" data-cat="Grocery Items" style="background: #FFF8D0; border-radius: 16px; padding: 2.2rem 1.6rem; cursor: pointer; grid-column: span 2; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Good Food, Good Mood</div>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Food / Restaurant</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">Good Food, Good Mood</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Food / Restaurant</div>
         </div>
 
         <!-- Card 5: Jewellery (Gray #D5D5D8) -->
         <div class="pop-cat-card" data-cat="Fashion" style="background: #D5D5D8; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">Sparkle With Every Step</div>
-          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Jewellery</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">Sparkle With Every Step</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Jewellery</div>
         </div>
 
         <!-- Card 6: Cakes (Soft Cyan #D0F8FF) -->
         <div class="pop-cat-card" data-cat="Cake Shop" style="background: #D0F8FF; border-radius: 16px; padding: 2rem 1.6rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-          <div style="font-size: 0.75rem; color: #666; font-weight: 600; margin-bottom: 0.35rem;">For The Love of Food</div>
-          <div style="font-size: 1.5rem; font-weight: 900; color: #280026; font-family: var(--font-display);">Cakes</div>
+          <div style="font-size: 0.75rem; color: #444; font-weight: 600; margin-bottom: 0.35rem;">For The Love of Food</div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #000000; font-family: var(--font-display);">Cakes</div>
         </div>
       </div>
     </section>
@@ -430,8 +433,8 @@ function renderSuggestionsSection() {
           }
         </div>
         <div style="margin-top: 0.6rem;">
-          <div style="font-size: 0.82rem; color: #333333; font-weight: 500; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nameText}</div>
-          <div style="font-size: 0.88rem; font-weight: 900; color: #280026; margin-top: 3px; font-family: var(--font-display);">${priceText}</div>
+          <div style="font-size: 0.82rem; color: #000000; font-weight: 500; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nameText}</div>
+          <div style="font-size: 0.88rem; font-weight: 900; color: #000000; margin-top: 3px; font-family: var(--font-display);">${priceText}</div>
         </div>
       </div>
     `;
@@ -440,13 +443,13 @@ function renderSuggestionsSection() {
   return `
     <section style="max-width: 100%; margin: 0 auto 3rem auto; padding: 0 2.5rem;">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: #280026; margin: 0; font-family: var(--font-display);">Your Suggestions</h2>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #000000; margin: 0; font-family: var(--font-display);">Your Suggestions</h2>
         <!-- Prev/Next Controls -->
         <div style="display: flex; gap: 0.6rem; align-items: center;">
-          <button id="sug-prev-btn" aria-label="Previous product" style="background: rgba(40,0,38,0.08); color: #280026; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
+          <button id="sug-prev-btn" aria-label="Previous product" style="background: rgba(255,87,34,0.1); color: #FF5722; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
             <span class="material-icons-round" style="font-size: 1.2rem;">chevron_left</span>
           </button>
-          <button id="sug-next-btn" aria-label="Next product" style="background: #280026; color: #ffffff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
+          <button id="sug-next-btn" aria-label="Next product" style="background: #FF5722; color: #ffffff; border: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
             <span class="material-icons-round" style="font-size: 1.2rem;">chevron_right</span>
           </button>
         </div>
@@ -462,10 +465,10 @@ function renderSuggestionsSection() {
         </div>
 
         <div id="sug-dots-container" style="display: flex; justify-content: flex-end; gap: 8px; width: 65%; margin-top: 1.2rem; padding-right: 0.5rem;">
-          <div class="sug-dot active" data-sug-dot="0" style="width: 8px; height: 8px; border-radius: 50%; background: #280026; cursor: pointer; transition: all 0.2s;"></div>
-          <div class="sug-dot" data-sug-dot="1" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
-          <div class="sug-dot" data-sug-dot="2" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
-          <div class="sug-dot" data-sug-dot="3" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(40,0,38,0.25); cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot active" data-sug-dot="0" style="width: 8px; height: 8px; border-radius: 50%; background: #FF5722; cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="1" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(255,87,34,0.25); cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="2" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(255,87,34,0.25); cursor: pointer; transition: all 0.2s;"></div>
+          <div class="sug-dot" data-sug-dot="3" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(255,87,34,0.25); cursor: pointer; transition: all 0.2s;"></div>
         </div>
       </div>
     </section>
@@ -523,7 +526,7 @@ function renderSuggestionsSection() {
 // ---- Sell with Zando Promo Banner ----
 function renderSellWithZandoBanner() {
   return `
-    <section style="background: #5B0068; color: #ffffff; padding: 4rem 2.5rem; width: 100%; margin: 0 0 0 0; text-align: left;">
+    <section style="background: #FF5722; color: #ffffff; padding: 4rem 2.5rem; width: 100%; margin: 0 0 0 0; text-align: left;">
       <div style="max-width: 100%; margin: 0 auto;">
         <h2 style="font-size: 3.2rem; font-weight: 900; color: #ffffff; letter-spacing: 0.02em; line-height: 1.15; margin: 0 0 1.2rem 0; text-transform: uppercase; font-family: var(--font-display);">
           SELL WITH ZANDO AND<br />GROW YOUR BUSINESS
@@ -536,10 +539,10 @@ function renderSellWithZandoBanner() {
 
     <style>
       @media (max-width: 768px) {
-        section[style*="background: #5B0068"] h2 {
+        section[style*="background: #FF5722"] h2 {
           font-size: 2rem !important;
         }
-        section[style*="background: #5B0068"] div {
+        section[style*="background: #FF5722"] div {
           font-size: 1.4rem !important;
         }
       }
@@ -971,7 +974,7 @@ function bindAutoAndInfiniteScroll() {
         dots.length - 1,
         Math.floor((_sugItemIndex / (maxSteps - 1)) * dots.length)
       );
-      dot.style.background = idx === activeIdx ? '#280026' : 'rgba(40,0,38,0.25)';
+      dot.style.background = idx === activeIdx ? '#FF5722' : 'rgba(255,87,34,0.25)';
     });
   };
 

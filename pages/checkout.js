@@ -50,7 +50,7 @@ export function renderCheckout(appEl) {
       <div class="app-layout" style="min-height: 80vh; background: #f8f9fa;">
         <div class="page-content" style="padding: 2rem;">
           <div class="page-content-inner">
-            <h2 style="font-family: var(--font-display); color: #280026; margin-bottom: 1rem;">Checkout</h2>
+            <h2 style="font-family: var(--font-display); color: #000000; margin-bottom: 1rem;">Checkout</h2>
             <p style="color: #666;">Opening secure checkout modal...</p>
           </div>
         </div>

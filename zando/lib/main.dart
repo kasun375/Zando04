@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'providers/auth_provider.dart';

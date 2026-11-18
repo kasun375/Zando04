@@ -50,7 +50,7 @@ class ProductCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: AppColors.primary,
+                color: Colors.black,
                 fontSize: 12,
                 fontWeight: FontWeight.normal,
               ),
@@ -60,7 +60,7 @@ class ProductCard extends StatelessWidget {
             Text(
               AppConstants.formatCurrency(product.price > 0 ? product.price : 16750),
               style: const TextStyle(
-                color: AppColors.primary,
+                color: Colors.black,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),

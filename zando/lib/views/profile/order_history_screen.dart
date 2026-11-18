@@ -324,7 +324,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
-                                    color: AppColors.primary,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ],
@@ -455,7 +455,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,
-                                color: AppColors.primary,
+                                color: Colors.black,
                               ),
                             ),
                           ],

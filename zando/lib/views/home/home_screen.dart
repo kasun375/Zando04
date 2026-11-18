@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             trailing: Text(
                               AppConstants.formatCurrency(product.price),
                               style: const TextStyle(
-                                color: AppColors.primary,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final notificationProvider = Provider.of<NotificationProvider>(context);
 
     return Container(
-      color: AppColors.primary, // Deep Plum #2E062B
+      color: AppColors.primary, // Vibrant Brand Orange #FF5722
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 8,
         bottom: 12,
@@ -551,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text(
                       'Featured Products',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -754,7 +754,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Text(
             'Popular Categories',
             style: TextStyle(
-              color: AppColors.primary,
+              color: Colors.black,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -793,8 +793,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           cat['tag'] as String,
-                          style: TextStyle(
-                            color: AppColors.primary.withValues(alpha: 0.7),
+                          style: const TextStyle(
+                            color: Colors.black54,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -803,7 +803,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           cat['title'] as String,
                           style: const TextStyle(
-                            color: AppColors.primary,
+                            color: Colors.black,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -847,7 +847,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             'Your Suggestions',
             style: TextStyle(
-              color: AppColors.primary,
+              color: Colors.black,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -910,7 +910,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            color: AppColors.primary,
+                            color: Colors.black,
                             fontSize: 11,
                           ),
                         ),
@@ -918,7 +918,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           AppConstants.formatCurrency(prod.price > 0 ? prod.price : 16750),
                           style: const TextStyle(
-                            color: AppColors.primary,
+                            color: Colors.black,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -939,7 +939,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSellWithZandoBanner() {
     return Container(
       width: double.infinity,
-      color: AppColors.primary, // Deep Plum
+      color: AppColors.primary, // Vibrant Brand Orange #FF5722
       padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
       child: Column(
         children: const [

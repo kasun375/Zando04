@@ -318,7 +318,7 @@ class _SlideDownBannerState extends State<SlideDownBanner>
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2E062B),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(

@@ -67,7 +67,7 @@ export function renderProductDetail(appEl) {
 
               <h1 class="product-detail-name" style="font-size: 1.5rem; font-weight: 700; color: #000; margin: 0; font-family: var(--font-display);">${p.name}</h1>
 
-              <div class="product-detail-price" style="font-size: 2.25rem; font-weight: 700; color: #2E062B; margin: 0.5rem 0;">
+              <div class="product-detail-price" style="font-size: 2.25rem; font-weight: 700; color: #000000; margin: 0.5rem 0;">
                 ${formatCurrency(p.price)}
               </div>
 
@@ -162,7 +162,7 @@ function renderProductDetailHeader(productName) {
         <button class="icon-btn" id="back-btn" aria-label="Go back" style="flex-shrink:0;">
           <span class="material-icons-round">arrow_back</span>
         </button>
-        <div class="header-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: #2E062B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">
+        <div class="header-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">
           ${productName}
         </div>
       </div>
